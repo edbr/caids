@@ -1,0 +1,119 @@
+:root {
+  /* =========================
+     NUMO Palette (base tokens)
+     ========================= */
+
+  /* Teal / Primary Brand */
+  --numo-teal-900: 160 82% 10%;
+  --numo-teal-800: 160 24% 18%;
+  --numo-teal-700: 160 24% 23%;
+  --numo-teal-600: 160 24% 33%;
+  --numo-teal-500: 160 40% 43%;
+  --numo-teal-400: 160 40% 53%;
+
+  /* Orange */
+  --numo-orange-900: 23 85% 30%;
+  --numo-orange-800: 23 69% 40%;
+  --numo-orange-700: 23 69% 50%;
+  --numo-orange-600: 23 69% 59%;
+  --numo-orange-500: 23 88% 68%;
+  --numo-orange-400: 23 98% 78%;
+
+  /* Neutral Gray */
+  --numo-gray-900: 0 0% 66%;
+  --numo-gray-800: 0 0% 76%;
+  --numo-gray-700: 0 0% 86%;
+  --numo-gray-600: 0 0% 96%;
+  --numo-gray-500: 0 0% 97%;
+  --numo-gray-400: 0 0% 98%;
+
+  /* Yellow / Warning */
+  --numo-yellow-900: 51 84% 30%;
+  --numo-yellow-800: 51 64% 40%;
+  --numo-yellow-700: 51 64% 50%;
+  --numo-yellow-600: 51 64% 59%;
+  --numo-yellow-500: 51 80% 70%;
+  --numo-yellow-400: 51 90% 80%;
+
+  /* Red / Danger */
+  --numo-red-900: 7 77% 30%;
+  --numo-red-800: 7 67% 40%;
+  --numo-red-700: 7 67% 50%;
+  --numo-red-600: 7 67% 59%;
+  --numo-red-500: 7 72% 66%;
+  --numo-red-400: 7 99% 76%;
+
+  /* Slate / Blue-Gray */
+  --numo-slate-900: 200 18% 40%;
+  --numo-slate-800: 200 18% 50%;
+  --numo-slate-700: 200 18% 60%;
+  --numo-slate-600: 200 18% 70%;
+  --numo-slate-500: 200 18% 80%;
+  --numo-slate-400: 200 40% 90%;
+
+  /* Deep Blue */
+  --numo-blue-900: 200 38% 15%;
+  --numo-blue-800: 200 38% 20%;
+  --numo-blue-700: 200 38% 30%;
+  --numo-blue-600: 200 38% 40%;
+  --numo-blue-500: 200 38% 50%;
+  --numo-blue-400: 200 40% 65%;
+
+  /* =========================
+     DS semantic (intent tokens)
+     ========================= */
+
+  /* Surfaces */
+  --ds-surface-1: 0 0% 100%;
+  --ds-surface-2: var(--numo-gray-500);
+  --ds-surface-3: var(--numo-gray-600);
+
+  /* Text */
+  --ds-text-1: var(--numo-blue-900);
+  --ds-text-2: var(--numo-slate-900);
+
+  /* Borders + rings */
+  --ds-border-1: var(--numo-slate-400);
+  --ds-ring-1: var(--numo-teal-500);
+
+  /* Brand */
+  --ds-accent: var(--numo-teal-500);
+  --ds-accent-foreground: 0 0% 100%;
+
+  /* Status */
+  --ds-success: var(--numo-teal-600);
+  --ds-warning: var(--numo-yellow-800);
+  --ds-danger: var(--numo-red-700);
+
+  /* Row */
+  --ds-row: var(--numo-gray-500);
+  --ds-row-hover: var(--numo-gray-600);
+
+  /* =========================
+     Behaviors
+     ========================= */
+
+  /* Shadows */
+  --ds-shadow-xs: 0 1px 2px hsl(var(--ds-text-1) / 0.04);
+  --ds-shadow-sm: 0 2px 6px hsl(var(--ds-text-1) / 0.06);
+  --ds-shadow-md: 0 6px 18px hsl(var(--ds-text-1) / 0.08);
+  --ds-shadow-lg: 0 12px 32px hsl(var(--ds-text-1) / 0.12);
+
+  /* Focus (store as a REAL color string because you use it directly in box-shadow) */
+  --ds-ring-1: var(--numo-yellow-500);
+  --ds-focus-ring: hsl(var(--numo-yellow-500));
+  --ds-focus-width: 2px;
+  --ds-focus-offset: 2px;
+
+  /* Motion */
+  --motion-fast: 120ms;
+  --motion-med: 180ms;
+  --motion-slow: 240ms;
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Radii (if you want them here; otherwise keep in globals) */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+}
