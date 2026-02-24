@@ -30,7 +30,10 @@ export function DSPage({
               <NavLink href="/foundations">Foundations</NavLink>
               <NavLink href="/components">Components</NavLink>
               <NavLink href="/patterns">Patterns</NavLink>
-              <NavLink href="/numo-home">Numo Home</NavLink>
+              <NavMenu label="Protoypes">
+                <NavMenuLink href="/numo-home">Curie Home</NavMenuLink>
+                <NavMenuLink href="/notes">Notes</NavMenuLink>
+              </NavMenu>
             </nav>
           </div>
         </header>
@@ -46,6 +49,46 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
     <Link
       href={href}
       className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition"
+    >
+      {children}
+    </Link>
+  );
+}
+
+function NavMenu({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="relative group">
+      <button
+        type="button"
+        className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition group-focus-within:text-foreground group-focus-within:bg-muted/50"
+        aria-haspopup="menu"
+      >
+        {label}
+      </button>
+
+      <div aria-hidden className="absolute right-0 top-full h-3 w-44" />
+
+      <div
+        className={[
+          "absolute right-0 top-[calc(100%+0.15rem)] z-40 min-w-44 rounded-lg border border-border bg-background p-1 shadow-md",
+          "invisible translate-y-1 opacity-0 transition duration-150",
+          "group-hover:visible group-hover:translate-y-0 group-hover:opacity-100",
+          "group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100",
+        ].join(" ")}
+        role="menu"
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function NavMenuLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      role="menuitem"
+      className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted/60 hover:text-foreground transition"
     >
       {children}
     </Link>

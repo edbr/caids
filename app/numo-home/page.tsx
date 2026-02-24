@@ -13,8 +13,8 @@ export default function NumoHomePage() {
 
   return (
     <DSPage
-      title="Numo Home"
-      description="Composed page that reuses the patterns components: home header, bell notifications, and actionable insights."
+      title="Protypes"
+      description="Composed pages that reuses the patterns components: home header, bell notifications, and actionable insights."
     >
       <section className="rounded-xl border border-border bg-muted/25 p-5 md:p-8">
         <div className="relative overflow-visible rounded-xl bg-background">

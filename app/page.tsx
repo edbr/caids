@@ -6,6 +6,7 @@ const links = [
   { href: "/components", label: "Components", desc: "Primitives: Button, Panel, Input, Tooltip…" },
   { href: "/patterns", label: "Patterns", desc: "Composed flows: notifications, insight rows, cards." },
   { href: "/numo-home", label: "Numo Home", desc: "Composed page using patterns in one tab." },
+  { href: "/notes", label: "Notes", desc: "Prototype: browse, add, and edit notes interactions." },
 ];
 
 export default function Home() {
