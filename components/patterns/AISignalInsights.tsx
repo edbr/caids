@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock3,
+  RefreshCw,
   ShieldAlert,
   Users,
 } from "lucide-react";
@@ -70,12 +71,79 @@ const BUBBLES: InsightBubble[] = [
   },
 ];
 
+const LAST_UPDATED_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+});
+
+function formatRelativeTime(from: Date, nowMs: number) {
+  const seconds = Math.max(0, Math.floor((nowMs - from.getTime()) / 1000));
+  if (seconds < 60) return `${seconds}s ago`;
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 export function AISignalInsights() {
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = React.useState(() => new Date());
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const [nowMs, setNowMs] = React.useState(() => Date.now());
+
+  React.useEffect(() => {
+    const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const handleReload = React.useCallback(() => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+
+    window.setTimeout(() => {
+      setLastUpdated(new Date());
+      setNowMs(Date.now());
+      setIsRefreshing(false);
+    }, 900);
+  }, [isRefreshing]);
 
   return (
     <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-[#d8e4ee] bg-[#f6fbff] px-3 py-2">
+        <div className="min-w-0 flex items-center gap-2">
+          <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#c9ddec] bg-white text-[#2b5a77]">
+            <Clock3 className="h-3.5 w-3.5" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2b5a77]">
+              Latest Update
+            </p>
+            <p className="truncate text-xs text-[#445564]">
+              {LAST_UPDATED_FORMATTER.format(lastUpdated)}
+              <span className="ml-2 rounded-full bg-[#e9f4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#1f6aa3]">
+                {formatRelativeTime(lastUpdated, nowMs)}
+              </span>
+            </p>
+          </div>
+        </div>
 
+        <button
+          type="button"
+          onClick={handleReload}
+          disabled={isRefreshing}
+          className="inline-flex items-center gap-1.5 rounded-md border border-[#bfd8ea] bg-white px-2.5 py-1.5 text-[11px] font-medium text-[#1f4f6d] transition hover:bg-[#edf7ff] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <RefreshCw className={["h-3.5 w-3.5", isRefreshing ? "animate-spin" : ""].join(" ")} />
+          {isRefreshing ? "Refreshing..." : "Reload data"}
+        </button>
+      </div>
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
         {BUBBLES.map((bubble) => {
           const hovered = hoveredId === bubble.id;

@@ -23,14 +23,11 @@ export default function NumoHomePage() {
               unreadCount={unreadCount}
               notificationsOpen={notificationsOpen}
               onToggleNotifications={() => setNotificationsOpen((v) => !v)}
+              notificationPanel={
+                notificationsOpen ? <NotificationsPanelDemo showReset={false} /> : null
+              }
             />
           </div>
-
-          {notificationsOpen ? (
-            <div className="absolute right-4 top-16 z-[500] w-[32rem] max-w-[calc(100vw-2rem)]">
-              <NotificationsPanelDemo showReset={false} />
-            </div>
-          ) : null}
 
           <div className="space-y-8 px-4 pb-5 pt-3 md:space-y-10 md:px-6 md:pb-8 md:pt-4">
             <AISignalInsights />

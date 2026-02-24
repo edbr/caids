@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { InsightTableFilters, type RiskFilter } from "@/components/patterns/InsightTableFilters";
 
 type ActionState = "default" | "disabled" | "loading" | "success" | "danger";
 
@@ -30,6 +31,9 @@ type RowAction = {
 type PatientRow = {
   id: string;
   name: string;
+  clinic: string;
+  risk: Exclude<RiskFilter, "all">;
+  abnormalVitals: boolean;
   meta: string;
   condition: string;
   symptoms: string[];
@@ -427,6 +431,9 @@ export default function InsightTableDemo() {
       {
         id: "p1",
         name: "Marta Beauchamp",
+        clinic: "Curie Downtown",
+        risk: "moderate",
+        abnormalVitals: false,
         meta: "57 yrs, female",
         condition: "COPD",
         symptoms: ["Cough [4]", "Sneeze [8]", "Heavy breathing [2]"],
@@ -444,6 +451,9 @@ export default function InsightTableDemo() {
       {
         id: "p2",
         name: "Marco Odermatt",
+        clinic: "Curie North",
+        risk: "high",
+        abnormalVitals: true,
         meta: "63 yrs, male",
         condition: "Asthma",
         symptoms: ["Wheezing [6]", "Cough [2]", "Shortness of breath [3]"],
@@ -461,6 +471,9 @@ export default function InsightTableDemo() {
       {
         id: "p3",
         name: "Denise Mertens",
+        clinic: "Curie Downtown",
+        risk: "low",
+        abnormalVitals: true,
         meta: "80 yrs, female",
         condition: "COPD",
         symptoms: ["Wheezing [19]", "Cough [2]", "Shortness of breath [30]"],
@@ -485,6 +498,25 @@ export default function InsightTableDemo() {
     p2: 12,
     p3: 0,
   });
+  const [risk, setRisk] = React.useState<RiskFilter>("all");
+  const [clinic, setClinic] = React.useState("all");
+  const [abnormalVitalsOnly, setAbnormalVitalsOnly] = React.useState(false);
+
+  const clinics = React.useMemo(
+    () => [...new Set(rows.map((row) => row.clinic))].sort((a, b) => a.localeCompare(b)),
+    [rows]
+  );
+
+  const filteredRows = React.useMemo(
+    () =>
+      rows.filter((row) => {
+        if (risk !== "all" && row.risk !== risk) return false;
+        if (clinic !== "all" && row.clinic !== clinic) return false;
+        if (abnormalVitalsOnly && !row.abnormalVitals) return false;
+        return true;
+      }),
+    [rows, risk, clinic, abnormalVitalsOnly]
+  );
 
   function togglePlay(rowId: string) {
     setPlayingRowId((prev) => {
@@ -516,24 +548,46 @@ export default function InsightTableDemo() {
     return () => window.clearInterval(interval);
   }, [playingRowId]);
 
-return (
-  <TooltipProvider delayDuration={200}>
-    <div className="w-full rounded-xl border border-border bg-muted/30 overflow-visible">
-      <HeaderRow />
-      <div className="rounded-b-xl">
-        {rows.map((row, idx) => (
-          <InsightRow
-            key={row.id}
-            row={row}
-            rowIndex={idx}
-            isLast={idx === rows.length - 1}
-            isPlaying={playingRowId === row.id}
-            onTogglePlay={() => togglePlay(row.id)}
-            elapsedSeconds={elapsedByRowId[row.id] ?? 0}
-          />
-        ))}
+  return (
+    <TooltipProvider delayDuration={200}>
+      <div className="w-full overflow-visible">
+        <InsightTableFilters
+          risk={risk}
+          clinic={clinic}
+          abnormalVitalsOnly={abnormalVitalsOnly}
+          clinics={clinics}
+          onRiskChange={setRisk}
+          onClinicChange={setClinic}
+          onAbnormalVitalsOnlyChange={setAbnormalVitalsOnly}
+          onClear={() => {
+            setRisk("all");
+            setClinic("all");
+            setAbnormalVitalsOnly(false);
+          }}
+        />
+        <div className="rounded-xl border border-border bg-muted/30 overflow-visible">
+          <HeaderRow />
+          <div className="rounded-b-xl">
+            {filteredRows.length > 0 ? (
+              filteredRows.map((row, idx) => (
+                <InsightRow
+                  key={row.id}
+                  row={row}
+                  rowIndex={idx}
+                  isLast={idx === filteredRows.length - 1}
+                  isPlaying={playingRowId === row.id}
+                  onTogglePlay={() => togglePlay(row.id)}
+                  elapsedSeconds={elapsedByRowId[row.id] ?? 0}
+                />
+              ))
+            ) : (
+              <div className="rounded-b-xl border border-border border-t-0 px-6 py-8 text-center text-sm text-muted-foreground">
+                No patients match the current filters.
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  </TooltipProvider>
-);
+    </TooltipProvider>
+  );
 }
