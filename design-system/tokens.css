@@ -101,9 +101,9 @@
 
   /* Focus (store as a REAL color string because you use it directly in box-shadow) */
   --ds-ring-1: var(--numo-yellow-500);
-  --ds-focus-ring: hsl(var(--numo-yellow-500));
-  --ds-focus-width: 2px;
-  --ds-focus-offset: 2px;
+  --ds-focus-ring: hsl(var(--numo-blue-300));
+  --ds-focus-width: 1px;
+  --ds-focus-offset: 1px;
 
   /* Motion */
   --motion-fast: 120ms;

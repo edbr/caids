@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Activity, ChevronDown, FilePlus2, Pencil, Plus, Share2 } from "lucide-react";
+import { Activity, ChevronDown, FilePlus2, NotebookPen, Pencil, Plus, Share2 } from "lucide-react";
 
 type NoteType = "all" | "video";
 
@@ -165,7 +165,7 @@ export function NotesDemo() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search notes"
-                  className="w-72 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-[#0ea5e9]"
+                  className="w-72 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-numo-blue-500"
                 />
               </label>
 
@@ -175,7 +175,7 @@ export function NotesDemo() {
                   <select
                     value={filter}
                     onChange={(e) => setFilter(e.target.value as NoteType)}
-                    className="h-10 min-w-44 appearance-none rounded-md border border-border bg-background px-3 pr-10 text-sm outline-none focus:border-[#0ea5e9]"
+                    className="h-10 min-w-44 appearance-none rounded-md border border-border bg-background px-3 pr-10 text-sm outline-none focus:border-numo-blue-500"
                   >
                     <option value="all">All Notes</option>
                     <option value="video">Video Notes</option>
@@ -190,7 +190,7 @@ export function NotesDemo() {
                   <select
                     value={authorFilter}
                     onChange={(e) => setAuthorFilter(e.target.value)}
-                    className="h-10 min-w-48 appearance-none rounded-md border border-border bg-background px-3 pr-10 text-sm outline-none focus:border-[#0ea5e9]"
+                    className="h-10 min-w-48 appearance-none rounded-md border border-border bg-background px-3 pr-10 text-sm outline-none focus:border-numo-blue-500"
                   >
                     <option value="all">All authors</option>
                     {authors.map((author) => (
@@ -207,8 +207,9 @@ export function NotesDemo() {
             <button
               type="button"
               onClick={openAddMode}
-              className="rounded-md bg-[#0ea5e9] px-5 py-2 text-sm font-medium text-white hover:bg-[#0284c7]"
+              className="group inline-flex items-center gap-1.5 rounded-md border border-numo-blue-500 bg-numo-blue-600 px-5 py-2 text-sm font-medium text-white transition-all duration-200 ease-out hover:border-numo-blue-400 hover:bg-numo-blue-600 hover:shadow-[0_0_0_1px_hsl(var(--numo-blue-400)/0.35),0_8px_18px_hsl(var(--numo-blue-500)/0.28)] active:opacity-95"
             >
+              <NotebookPen className="h-4 w-4 transition-all duration-200 ease-out group-hover:scale-105 group-hover:opacity-95" />
               Add note
             </button>
           </div>
@@ -217,8 +218,8 @@ export function NotesDemo() {
             {groupedEntries.map(([dateLabel, dateNotes]) => (
               <section key={dateLabel} className="rounded-lg border border-border bg-background px-3 py-3.5 md:px-4 md:py-4">
                 <div className="sticky top-0 z-10 -mx-2 mb-2.5 flex items-center justify-between gap-3 border-b border-border/70 bg-background/95 px-2 py-1.5 backdrop-blur-sm">
-                  <h3 className="text-lg font-semibold tracking-tight text-[#4b5675]">{dateLabel}</h3>
-                  <p className="inline-flex items-center gap-1.5 rounded-full bg-[#eef6ff] px-2 py-0.5 text-[11px] font-medium text-[#375676]">
+                  <h3 className="text-md tracking-tight text-numo-teal-600">{dateLabel}</h3>
+                  <p className="inline-flex items-center gap-1.5 rounded-full bg-numo-blue-400/25 px-2 py-0.5 text-[11px] font-medium text-numo-blue-800">
                     <Activity className="h-3 w-3" />
                     Latest vitals: {DATE_VITALS[dateLabel] ?? "SpO2 -- | RR -- | HR --"}
                   </p>
@@ -232,12 +233,12 @@ export function NotesDemo() {
                     <article
                       key={note.id}
                       className={[
-                        "text-[#4f5874] py-3 first:pt-0 last:pb-0",
+                        "text-numo-slate-800 py-3 first:pt-0 last:pb-0",
                         authorChanged ? "mt-1 border-t border-dashed border-border/70 pt-4" : "",
                       ].join(" ")}
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <p className="text-sm font-semibold text-[#3f4a67]">{`${note.author} ${note.time}`}</p>
+                        <p className="text-sm font-semibold text-numo-blue-800">{`${note.author} ${note.time}`}</p>
                         <div className="flex items-center gap-1.5">
                           <button
                             type="button"
@@ -263,7 +264,7 @@ export function NotesDemo() {
                           </button>
                         </div>
                       </div>
-                      <p className="mt-1 max-w-[80ch] text-sm leading-6 text-[#4f5874]">{note.text}</p>
+                      <p className="mt-1 max-w-[80ch] text-sm leading-6 text-numo-slate-800">{note.text}</p>
                     </article>
                   )})}
                 </div>
@@ -280,7 +281,7 @@ export function NotesDemo() {
           <div className="mt-5 flex justify-end">
             <div className="inline-flex overflow-hidden rounded-md border border-border text-sm">
               <button type="button" className="px-3 py-1 text-muted-foreground hover:bg-muted/50">Prev</button>
-              <button type="button" className="bg-[#1e3a8a] px-3 py-1 text-white">1</button>
+              <button type="button" className="bg-numo-blue-800 px-3 py-1 text-white">1</button>
               <button type="button" className="px-3 py-1 hover:bg-muted/50">2</button>
               <button type="button" className="px-3 py-1 hover:bg-muted/50">3</button>
               <button type="button" className="px-3 py-1 text-muted-foreground hover:bg-muted/50">Next</button>
@@ -293,7 +294,7 @@ export function NotesDemo() {
             <button
               type="button"
               onClick={cancelCompose}
-              className="rounded-md border border-[#0ea5e9] bg-background px-5 py-2 text-sm text-[#0ea5e9] hover:bg-[#e0f2fe]"
+              className="rounded-md border border-numo-blue-500 bg-background px-5 py-2 text-sm text-numo-blue-500 hover:bg-numo-blue-400/25"
             >
               Cancel
             </button>
@@ -301,14 +302,14 @@ export function NotesDemo() {
               type="button"
               onClick={saveNote}
               disabled={draft.trim().length === 0}
-              className="rounded-md bg-[#0ea5e9] px-8 py-2 text-sm font-medium text-white hover:bg-[#0284c7] disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-md bg-numo-blue-500 px-8 py-2 text-sm font-medium text-white hover:bg-numo-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Save
             </button>
           </div>
 
           <div className="rounded-lg border border-border bg-background p-4">
-            <h3 className="mb-3 text-3xl font-semibold text-[#4b5675]">
+            <h3 className="mb-3 text-3xl font-semibold text-numo-slate-900">
               {editingNote ? "Edit note" : "Add note"}
             </h3>
 
@@ -319,7 +320,7 @@ export function NotesDemo() {
             ) : null}
 
             <div className="flex items-center gap-3">
-              <Plus className="h-5 w-5 text-[#0ea5e9]" />
+              <Plus className="h-5 w-5 text-numo-blue-500" />
               <input
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
@@ -327,7 +328,7 @@ export function NotesDemo() {
                   if (e.key === "Enter") saveNote();
                 }}
                 placeholder="Write a note"
-                className="w-full rounded-md border border-[#93c5fd] bg-background px-3 py-2 text-sm outline-none focus:border-[#0ea5e9]"
+                className="w-full rounded-md border border-numo-blue-400 bg-background px-3 py-2 text-sm outline-none focus:border-numo-blue-500"
                 autoFocus
               />
             </div>

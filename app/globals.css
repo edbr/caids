@@ -31,6 +31,57 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
 
+  /* Numo base palette aliases for Tailwind utilities:
+     Use as bg-numo-red-500 / text-numo-teal-700 / border-numo-slate-400 */
+  --color-numo-teal-900: hsl(var(--numo-teal-900));
+  --color-numo-teal-800: hsl(var(--numo-teal-800));
+  --color-numo-teal-700: hsl(var(--numo-teal-700));
+  --color-numo-teal-600: hsl(var(--numo-teal-600));
+  --color-numo-teal-500: hsl(var(--numo-teal-500));
+  --color-numo-teal-400: hsl(var(--numo-teal-400));
+
+  --color-numo-orange-900: hsl(var(--numo-orange-900));
+  --color-numo-orange-800: hsl(var(--numo-orange-800));
+  --color-numo-orange-700: hsl(var(--numo-orange-700));
+  --color-numo-orange-600: hsl(var(--numo-orange-600));
+  --color-numo-orange-500: hsl(var(--numo-orange-500));
+  --color-numo-orange-400: hsl(var(--numo-orange-400));
+
+  --color-numo-gray-900: hsl(var(--numo-gray-900));
+  --color-numo-gray-800: hsl(var(--numo-gray-800));
+  --color-numo-gray-700: hsl(var(--numo-gray-700));
+  --color-numo-gray-600: hsl(var(--numo-gray-600));
+  --color-numo-gray-500: hsl(var(--numo-gray-500));
+  --color-numo-gray-400: hsl(var(--numo-gray-400));
+
+  --color-numo-yellow-900: hsl(var(--numo-yellow-900));
+  --color-numo-yellow-800: hsl(var(--numo-yellow-800));
+  --color-numo-yellow-700: hsl(var(--numo-yellow-700));
+  --color-numo-yellow-600: hsl(var(--numo-yellow-600));
+  --color-numo-yellow-500: hsl(var(--numo-yellow-500));
+  --color-numo-yellow-400: hsl(var(--numo-yellow-400));
+
+  --color-numo-red-900: hsl(var(--numo-red-900));
+  --color-numo-red-800: hsl(var(--numo-red-800));
+  --color-numo-red-700: hsl(var(--numo-red-700));
+  --color-numo-red-600: hsl(var(--numo-red-600));
+  --color-numo-red-500: hsl(var(--numo-red-500));
+  --color-numo-red-400: hsl(var(--numo-red-400));
+
+  --color-numo-slate-900: hsl(var(--numo-slate-900));
+  --color-numo-slate-800: hsl(var(--numo-slate-800));
+  --color-numo-slate-700: hsl(var(--numo-slate-700));
+  --color-numo-slate-600: hsl(var(--numo-slate-600));
+  --color-numo-slate-500: hsl(var(--numo-slate-500));
+  --color-numo-slate-400: hsl(var(--numo-slate-400));
+
+  --color-numo-blue-900: hsl(var(--numo-blue-900));
+  --color-numo-blue-800: hsl(var(--numo-blue-800));
+  --color-numo-blue-700: hsl(var(--numo-blue-700));
+  --color-numo-blue-600: hsl(var(--numo-blue-600));
+  --color-numo-blue-500: hsl(var(--numo-blue-500));
+  --color-numo-blue-400: hsl(var(--numo-blue-400));
+
   /* Radius scale (driven by --radius below) */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
