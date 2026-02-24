@@ -31,7 +31,7 @@ export function DSPage({
               <NavLink href="/components">Components</NavLink>
               <NavLink href="/patterns">Patterns</NavLink>
               <NavMenu label="Protoypes">
-                <NavMenuLink href="/numo-home">Curie Home</NavMenuLink>
+                <NavMenuLink href="/numo-home">Clinical Dashboard</NavMenuLink>
                 <NavMenuLink href="/notes">Notes</NavMenuLink>
               </NavMenu>
             </nav>
