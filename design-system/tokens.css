@@ -86,7 +86,7 @@
   --ds-danger: var(--numo-red-700);
 
   /* Row */
-  --ds-row: var(--numo-gray-500);
+  --ds-row: var(--numo-gray-100);
   --ds-row-hover: var(--numo-gray-600);
 
   /* =========================

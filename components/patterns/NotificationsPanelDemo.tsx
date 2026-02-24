@@ -25,7 +25,11 @@ const DEFAULT_ITEMS: NotificationItem[] = [
   { id: "n3", title: "SPO2: 88%, Pulse Rate: 84 bpm", name: "Maria Perryman", timeAgo: "45 min ago", read: true },
 ];
 
-export default function NotificationsPanelDemo() {
+export default function NotificationsPanelDemo({
+  showReset = true,
+}: {
+  showReset?: boolean;
+}) {
   const [items, setItems] = React.useState<NotificationItem[]>(DEFAULT_ITEMS);
   const initialRef = React.useRef<NotificationItem[]>(DEFAULT_ITEMS);
 
@@ -37,17 +41,19 @@ export default function NotificationsPanelDemo() {
 
   return (
     <div className="relative inline-block">
-      <button
-        type="button"
-        onClick={reset}
-        className="absolute -top-3 -left-3 z-10 inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        aria-label="Reset notifications"
-      >
-        <RotateCcw className="h-4 w-4" />
-        Reset
-      </button>
+      {showReset ? (
+        <button
+          type="button"
+          onClick={reset}
+          className="absolute -top-3 -left-3 z-10 inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Reset notifications"
+        >
+          <RotateCcw className="h-4 w-4" />
+          Reset
+        </button>
+      ) : null}
 
-      <DSPanel className="w-full max-w-140 rounded-xl">
+      <DSPanel className="w-full max-w-128 rounded-xl">
         <DSPanelHeader>
           <DSPanelTitle>Notifications</DSPanelTitle>
 
@@ -61,7 +67,7 @@ export default function NotificationsPanelDemo() {
         </DSPanelHeader>
 
         <DSPanelSubheader>
-          <div className="text-sm font-semibold text-foreground">New</div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-foreground">New</div>
           <DSActionLink onClick={markAllAsRead}>Mark all as read</DSActionLink>
         </DSPanelSubheader>
 
@@ -148,7 +154,7 @@ function NotificationRow({
       onPointerLeave={endLongPress}
       title="Press and hold to dismiss"
       className={[
-        "relative flex items-start gap-4 px-5 py-3 cursor-pointer select-none",
+        "relative flex items-start gap-3 px-4 py-2.5 cursor-pointer select-none",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         pressing ? "bg-muted/90" : "hover:bg-muted/10",
         "transition-all duration-200 ease-out",
@@ -158,20 +164,22 @@ function NotificationRow({
       <span
         className={[
           "mt-1.5 h-2.5 w-2.5 rounded-full shrink-0",
-          item.read ? "bg-muted-foreground/35" : "bg-[hsl(var(--success))]",
+          item.read
+            ? "bg-muted-foreground/35"
+            : "bg-[hsl(var(--ds-success))] ring-1 ring-[hsl(var(--ds-success))]/30",
         ].join(" ")}
         aria-label={item.read ? "Read" : "Unread"}
       />
 
       <div className="min-w-0 flex-1">
-        <p className="text-[18px] font-semibold leading-snug text-foreground">{item.title}</p>
-        <p className="text-[18px] leading-snug text-foreground/90">{item.name}</p>
-        <p className="mt-1 text-[16px] leading-snug text-muted-foreground">{item.timeAgo}</p>
+        <p className="text-sm font-semibold leading-snug text-foreground">{item.title}</p>
+        <p className="text-sm leading-snug text-foreground/90">{item.name}</p>
+        <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{item.timeAgo}</p>
       </div>
 
-      <div className="pt-1">
-        <span className="inline-flex h-10 w-10 items-center justify-center">
-          <img src="/heart.svg" alt="" aria-hidden className="h-8 w-8" />
+      <div className="pt-0.5">
+        <span className="inline-flex h-8 w-8 items-center justify-center">
+          <img src="/heart.svg" alt="" aria-hidden className="h-6 w-6" />
         </span>
       </div>
     </div>

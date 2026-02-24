@@ -30,6 +30,7 @@ export function DSPage({
               <NavLink href="/foundations">Foundations</NavLink>
               <NavLink href="/components">Components</NavLink>
               <NavLink href="/patterns">Patterns</NavLink>
+              <NavLink href="/numo-home">Numo Home</NavLink>
             </nav>
           </div>
         </header>

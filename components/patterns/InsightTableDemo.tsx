@@ -309,9 +309,9 @@ function InsightRow({
       >
         {/* status */}
         <div className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded bg-[hsl(var(--ds-success))]" />
-          <span className="h-4 w-4 rounded bg-[hsl(var(--ds-warning))]" />
-          <span className="h-6 w-6 rounded bg-[hsl(var(--ds-danger))]" />
+          <span className="h-3 w-3 rounded bg-[#22c55e] ring-1 ring-white/70 shadow-[0_0_0_1px_rgba(34,197,94,0.15),0_0_10px_rgba(34,197,94,0.35)]" />
+          <span className="h-4 w-4 rounded bg-[#f59e0b] ring-1 ring-white/70 shadow-[0_0_0_1px_rgba(245,158,11,0.15),0_0_10px_rgba(245,158,11,0.35)]" />
+          <span className="h-6 w-6 rounded bg-[#ef4444] ring-1 ring-white/70 shadow-[0_0_0_1px_rgba(239,68,68,0.15),0_0_12px_rgba(239,68,68,0.4)]" />
         </div>
 
         {/* patient */}
