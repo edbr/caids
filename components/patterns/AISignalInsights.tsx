@@ -97,10 +97,54 @@ export function AISignalInsights() {
   const [lastUpdated, setLastUpdated] = React.useState(() => new Date());
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [nowMs, setNowMs] = React.useState(() => Date.now());
+  const [displayValues, setDisplayValues] = React.useState<Record<string, number>>(() =>
+    Object.fromEntries(BUBBLES.map((bubble) => [bubble.id, bubble.value]))
+  );
+  const animationFrameRef = React.useRef<number | null>(null);
 
   React.useEffect(() => {
     const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
     return () => window.clearInterval(timer);
+  }, []);
+
+  const startCountAnimation = React.useCallback(() => {
+    const durationMs = 800;
+    const targets = Object.fromEntries(BUBBLES.map((bubble) => [bubble.id, bubble.value]));
+    const startTime = performance.now();
+
+    if (animationFrameRef.current !== null) {
+      window.cancelAnimationFrame(animationFrameRef.current);
+    }
+
+    setDisplayValues(Object.fromEntries(BUBBLES.map((bubble) => [bubble.id, 0])));
+
+    const step = (now: number) => {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / durationMs);
+      const eased = 1 - (1 - t) * (1 - t);
+
+      setDisplayValues(
+        Object.fromEntries(
+          BUBBLES.map((bubble) => [bubble.id, Math.round(targets[bubble.id] * eased)])
+        )
+      );
+
+      if (t < 1) {
+        animationFrameRef.current = window.requestAnimationFrame(step);
+      } else {
+        animationFrameRef.current = null;
+      }
+    };
+
+    animationFrameRef.current = window.requestAnimationFrame(step);
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
   }, []);
 
   const handleReload = React.useCallback(() => {
@@ -111,8 +155,9 @@ export function AISignalInsights() {
       setLastUpdated(new Date());
       setNowMs(Date.now());
       setIsRefreshing(false);
+      startCountAnimation();
     }, 900);
-  }, [isRefreshing]);
+  }, [isRefreshing, startCountAnimation]);
 
   return (
     <div className="space-y-3">
@@ -160,7 +205,7 @@ export function AISignalInsights() {
             >
               <div className="flex items-center justify-between gap-2">
                 <p className={["text-[36px] font-semibold leading-none", bubble.valueClassName].join(" ")}>
-                  {bubble.value}
+                  {displayValues[bubble.id] ?? bubble.value}
                 </p>
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-muted text-foreground">
                   <bubble.Icon className="h-4 w-4" />
