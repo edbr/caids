@@ -103,32 +103,6 @@ export default function FoundationsPage() {
       description="Tokens → semantic variables → UI. This page is the living reference for colors, radius, and typography."
     >
 
-      <section className="space-y-4">
-  <h2 className="text-lg font-semibold">Elevation</h2>
-
-  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-    <ElevationCard label="xs" varName="--shadow-xs" />
-    <ElevationCard label="sm" varName="--shadow-sm" />
-    <ElevationCard label="md" varName="--shadow-md" />
-    <ElevationCard label="lg" varName="--shadow-lg" />
-  </div>
-</section>
-
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Radius</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <RadiusCard label="radius-sm" className="rounded-sm" />
-          <RadiusCard label="radius-md" className="rounded-md" />
-          <RadiusCard label="radius-lg" className="rounded-lg" />
-          <RadiusCard label="radius-xl" className="rounded-xl" />
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Note: your Tailwind v4 setup maps these from{" "}
-          <span className="font-mono">--radius</span> in globals.css via the{" "}
-          <span className="font-mono">@theme</span> block.
-        </p>
-      </section>
-
             <section className="space-y-4">
         <h2 className="text-lg font-semibold">Type</h2>
         <div className="rounded-xl border border-border bg-card p-6 space-y-3">
@@ -147,7 +121,55 @@ export default function FoundationsPage() {
         </div>
       </section>
 
+<section className="space-y-4">
+  <h2 className="text-lg font-semibold">DS semantic (intent tokens)</h2>
+
+  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <TokenSwatch label="ds-surface-1" cssVar="--ds-surface-1" />
+    <TokenSwatch label="ds-surface-2" cssVar="--ds-surface-2" />
+    <TokenSwatch label="ds-surface-3" cssVar="--ds-surface-3" />
+
+    <TokenSwatch label="ds-text-1" cssVar="--ds-text-1" />
+    <TokenSwatch label="ds-text-2" cssVar="--ds-text-2" />
+
+    <TokenSwatch label="ds-border-1" cssVar="--ds-border-1" />
+    <TokenSwatch label="ds-ring-1" cssVar="--ds-ring-1" />
+
+    <TokenSwatch label="ds-accent" cssVar="--ds-accent" />
+    <TokenSwatch label="ds-success" cssVar="--ds-success" />
+    <TokenSwatch label="ds-warning" cssVar="--ds-warning" />
+    <TokenSwatch label="ds-danger" cssVar="--ds-danger" />
+  </div>
+</section>
+
+
       <section className="space-y-4">
+        <h2 className="text-lg font-semibold">Numo palette (base tokens)</h2>
+        <p className="text-sm text-muted-foreground">
+          Raw palette tokens from brand. Semantic tokens (accent/success/warning/danger) should map to these.
+        </p>
+
+        <div className="space-y-8">
+          {PALETTE.map((group) => (
+            <div key={group.title} className="space-y-3">
+              <div className="flex items-baseline justify-between">
+                <h3 className="text-base font-semibold">{group.title}</h3>
+                <span className="text-xs text-muted-foreground font-mono">
+                  {group.items[0][1].replace("--numo-", "numo.")}
+                </span>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {group.items.map(([label, cssVar]) => (
+                  <TokenSwatch key={cssVar} label={label} cssVar={cssVar} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      
+            <section className="space-y-4">
   <h2 className="text-lg font-semibold">Focus</h2>
 
   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -178,64 +200,30 @@ export default function FoundationsPage() {
     Focus ring is driven by <span className="font-mono">--ds-focus-*</span> tokens.
   </p>
 </section>
+            <section className="space-y-4">
+  <h2 className="text-lg font-semibold">Elevation</h2>
 
-<section className="space-y-4">
-  <h2 className="text-lg font-semibold">DS semantic (intent tokens)</h2>
-
-  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-    <TokenSwatch label="ds-surface-1" cssVar="--ds-surface-1" />
-    <TokenSwatch label="ds-surface-2" cssVar="--ds-surface-2" />
-    <TokenSwatch label="ds-surface-3" cssVar="--ds-surface-3" />
-
-    <TokenSwatch label="ds-text-1" cssVar="--ds-text-1" />
-    <TokenSwatch label="ds-text-2" cssVar="--ds-text-2" />
-
-    <TokenSwatch label="ds-border-1" cssVar="--ds-border-1" />
-    <TokenSwatch label="ds-ring-1" cssVar="--ds-ring-1" />
-
-    <TokenSwatch label="ds-accent" cssVar="--ds-accent" />
-    <TokenSwatch label="ds-success" cssVar="--ds-success" />
-    <TokenSwatch label="ds-warning" cssVar="--ds-warning" />
-    <TokenSwatch label="ds-danger" cssVar="--ds-danger" />
+  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <ElevationCard label="xs" varName="--shadow-xs" />
+    <ElevationCard label="sm" varName="--shadow-sm" />
+    <ElevationCard label="md" varName="--shadow-md" />
+    <ElevationCard label="lg" varName="--shadow-lg" />
   </div>
 </section>
 
-<section className="space-y-4">
-  <h2 className="text-lg font-semibold">Actionable Insight Actions</h2>
-  <p className="text-sm text-muted-foreground">
-    Icons + state badges pulled from the Insight Table actions.
-  </p>
-  <TooltipProvider delayDuration={200}>
-    <div className="rounded-xl border border-border bg-card p-4">
-      <RowActions actions={INSIGHT_ACTIONS} />
-    </div>
-  </TooltipProvider>
-</section>
-
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Numo palette (base tokens)</h2>
-        <p className="text-sm text-muted-foreground">
-          Raw palette tokens from brand. Semantic tokens (accent/success/warning/danger) should map to these.
-        </p>
-
-        <div className="space-y-8">
-          {PALETTE.map((group) => (
-            <div key={group.title} className="space-y-3">
-              <div className="flex items-baseline justify-between">
-                <h3 className="text-base font-semibold">{group.title}</h3>
-                <span className="text-xs text-muted-foreground font-mono">
-                  {group.items[0][1].replace("--numo-", "numo.")}
-                </span>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {group.items.map(([label, cssVar]) => (
-                  <TokenSwatch key={cssVar} label={label} cssVar={cssVar} />
-                ))}
-              </div>
-            </div>
-          ))}
+        <h2 className="text-lg font-semibold">Radius</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <RadiusCard label="radius-sm" className="rounded-sm" />
+          <RadiusCard label="radius-md" className="rounded-md" />
+          <RadiusCard label="radius-lg" className="rounded-lg" />
+          <RadiusCard label="radius-xl" className="rounded-xl" />
         </div>
+        <p className="text-sm text-muted-foreground">
+          Note: your Tailwind v4 setup maps these from{" "}
+          <span className="font-mono">--radius</span> in globals.css via the{" "}
+          <span className="font-mono">@theme</span> block.
+        </p>
       </section>
     </DSPage>
   );

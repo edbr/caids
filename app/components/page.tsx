@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { DSPage } from "@/components/ds/page";
 import { INSIGHT_ACTIONS, RowActions } from "@/components/patterns/RowActions";
 import { DSIconButton } from "@/components/ds/icon-button";
@@ -22,6 +23,17 @@ export default function ComponentsPage() {
       title="Components"
       description="Primitives you’ll reuse everywhere. Keep these boring, consistent, and token-driven."
     >
+      <div className="flex justify-end">
+        <Image
+          src="/numoLogo.svg"
+          alt="Numo"
+          width={176}
+          height={48}
+          className="h-10 w-auto"
+          priority
+        />
+      </div>
+
       <Section title="IconButton" description="Compact action affordance with tooltip + state ring.">
         <div className="flex flex-wrap items-center gap-3">
           <DSIconButton aria-label="Schedule follow-up" tooltip="Schedule follow-up">

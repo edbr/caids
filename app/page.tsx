@@ -7,6 +7,11 @@ const links = [
   { href: "/patterns", label: "Patterns", desc: "Composed flows: notifications, insight rows, cards." },
   { href: "/numo-home", label: "Numo Home", desc: "Composed page using patterns in one tab." },
   { href: "/notes", label: "Notes", desc: "Prototype: browse, add, and edit notes interactions." },
+  {
+    href: "/tablet-appointment",
+    label: "Tablet Appointment",
+    desc: "Prototype: next-appointment card minimizing into a nav appointment icon.",
+  },
 ];
 
 export default function Home() {
