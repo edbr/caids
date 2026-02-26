@@ -30,9 +30,8 @@ const SITEMAP_GROUPS = [
 export function DSFooter() {
   return (
     <footer className="rounded-2xl border border-border bg-muted/30 px-5 py-6 md:px-6">
-      <div className="mb-6 flex flex-col gap-1">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Sitemap</h2>
-        <p className="text-xs text-muted-foreground">
+      <div className="flex flex-col py-10 pt-4">
+        <p className="text-md text-muted-foreground">
           Designed by{" "}
           <a
             href="https://edbelluti.com/"
@@ -43,8 +42,8 @@ export function DSFooter() {
             edbelluti.com
           </a>
         </p>
+        <div className="mt-12 border-t border-border" />
       </div>
-
       <div className="inline-grid grid-cols-1 items-start gap-x-10 gap-y-4 md:grid-cols-3">
         {SITEMAP_GROUPS.map((group) => (
           <section key={group.title}>
