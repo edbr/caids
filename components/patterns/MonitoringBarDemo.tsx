@@ -20,7 +20,7 @@ const STATE_COPY: Record<MonitoringState, string> = {
 };
 
 const STATE_ACTIONS: Record<MonitoringState, MenuAction[]> = {
-  start: [{ id: "start-now", label: "Start monitoring", nextState: "paused", icon: CirclePlay }],
+  start: [{ id: "start-now", label: "Start monitoring", nextState: "stopAtTen", icon: CirclePlay }],
   paused: [
     {
       id: "start-from-paused",
@@ -75,7 +75,7 @@ export function MonitoringBarDemo() {
 
   return (
     <div className="rounded-md border border-numo-blue-700 bg-numo-blue-800 p-6 md:p-8 overflow-visible">
-      <div className="relative mx-auto w-full max-w-370 overflow-visible" ref={menuRef}>
+      <div className="relative mx-auto w-full max-w-260 overflow-visible" ref={menuRef}>
         <div
           className="flex items-center gap-6 px-8 py-5"
           style={{
@@ -88,9 +88,10 @@ export function MonitoringBarDemo() {
         >
           <motion.svg
             viewBox="0 0 240 76"
-            className="h-14 w-85 shrink-0"
+            className="h-14 w-54 shrink-0 "
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
             aria-hidden
             animate={{ opacity: isAnimating ? 0.92 : 0.62 }}
             transition={{ duration: 0.2 }}
@@ -171,7 +172,7 @@ export function MonitoringBarDemo() {
             />
           </motion.svg>
 
-          <p className="flex-1 text-left font-sans text-[30px] leading-none text-numo-slate-400">
+          <p className="flex-1 text-left font-sans px-6 text-[26px] leading-none text-numo-slate-400">
             {STATE_COPY[state]}
           </p>
 
@@ -180,7 +181,7 @@ export function MonitoringBarDemo() {
             onClick={() => setMenuOpen((v) => !v)}
             aria-expanded={menuOpen}
             aria-label="Open monitoring menu"
-            className="shrink-0 self-center inline-flex h-12 w-12 items-center justify-center rounded-full border-2 border-numo-slate-500/30 bg-numo-blue-900/35 text-numo-gray-400 transition hover:border-numo-orange-500 hover:bg-numo-blue-800/55 hover:text-numo-orange-400"
+            className="shrink-0 self-center inline-flex h-12 w-12 items-center justify-center rounded-xl border-2 border-numo-slate-500/30 bg-numo-blue-900/35 text-numo-gray-400 transition hover:border-numo-orange-500 hover:bg-numo-blue-800/55 hover:text-numo-orange-400"
           >
             <Ellipsis className="h-6 w-6" />
           </button>
@@ -188,8 +189,8 @@ export function MonitoringBarDemo() {
 
         {menuOpen ? (
           <div className="absolute right-0 top-full z-20 mt-3 w-90">
-            <div className="rounded-lg border border-numo-blue-700 bg-numo-blue-900 p-2 shadow-md">
-            <div className="space-y-1">
+            <div className="rounded-2xl border border-numo-blue-700/70 bg-numo-blue-900/95 p-2.5 shadow-[0_10px_24px_hsl(var(--numo-blue-900)/0.45),0_2px_8px_hsl(var(--numo-blue-900)/0.35)] backdrop-blur-sm">
+            <div className="space-y-1.5">
               {actions.map((action) => (
                 <button
                   key={action.id}
@@ -198,9 +199,11 @@ export function MonitoringBarDemo() {
                     setState(action.nextState);
                     setMenuOpen(false);
                   }}
-                  className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-lg text-numo-slate-400 transition hover:bg-numo-blue-700"
+                  className="group flex min-h-12 w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-base font-medium text-numo-slate-400 transition-all duration-150 hover:bg-numo-blue-700/80 active:scale-[0.99] active:bg-numo-blue-700"
                 >
-                  <action.icon className="h-4.5 w-4.5 shrink-0 text-numo-slate-500" />
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-numo-blue-800/70 text-numo-slate-500 transition-colors group-hover:bg-numo-blue-800 group-hover:text-numo-gray-400">
+                    <action.icon className="h-6 w-6" />
+                  </span>
                   {action.label}
                 </button>
               ))}
