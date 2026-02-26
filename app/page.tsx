@@ -1,5 +1,6 @@
 import { DSPage } from "@/components/ds/page";
 import { DSFooter } from "@/components/ds/footer";
+import { HomeInteractiveShowcase } from "@/components/ds/home-interactive-showcase";
 
 export default function Home() {
   return (
@@ -17,29 +18,16 @@ export default function Home() {
         <p className="mt-4 max-w-3xl text-sm text-muted-foreground md:text-base">
           This system standardizes interaction quality across clinician and patient surfaces, while keeping implementation practical for day-to-day product teams.
         </p>
-
-        <div className="mt-8 grid gap-3 md:grid-cols-3">
-          <div className="rounded-xl border border-border bg-background/70 p-4">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Foundations</p>
-            <p className="mt-1 text-sm text-foreground">
-              Tokenized color, type, spacing, and motion primitives.
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-background/70 p-4">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Components</p>
-            <p className="mt-1 text-sm text-foreground">
-              Reusable building blocks with consistent state behavior.
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-background/70 p-4">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Patterns</p>
-            <p className="mt-1 text-sm text-foreground">
-              Real workflow modules for clinical and patient journeys.
-            </p>
-          </div>
-        </div>
       </section>
-
+<section className="mt-10 rounded-2xl border border-border bg-[radial-gradient(120%_120%_at_10%_0%,hsl(var(--numo-yellow-500)/0.18),hsl(var(--numo-blue-900)/0.04)_40%,transparent)] px-6 py-8 md:px-10 md:py-12">
+        <h2 className="text-2xl font-semibold leading-tight tracking-tight text-foreground md:text-4xl">
+          Explore the system
+        </h2>
+        <p className="mt-4 max-w-3xl text-sm text-muted-foreground md:text-base">
+          Browse the component library, check out code examples, or dive into the patterns that solve for common clinical and patient use cases.
+        </p>
+        <HomeInteractiveShowcase />
+      </section>
       <DSFooter />
     </DSPage>
   );
