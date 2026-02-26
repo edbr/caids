@@ -74,13 +74,13 @@ export function MonitoringBarDemo() {
   const actions = STATE_ACTIONS[state];
 
   return (
-    <div className="rounded-md border border-numo-blue-700 bg-numo-blue-800 p-6 md:p-8 overflow-visible">
+    <div className="rounded-md  bg-numo-blue-800 p-6 md:p-8 overflow-visible">
       <div className="relative mx-auto w-full max-w-260 overflow-visible" ref={menuRef}>
         <div
           className="flex items-center gap-6 px-8 py-5"
           style={{
             borderRadius: "20px",
-            border: "2px solid hsl(var(--numo-blue-900))",
+            border: "2px solid hsl(var(--numo-teal-900))",
             opacity: 1,
             background: "hsl(var(--numo-blue-800))",
             boxShadow: "var(--ds-shadow-md)",

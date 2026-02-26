@@ -4,6 +4,7 @@ import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { CalendarClock, Minimize2, Phone } from "lucide-react";
+import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
 
 type BlobPath = {
   sx: number;
@@ -87,7 +88,7 @@ export function TabletAppointmentDemo() {
 
       <header className="relative z-20 flex items-center justify-between gap-4">
         <Image
-          src="/numoLogo.svg"
+          src="/numoW.svg"
           alt="Numo"
           width={198}
           height={54}
@@ -96,7 +97,7 @@ export function TabletAppointmentDemo() {
         />
 
         <div className="flex items-center gap-3">
-          <button className="font-sans inline-flex h-11 items-center rounded-full border border-numo-teal-500 px-5 text-2xl text-numo-teal-400 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-teal-500/15 md:h-12 md:px-6 md:text-3xl">
+          <button className="font-sans inline-flex h-11 items-center rounded-full border border-numo-teal-500 px-6 font-medium text-2xl text-numo-teal-400 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-teal-500/15">
             Menu
           </button>
           <button
@@ -115,19 +116,38 @@ export function TabletAppointmentDemo() {
         </div>
       </header>
 
-      <div className="relative z-10 mt-14 grid items-start gap-9 xl:mt-20 xl:grid-cols-[minmax(0,1fr)_410px]">
-        <div className="pl-2 text-center md:pl-6 xl:pl-8">
-          <div className="text-center font-sans text-[98px] font-normal leading-none text-[#82B1C9] md:text-[112px] xl:text-[128px]">
+      <div
+        className={[
+          "relative z-10 mt-14 grid items-start transition-all duration-500 xl:mt-20",
+          isMinimized ? "xl:grid-cols-1" : "xl:grid-cols-[minmax(0,1fr)_410px]",
+        ].join(" ")}
+      >
+        <motion.div
+          layout
+          transition={{ type: "spring", stiffness: 180, damping: 22 }}
+          className={[
+            "text-center",
+            isMinimized ? "mx-auto w-full max-w-5xl pl-0" : "pl-2 xl:pl-8",
+          ].join(" ")}
+        >
+          <div className="text-center font-sans text-[120px] font-normal leading-none text-[#82B1C9] ">
             2:14 PM
           </div>
-          <div className="mt-3 text-center font-sans text-[36px] font-normal leading-normal text-[#82B1C9] md:text-[40px] xl:mt-4 xl:text-[46px]">
+          <div className="mt-3 text-center font-sans text-[36px] font-normal leading-normal text-[#82B1C9] ]">
             September 23, 2022
           </div>
-        </div>
+        </motion.div>
 
-        <div className="relative w-full max-w-102.5 xl:ml-auto">
-          <AnimatePresence initial={false} mode="wait">
-            {!isMinimized ? (
+        <AnimatePresence initial={false} mode="wait">
+          {!isMinimized ? (
+            <motion.div
+              key="appointment-column"
+              initial={{ opacity: 0, x: 14 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 24 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="relative w-full max-w-102.5 xl:ml-auto"
+            >
               <motion.div
                 key="appointment-card"
                 ref={cardRef}
@@ -137,8 +157,10 @@ export function TabletAppointmentDemo() {
                 transition={{ duration: 0.62, ease: [0.2, 0.8, 0.2, 1] }}
                 className="rounded-3xl border border-numo-blue-600/70 bg-numo-blue-900/55 p-5 text-numo-gray-400 shadow-[0_20px_40px_hsl(var(--numo-blue-900)/0.35)] md:p-6"
               >
-                <div className="mb-4 flex items-center justify-between border-b border-numo-blue-600/70 pb-3">
-                  <h3 className="text-[33px] font-semibold leading-[0.95] text-numo-slate-500">Next appointment:</h3>
+                <div className="mb-3.5 flex items-center justify-between border-b border-numo-blue-600/70 pb-3">
+                  <h3 className="font-sans text-[28px] leading-[1.02] tracking-tight text-numo-slate-500">
+                    Next appointment:
+                  </h3>
                   <button
                     onClick={handleMinimize}
                     className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-numo-blue-500 text-numo-slate-500 transition-colors hover:bg-numo-blue-600/25"
@@ -148,52 +170,28 @@ export function TabletAppointmentDemo() {
                   </button>
                 </div>
 
-                <p className="text-[31px] leading-tight">Apr 01, 2023, 3:00 PM</p>
+                <p className="font-sans text-[26px] font-medium leading-tight tracking-tight text-numo-orange-400">
+                  Apr 01, 2023, 3:00 PM
+                </p>
 
-                <button className="mt-5 inline-flex rounded-full border border-numo-orange-500 px-5 py-1.5 text-[44px] leading-none text-numo-orange-500 transition-colors hover:bg-numo-orange-500/15">
+                <button className="mt-4.5 inline-flex rounded-full border border-numo-orange-700 bg-numo-orange-500 px-5 py-2 font-sans text-[20px] font-semibold leading-none tracking-tight text-numo-blue-900 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-orange-700/90">
                   Start Check-in
                 </button>
 
-                <div className="mt-7 text-[31px] leading-tight">
-                  <div>Call back number:</div>
-                  <div className="mt-1 inline-flex items-center gap-3">
-                    <Phone className="h-4.5 w-4.5" />
+                <div className="mt-6.5 font-sans">
+                  <div className="mt-1.5 inline-flex items-center gap-2.5 text-[20px] leading-tight tracking-tight text-numo-slate-500">
+                    <Phone className="h-5 w-5 " />
                     (480)336-2774
                   </div>
                 </div>
               </motion.div>
-            ) : null}
-          </AnimatePresence>
-        </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </div>
 
-      <div
-        className="absolute bottom-8 left-1/2 z-10 w-270 max-w-[calc(100%-2rem)] -translate-x-1/2 px-8 py-4"
-        style={{
-          borderRadius: "20px",
-          border: "2px solid var(--Nu-green-300, #41695C)",
-          background: "var(--Nu-green-500, #233932)",
-          boxShadow: "0 4px 4px 0 rgba(0, 0, 0, 0.25)",
-        }}
-      >
-        <div className="grid grid-cols-[210px_1fr_80px] items-center">
-          <svg
-            viewBox="0 0 240 50"
-            className="h-8 w-52.5"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden
-          >
-            <path d="M4 26C32 26 40 10 67 10C94 10 102 26 130 26C158 26 166 10 194 10C214 10 225 18 236 18" stroke="rgba(153,170,169,0.55)" strokeWidth="3" strokeLinecap="round" />
-            <path d="M4 34C32 34 40 18 67 18C94 18 102 34 130 34C158 34 166 18 194 18C214 18 225 26 236 26" stroke="rgba(153,170,169,0.28)" strokeWidth="3" strokeLinecap="round" />
-          </svg>
-
-          <p className="text-center font-sans text-[48px] font-normal leading-none text-[#55C7AB]">
-            Monitoring will start at 7:00 PM
-          </p>
-
-          <div className="text-right text-[44px] leading-none text-[#d8e6df]">...</div>
-        </div>
+      <div className="absolute bottom-8 left-1/2 z-10 w-[min(1080px,calc(100%-2rem))] -translate-x-1/2">
+        <MonitoringBarDemo />
       </div>
 
       {showBlob && blobPath ? (

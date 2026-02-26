@@ -36,6 +36,7 @@ export function DSPage({
               <NavMenu label="Protoypes">
                 <NavMenuLink href="/numo-home">Clinical Dashboard</NavMenuLink>
                 <NavMenuLink href="/notes">Notes</NavMenuLink>
+                <NavMenuLink href="/tablet-appointment">Tablet Appointment</NavMenuLink>
               </NavMenu>
             </nav>
           </div>
