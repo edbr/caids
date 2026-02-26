@@ -1,41 +1,33 @@
-import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
-import InsightTableDemo from "@/components/patterns/InsightTableDemo";
-import { HomeMenuDemo } from "@/components/patterns/HomeMenuDemo";
-import { AISignalInsights } from "@/components/patterns/AISignalInsights";
-import { CurieHeader } from "@/components/patterns/CurieHeader";
-import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
+import Link from "next/link";
 import { DSPage } from "@/components/ds/page";
 
-export default function PatternsPage() {
+export default function PatternsIndexPage() {
   return (
     <DSPage
       title="Patterns"
-      description="Composed interactions built from DS primitives."
+      description="Choose a pattern group."
     >
-      <section className="rounded-xl border border-border bg-muted/30 p-6">
-        <h2 className="text-lg font-semibold mb-4">Curie App Header</h2>
-        <CurieHeader />
+      <section className="grid gap-3 md:grid-cols-2">
+        <Link
+          href="/patterns/clinical"
+          className="rounded-xl border border-border bg-muted/30 px-5 py-5 transition hover:bg-muted/45"
+        >
+          <h2 className="text-lg font-semibold">Clinical Patterns</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Header, AI signal insights, notifications, and actionable insight table.
+          </p>
+        </Link>
+
+        <Link
+          href="/patterns/patient"
+          className="rounded-xl border border-border bg-muted/30 px-5 py-5 transition hover:bg-muted/45"
+        >
+          <h2 className="text-lg font-semibold">Patient Patterns</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Monitoring bar contextual states and home menu overlay interactions.
+          </p>
+        </Link>
       </section>
-      <section className="rounded-xl border border-border bg-muted/30 p-6 overflow-visible">
-        <h2 className="text-lg font-semibold mb-4">AI Signal Insights</h2>
-        <AISignalInsights />
-      </section>
-      <section className="rounded-xl border border-border bg-muted/30 p-6">
-        <h2 className="text-lg font-semibold mb-4">Notifications Panel</h2>
-        <NotificationsPanelDemo />
-      </section>
-      <section className="rounded-xl border border-border bg-muted/30 p-6">
-        <h2 className="text-lg font-semibold mb-4">Actionable Insight Table</h2>
-        <InsightTableDemo />
-      </section>
-      <section className="rounded-xl border border-border bg-muted/30 p-6 overflow-visible">
-        <h2 className="text-lg font-semibold mb-4">Monitoring Bar + Contextual Menu</h2>
-        <MonitoringBarDemo />
-      </section>
-      <section className="rounded-xl border border-border bg-muted/30 p-6 overflow-visible">
-  <h2 className="text-lg font-semibold mb-4">Home Menu Overlay</h2>
-  <HomeMenuDemo />
-</section>
     </DSPage>
   );
 }

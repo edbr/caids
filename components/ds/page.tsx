@@ -29,7 +29,10 @@ export function DSPage({
               <NavLink href="/">Home</NavLink>
               <NavLink href="/foundations">Foundations</NavLink>
               <NavLink href="/components">Components</NavLink>
-              <NavLink href="/patterns">Patterns</NavLink>
+              <NavMenu label="Patterns">
+                <NavMenuLink href="/patterns/clinical">Clinical</NavMenuLink>
+                <NavMenuLink href="/patterns/patient">Patient</NavMenuLink>
+              </NavMenu>
               <NavMenu label="Protoypes">
                 <NavMenuLink href="/numo-home">Clinical Dashboard</NavMenuLink>
                 <NavMenuLink href="/notes">Notes</NavMenuLink>
@@ -60,7 +63,7 @@ function NavMenu({ label, children }: { label: string; children: React.ReactNode
     <div className="relative group">
       <button
         type="button"
-        className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition group-focus-within:text-foreground group-focus-within:bg-muted/50"
+        className="inline-flex min-h-11 items-center rounded-md px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition group-focus-within:text-foreground group-focus-within:bg-muted/50"
         aria-haspopup="menu"
       >
         {label}
