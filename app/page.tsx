@@ -13,10 +13,13 @@ export default function Home() {
           Curie + Numo
         </p>
         <h2 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl">
-          Build healthcare experiences faster with one shared language for tokens, components, and patterns.
+          Build healthcare products faster.
         </h2>
         <p className="mt-4 max-w-3xl text-sm text-muted-foreground md:text-base">
-          This system standardizes interaction quality across clinician and patient surfaces, while keeping implementation practical for day-to-day product teams.
+          One shared language of tokens, components, and patterns.
+        </p>
+        <p className="mt-4 max-w-3xl text-sm text-muted-foreground md:text-base">
+          Consistent UX across clinician and patient workflows. Practical for teams shipping daily.
         </p>
       </section>
 <section className="mt-10 rounded-2xl border border-border bg-[radial-gradient(120%_120%_at_10%_0%,hsl(var(--numo-yellow-500)/0.18),hsl(var(--numo-blue-900)/0.04)_40%,transparent)] px-6 py-8 md:px-10 md:py-12">
