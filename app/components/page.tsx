@@ -15,6 +15,7 @@ import {
 import { DSActionLink } from "@/components/ds/action-link";
 import { DSInput } from "@/components/ds/input";
 import { DSBreadcrumb } from "@/components/ds/breadcrumb";
+import { DSAudioPlayButton } from "@/components/ds/audio-play-button";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
 import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
@@ -25,6 +26,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 type ComponentId =
   | "brand-logos"
+  | "audio-play-button"
   | "breadcrumb"
   | "icon-button"
   | "insight-actions"
@@ -37,6 +39,54 @@ type ComponentId =
   | "monitoring-bar"
   | "time-selection";
 
+const AUDIO_DURATION_S = 30;
+
+function formatAudioTime(totalSeconds: number) {
+  const s = Math.max(0, Math.min(AUDIO_DURATION_S, Math.floor(totalSeconds)));
+  const mm = String(Math.floor(s / 60)).padStart(2, "0");
+  const ss = String(s % 60).padStart(2, "0");
+  return `${mm}:${ss}`;
+}
+
+function AudioPlayButtonDemo() {
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [elapsed, setElapsed] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!isPlaying) return;
+    const tickMs = 120;
+    const id = window.setInterval(() => {
+      setElapsed((current) => {
+        const next = current + tickMs / 1000;
+        if (next >= AUDIO_DURATION_S) {
+          window.setTimeout(() => setIsPlaying(false), 0);
+          return AUDIO_DURATION_S;
+        }
+        return next;
+      });
+    }, tickMs);
+
+    return () => window.clearInterval(id);
+  }, [isPlaying]);
+
+  return (
+    <div className="inline-flex items-center gap-3 rounded-lg border border-border bg-background px-3 py-2">
+      <DSAudioPlayButton
+        isPlaying={isPlaying}
+        elapsedSeconds={elapsed}
+        durationSeconds={AUDIO_DURATION_S}
+        onToggle={() => {
+          if (!isPlaying && elapsed >= AUDIO_DURATION_S) setElapsed(0);
+          setIsPlaying((v) => !v);
+        }}
+      />
+      <div className="text-xs text-muted-foreground tabular-nums">
+        {formatAudioTime(elapsed)} / {formatAudioTime(AUDIO_DURATION_S)}
+      </div>
+    </div>
+  );
+}
+
 export default function ComponentsPage() {
   const [notificationsOpen, setNotificationsOpen] = React.useState(false);
   const [activeId, setActiveId] = React.useState<ComponentId>("icon-button");
@@ -47,6 +97,7 @@ export default function ComponentsPage() {
     title: string;
     description: string;
     render: React.ReactNode;
+    code: string;
   }> = [
     {
       id: "brand-logos",
@@ -58,6 +109,20 @@ export default function ComponentsPage() {
           <Image src="/numoLogo.svg" alt="Numo logo" width={260} height={72} className="h-14 w-auto" priority />
         </div>
       ),
+      code: `<Image src="/numoLogo.svg" alt="Numo logo" width={260} height={72} className="h-14 w-auto" />`,
+    },
+    {
+      id: "audio-play-button",
+      label: "Play Audio Button",
+      title: "Play Audio Button",
+      description: "Audio play interaction used in the Actionable Insight Table.",
+      render: <AudioPlayButtonDemo />,
+      code: `<DSAudioPlayButton
+  isPlaying={isPlaying}
+  elapsedSeconds={elapsed}
+  durationSeconds={30}
+  onToggle={toggleAudio}
+/>`,
     },
     {
       id: "breadcrumb",
@@ -74,6 +139,14 @@ export default function ComponentsPage() {
           disease="COPD"
         />
       ),
+      code: `<DSBreadcrumb
+  sectionLabel="Patients"
+  patientName="Brian Lauson"
+  current="Notes"
+  age="57 yrs"
+  gender="Male"
+  disease="COPD"
+/>`,
     },
     {
       id: "icon-button",
@@ -99,6 +172,9 @@ export default function ComponentsPage() {
           </DSIconButton>
         </div>
       ),
+      code: `<DSIconButton aria-label="Schedule follow-up" tooltip="Schedule follow-up">
+  <Calendar className="h-4 w-4" />
+</DSIconButton>`,
     },
     {
       id: "insight-actions",
@@ -112,6 +188,9 @@ export default function ComponentsPage() {
           </div>
         </TooltipProvider>
       ),
+      code: `<TooltipProvider delayDuration={200}>
+  <RowActions actions={INSIGHT_ACTIONS} />
+</TooltipProvider>`,
     },
     {
       id: "panel",
@@ -137,6 +216,15 @@ export default function ComponentsPage() {
           </DSPanelBody>
         </DSPanel>
       ),
+      code: `<DSPanel>
+  <DSPanelHeader>
+    <DSPanelTitle>Notifications</DSPanelTitle>
+  </DSPanelHeader>
+  <DSPanelSubheader>
+    <DSActionLink>Mark all as read</DSActionLink>
+  </DSPanelSubheader>
+  <DSPanelBody>...</DSPanelBody>
+</DSPanel>`,
     },
     {
       id: "input",
@@ -146,14 +234,15 @@ export default function ComponentsPage() {
       render: (
         <div className="max-w-md space-y-3">
           <DSInput placeholder="Add diagnosis" />
-          <DSInput placeholder="Search patients…" />
+          <DSInput placeholder="Search patients..." />
         </div>
       ),
+      code: `<DSInput placeholder="Add diagnosis" />\n<DSInput placeholder="Search patients..." />`,
     },
     {
       id: "notes-simplified",
-      label: "Clinical Notes",
-      title: "Clinical Notes",
+      label: "Notes (Simplified)",
+      title: "Notes (Simplified)",
       description: "Core note controls: search, filters, add-note CTA, and compact note actions.",
       render: (
         <div className="rounded-xl border border-border bg-card p-4 space-y-4">
@@ -187,9 +276,7 @@ export default function ComponentsPage() {
           </div>
           <div className="rounded-lg border border-border bg-background p-3">
             <p className="text-sm font-semibold text-numo-blue-800">Brian Lauson 9:06 AM</p>
-            <p className="mt-1 text-sm text-numo-slate-800">
-              Patient reports increased cough overnight with mild wheeze after exertion.
-            </p>
+            <p className="mt-1 text-sm text-numo-slate-800">Patient reports increased cough overnight with mild wheeze after exertion.</p>
             <div className="mt-3 flex items-center gap-2">
               <button className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground">
                 <Pencil className="h-3 w-3" />
@@ -203,6 +290,7 @@ export default function ComponentsPage() {
           </div>
         </div>
       ),
+      code: `<DSInput placeholder="Search notes" />\n<select><option>All Notes</option></select>\n<button>Add note</button>`,
     },
     {
       id: "action-link",
@@ -215,6 +303,7 @@ export default function ComponentsPage() {
           <DSActionLink onClick={() => {}}>Reset</DSActionLink>
         </div>
       ),
+      code: `<DSActionLink onClick={() => {}}>Mark all as read</DSActionLink>`,
     },
     {
       id: "record-tabs",
@@ -222,6 +311,7 @@ export default function ComponentsPage() {
       title: "Patient Record Tabs",
       description: "Reusable top-level tabs for patient chart sections.",
       render: <PatientRecordTabs defaultTab="notes" />,
+      code: `<PatientRecordTabs defaultTab="notes" />`,
     },
     {
       id: "curie-header",
@@ -238,6 +328,7 @@ export default function ComponentsPage() {
           />
         </div>
       ),
+      code: `<CurieHeader unreadCount={2} notificationsOpen={notificationsOpen} onToggleNotifications={() => setNotificationsOpen((v) => !v)} />`,
     },
     {
       id: "monitoring-bar",
@@ -249,6 +340,7 @@ export default function ComponentsPage() {
           <MonitoringBarDemo />
         </div>
       ),
+      code: `<MonitoringBarDemo />`,
     },
     {
       id: "time-selection",
@@ -260,6 +352,7 @@ export default function ComponentsPage() {
           <PatientTimeSelectionDemo />
         </div>
       ),
+      code: `<PatientTimeSelectionDemo />`,
     },
   ];
 
@@ -270,8 +363,27 @@ export default function ComponentsPage() {
   return (
     <DSPage
       title="Components"
-      description="Primitives you’ll reuse everywhere. Keep these boring, consistent, and token-driven."
+      description="Primitives you'll reuse everywhere. Keep these boring, consistent, and token-driven."
     >
+      <div className="flex justify-end">
+        <Image
+          src="/numoLogo.svg"
+          alt="Numo"
+          width={176}
+          height={48}
+          className="h-10 w-auto"
+          priority
+        />
+      </div>
+
+      <DSBreadcrumb
+        sectionLabel="Patients"
+        patientName="Brian Lauson"
+        current="Components"
+        age="57 yrs"
+        gender="Male"
+        disease="COPD"
+      />
 
       <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
         <aside className="h-fit rounded-xl border border-border bg-muted/25 p-2 lg:sticky lg:top-24">
@@ -326,6 +438,12 @@ export default function ComponentsPage() {
             <p className="mt-1 text-sm text-muted-foreground">{activeItem.description}</p>
           </div>
           <div className="rounded-xl p-4">{activeItem.render}</div>
+          <div className="rounded-xl border border-border bg-background p-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Code</p>
+            <pre className="overflow-x-auto text-xs leading-6 text-foreground">
+              <code>{activeItem.code}</code>
+            </pre>
+          </div>
         </section>
       </div>
     </DSPage>
