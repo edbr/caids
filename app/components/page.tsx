@@ -89,7 +89,7 @@ function AudioPlayButtonDemo() {
 
 export default function ComponentsPage() {
   const [notificationsOpen, setNotificationsOpen] = React.useState(false);
-  const [activeId, setActiveId] = React.useState<ComponentId>("icon-button");
+  const [activeId, setActiveId] = React.useState<ComponentId>("audio-play-button");
 
   const items: Array<{
     id: ComponentId;
@@ -365,25 +365,7 @@ export default function ComponentsPage() {
       title="Components"
       description="Primitives you'll reuse everywhere. Keep these boring, consistent, and token-driven."
     >
-      <div className="flex justify-end">
-        <Image
-          src="/numoLogo.svg"
-          alt="Numo"
-          width={176}
-          height={48}
-          className="h-10 w-auto"
-          priority
-        />
-      </div>
-
-      <DSBreadcrumb
-        sectionLabel="Patients"
-        patientName="Brian Lauson"
-        current="Components"
-        age="57 yrs"
-        gender="Male"
-        disease="COPD"
-      />
+      
 
       <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
         <aside className="h-fit rounded-xl border border-border bg-muted/25 p-2 lg:sticky lg:top-24">
