@@ -17,12 +17,22 @@ import { DSInput } from "@/components/ds/input";
 import { DSBreadcrumb } from "@/components/ds/breadcrumb";
 import { DSAudioPlayButton } from "@/components/ds/audio-play-button";
 import { DSConversationModule } from "@/components/ds/conversation-module";
+import { DSNotesAddButtonDemo } from "@/components/ds/notes-add-button-demo";
+import { DSTabletButtonsDemo } from "@/components/ds/tablet-buttons-demo";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
 import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
 import { PatientTimeSelectionDemo } from "@/components/patterns/PatientTimeSelectionDemo";
 import { PatientRecordTabs } from "@/components/patterns/PatientRecordTabs";
-import { Calendar, MessageSquare, NotebookPen, Pencil, Share2, Video, X } from "lucide-react";
+import {
+  Calendar,
+  MessageSquare,
+  NotebookPen,
+  Pencil,
+  Share2,
+  Video,
+  X,
+} from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 type ComponentId =
@@ -38,8 +48,10 @@ type ComponentId =
   | "action-link"
   | "record-tabs"
   | "curie-header"
+  | "tablet-buttons"
   | "monitoring-bar"
-  | "time-selection";
+  | "time-selection"
+  | "notes-add-button";
 
 const AUDIO_DURATION_S = 30;
 
@@ -303,6 +315,22 @@ export default function ComponentsPage() {
       code: `<DSInput placeholder="Search notes" />\n<select><option>All Notes</option></select>\n<button>Add note</button>`,
     },
     {
+      id: "notes-add-button",
+      label: "Button",
+      title: "Notes Add Button",
+      description: "Primary Add note CTA from Notes with icon swap selector.",
+      render: <DSNotesAddButtonDemo />,
+      code: `<PrimaryBtn>
+  <NotebookPen className="h-4 w-4" />
+  Add note
+</PrimaryBtn>
+
+<SecondaryBtn>
+  <NotebookPen className="h-4 w-4" />
+  Secondary button
+</SecondaryBtn>`,
+    },
+    {
       id: "action-link",
       label: "ActionLink",
       title: "ActionLink",
@@ -341,6 +369,16 @@ export default function ComponentsPage() {
       code: `<CurieHeader unreadCount={2} notificationsOpen={notificationsOpen} onToggleNotifications={() => setNotificationsOpen((v) => !v)} />`,
     },
     {
+      id: "tablet-buttons",
+      label: "Buttons",
+      title: "Tablet Buttons",
+      description: "Buttons used in the tablet appointment prototype.",
+      render: <DSTabletButtonsDemo />,
+      code: `<button className="... border-numo-teal-500 ...">Menu</button>
+<button className="... border-numo-orange-700 bg-numo-orange-500 ...">Start Check-in</button>
+<button className="... rounded-full ..."><CalendarClock /></button>`,
+    },
+    {
       id: "monitoring-bar",
       label: "Monitoring Bar",
       title: "Monitoring Bar + Contextual Menu",
@@ -370,12 +408,18 @@ export default function ComponentsPage() {
     a.label.localeCompare(b.label);
 
   const tabletItems = items
-    .filter((item) => item.id === "monitoring-bar" || item.id === "time-selection")
+    .filter(
+      (item) =>
+        item.id === "monitoring-bar" ||
+        item.id === "time-selection" ||
+        item.id === "tablet-buttons"
+    )
     .sort(alphabetical);
   const clinicalItems = items
     .filter(
       (item) =>
         item.id !== "brand-logos" &&
+        item.id !== "tablet-buttons" &&
         item.id !== "monitoring-bar" &&
         item.id !== "time-selection"
     )
