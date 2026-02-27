@@ -53,7 +53,7 @@ export default function NotificationsPanelDemo({
         </button>
       ) : null}
 
-      <DSPanel className="w-full max-w-128 rounded-xl">
+      <DSPanel className="w-full max-w-lg rounded-xl">
         <DSPanelHeader>
           <DSPanelTitle>Notifications</DSPanelTitle>
 

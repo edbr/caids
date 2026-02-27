@@ -43,9 +43,36 @@ type PatientRow = {
   metricDetail: string;
   metricTime: string;
   actions: RowAction[];
+  statusDots: Array<{
+    color: "green" | "yellow" | "red";
+    size: "sm" | "md" | "lg";
+  }>;
 };
 
 const AUDIO_DURATION_S = 30;
+const STATUS_COLORS: Array<"green" | "yellow" | "red"> = ["green", "yellow", "red"];
+
+function randomStatusDots(): PatientRow["statusDots"] {
+  return [
+    { color: STATUS_COLORS[Math.floor(Math.random() * STATUS_COLORS.length)], size: "sm" },
+    { color: STATUS_COLORS[Math.floor(Math.random() * STATUS_COLORS.length)], size: "md" },
+    { color: STATUS_COLORS[Math.floor(Math.random() * STATUS_COLORS.length)], size: "lg" },
+  ];
+}
+
+function riskFromStatusDots(statusDots: PatientRow["statusDots"]): Exclude<RiskFilter, "all"> {
+  const thirdDot = statusDots[2];
+  if (!thirdDot) return "low";
+  if (thirdDot.color === "red") return "high";
+  if (thirdDot.color === "yellow") return "moderate";
+  return "low";
+}
+
+const RISK_ORDER: Record<Exclude<RiskFilter, "all">, number> = {
+  high: 0,
+  moderate: 1,
+  low: 2,
+};
 
 function ActionIcon({
   state,
@@ -284,6 +311,18 @@ function InsightRow({
   const clamped = Math.max(0, Math.min(AUDIO_DURATION_S, elapsedSeconds));
   const baseZ = 10 + rowIndex;
   const activeZ = 60;
+  const dotColorClass: Record<PatientRow["statusDots"][number]["color"], string> = {
+    green:
+      "bg-[#22c55e] shadow-[0_0_0_1px_rgba(34,197,94,0.15),0_0_10px_rgba(34,197,94,0.35)]",
+    yellow:
+      "bg-[#f59e0b] shadow-[0_0_0_1px_rgba(245,158,11,0.15),0_0_10px_rgba(245,158,11,0.35)]",
+    red: "bg-[#ef4444] shadow-[0_0_0_1px_rgba(239,68,68,0.15),0_0_12px_rgba(239,68,68,0.4)]",
+  };
+  const dotSizeClass: Record<PatientRow["statusDots"][number]["size"], string> = {
+    sm: "h-3 w-3",
+    md: "h-4 w-4",
+    lg: "h-6 w-6",
+  };
 
   return (
     <motion.div
@@ -313,9 +352,16 @@ function InsightRow({
       >
         {/* status */}
         <div className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded bg-[#22c55e] ring-1 ring-white/70 shadow-[0_0_0_1px_rgba(34,197,94,0.15),0_0_10px_rgba(34,197,94,0.35)]" />
-          <span className="h-4 w-4 rounded bg-[#f59e0b] ring-1 ring-white/70 shadow-[0_0_0_1px_rgba(245,158,11,0.15),0_0_10px_rgba(245,158,11,0.35)]" />
-          <span className="h-6 w-6 rounded bg-[#ef4444] ring-1 ring-white/70 shadow-[0_0_0_1px_rgba(239,68,68,0.15),0_0_12px_rgba(239,68,68,0.4)]" />
+          {row.statusDots.map((dot, idx) => (
+            <span
+              key={`${row.id}-dot-${idx}`}
+              className={[
+                "rounded ring-1 ring-white/70",
+                dotColorClass[dot.color],
+                dotSizeClass[dot.size],
+              ].join(" ")}
+            />
+          ))}
         </div>
 
         {/* patient */}
@@ -447,6 +493,7 @@ export default function InsightTableDemo() {
           { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "loading" },
           { key: "vid", Icon: Video, label: "Start video call", state: "disabled" },
         ],
+        statusDots: randomStatusDots(),
       },
       {
         id: "p2",
@@ -467,6 +514,7 @@ export default function InsightTableDemo() {
           { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "success" },
           { key: "vid", Icon: Video, label: "Start video call", state: "default" },
         ],
+        statusDots: randomStatusDots(),
       },
       {
         id: "p3",
@@ -487,6 +535,91 @@ export default function InsightTableDemo() {
           { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "default" },
           { key: "vid", Icon: Video, label: "Start video call", state: "default" },
         ],
+        statusDots: randomStatusDots(),
+      },
+      {
+        id: "p4",
+        name: "Caroline Hayes",
+        clinic: "Curie East",
+        risk: "moderate",
+        abnormalVitals: true,
+        meta: "69 yrs, female",
+        condition: "Interstitial Lung Disease",
+        symptoms: ["Chest tightness [4]", "Cough [3]", "Fatigue [5]"],
+        moreLabel: "Review trends",
+        moreTime: "11:22 AM, 02/25",
+        metricTitle: "Respiratory rate",
+        metricDetail: "RR: 23/min",
+        metricTime: "11:20 AM, 02/25",
+        actions: [
+          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "default" },
+          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "default" },
+          { key: "vid", Icon: Video, label: "Start video call", state: "success" },
+        ],
+        statusDots: randomStatusDots(),
+      },
+      {
+        id: "p5",
+        name: "Julian Mercer",
+        clinic: "Curie Downtown",
+        risk: "high",
+        abnormalVitals: true,
+        meta: "74 yrs, male",
+        condition: "COPD",
+        symptoms: ["Wheezing [8]", "Shortness of breath [7]", "Cough [5]"],
+        moreLabel: "Escalation needed",
+        moreTime: "01:05 PM, 02/25",
+        metricTitle: "SpO₂ trend",
+        metricDetail: "O2 saturation: 84% (critical)",
+        metricTime: "01:04 PM, 02/25",
+        actions: [
+          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "danger" },
+          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "loading" },
+          { key: "vid", Icon: Video, label: "Start video call", state: "default" },
+        ],
+        statusDots: randomStatusDots(),
+      },
+      {
+        id: "p6",
+        name: "Emma Sullivan",
+        clinic: "Curie North",
+        risk: "low",
+        abnormalVitals: false,
+        meta: "52 yrs, female",
+        condition: "Asthma",
+        symptoms: ["Sneeze [2]", "Cough [1]", "Shortness of breath [1]"],
+        moreLabel: "Stable",
+        moreTime: "08:33 AM, 02/25",
+        metricTitle: "Pulse trend",
+        metricDetail: "Pulse rate: 78 BPM",
+        metricTime: "08:31 AM, 02/25",
+        actions: [
+          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "default" },
+          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "success" },
+          { key: "vid", Icon: Video, label: "Start video call", state: "default" },
+        ],
+        statusDots: randomStatusDots(),
+      },
+      {
+        id: "p7",
+        name: "Noah Bradford",
+        clinic: "Curie South",
+        risk: "moderate",
+        abnormalVitals: true,
+        meta: "61 yrs, male",
+        condition: "Pulmonary Fibrosis",
+        symptoms: ["Breathlessness [5]", "Fatigue [4]", "Dry cough [3]"],
+        moreLabel: "Needs coaching",
+        moreTime: "04:44 PM, 02/24",
+        metricTitle: "Activity vs HR",
+        metricDetail: "Pulse rate: 104 BPM",
+        metricTime: "04:43 PM, 02/24",
+        actions: [
+          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "default" },
+          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "default" },
+          { key: "vid", Icon: Video, label: "Start video call", state: "disabled" },
+        ],
+        statusDots: randomStatusDots(),
       },
     ],
     []
@@ -497,6 +630,10 @@ export default function InsightTableDemo() {
     p1: 0,
     p2: 12,
     p3: 0,
+    p4: 0,
+    p5: 0,
+    p6: 0,
+    p7: 0,
   });
   const [risk, setRisk] = React.useState<RiskFilter>("all");
   const [clinic, setClinic] = React.useState("all");
@@ -508,13 +645,19 @@ export default function InsightTableDemo() {
   );
 
   const filteredRows = React.useMemo(
-    () =>
-      rows.filter((row) => {
-        if (risk !== "all" && row.risk !== risk) return false;
+    () => {
+      const result = rows.filter((row) => {
+        const derivedRisk = riskFromStatusDots(row.statusDots);
+        if (risk !== "all" && derivedRisk !== risk) return false;
         if (clinic !== "all" && row.clinic !== clinic) return false;
         if (abnormalVitalsOnly && !row.abnormalVitals) return false;
         return true;
-      }),
+      });
+
+      return result.sort(
+        (a, b) => RISK_ORDER[riskFromStatusDots(a.statusDots)] - RISK_ORDER[riskFromStatusDots(b.statusDots)]
+      );
+    },
     [rows, risk, clinic, abnormalVitalsOnly]
   );
 
@@ -550,7 +693,7 @@ export default function InsightTableDemo() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="w-full overflow-visible">
+      <div className="h-full w-full overflow-visible">
         <InsightTableFilters
           risk={risk}
           clinic={clinic}
@@ -565,26 +708,28 @@ export default function InsightTableDemo() {
             setAbnormalVitalsOnly(false);
           }}
         />
-        <div className="rounded-xl border border-border bg-muted/30 overflow-visible">
-          <HeaderRow />
-          <div className="rounded-b-xl">
-            {filteredRows.length > 0 ? (
-              filteredRows.map((row, idx) => (
-                <InsightRow
-                  key={row.id}
-                  row={row}
-                  rowIndex={idx}
-                  isLast={idx === filteredRows.length - 1}
-                  isPlaying={playingRowId === row.id}
-                  onTogglePlay={() => togglePlay(row.id)}
-                  elapsedSeconds={elapsedByRowId[row.id] ?? 0}
-                />
-              ))
-            ) : (
-              <div className="rounded-b-xl border border-border border-t-0 px-6 py-8 text-center text-sm text-muted-foreground">
-                No patients match the current filters.
-              </div>
-            )}
+        <div className="h-full overflow-x-auto overflow-y-hidden pb-1">
+          <div className="h-full min-w-310 rounded-xl border border-border bg-muted/30 overflow-visible">
+            <HeaderRow />
+            <div className="rounded-b-xl">
+              {filteredRows.length > 0 ? (
+                filteredRows.map((row, idx) => (
+                  <InsightRow
+                    key={row.id}
+                    row={row}
+                    rowIndex={idx}
+                    isLast={idx === filteredRows.length - 1}
+                    isPlaying={playingRowId === row.id}
+                    onTogglePlay={() => togglePlay(row.id)}
+                    elapsedSeconds={elapsedByRowId[row.id] ?? 0}
+                  />
+                ))
+              ) : (
+                <div className="rounded-b-xl border border-border border-t-0 px-6 py-8 text-center text-sm text-muted-foreground">
+                  No patients match the current filters.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

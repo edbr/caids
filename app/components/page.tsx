@@ -14,10 +14,17 @@ import {
 } from "@/components/ds/panel";
 import { DSActionLink } from "@/components/ds/action-link";
 import { DSInput } from "@/components/ds/input";
+import { CurieHeader } from "@/components/patterns/CurieHeader";
+import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
+import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
+import { PatientTimeSelectionDemo } from "@/components/patterns/PatientTimeSelectionDemo";
+import { PatientRecordTabs } from "@/components/patterns/PatientRecordTabs";
 import { Calendar, MessageSquare, NotebookPen, Pencil, Share2, Video, X } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function ComponentsPage() {
+  const [notificationsOpen, setNotificationsOpen] = React.useState(false);
+
   return (
     <DSPage
       title="Components"
@@ -32,6 +39,24 @@ export default function ComponentsPage() {
           className="h-10 w-auto"
           priority
         />
+      </div>
+
+      <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-muted-foreground">Patients</span>
+          <span className="text-muted-foreground/70">/</span>
+          <span className="font-medium text-foreground">Brian Lauson</span>
+          <span className="text-muted-foreground/70">/</span>
+          <span className="rounded-full bg-background px-2 py-0.5 text-muted-foreground">
+            57 yrs
+          </span>
+          <span className="rounded-full bg-background px-2 py-0.5 text-muted-foreground">
+            Male
+          </span>
+          <span className="rounded-full bg-background px-2 py-0.5 text-muted-foreground">
+            COPD
+          </span>
+        </div>
       </div>
 
       <Section title="IconButton" description="Compact action affordance with tooltip + state ring.">
@@ -160,6 +185,33 @@ export default function ComponentsPage() {
         <div className="flex items-center gap-6">
           <DSActionLink onClick={() => {}}>Mark all as read</DSActionLink>
           <DSActionLink onClick={() => {}}>Reset</DSActionLink>
+        </div>
+      </Section>
+
+      <Section title="Patient Record Tabs" description="Reusable top-level tabs for patient chart sections.">
+        <PatientRecordTabs defaultTab="notes" />
+      </Section>
+
+      <Section title="Curie Header + Notifications" description="Prototype header shell with messages, bell, and user chip.">
+        <div className="rounded-xl border border-border bg-background p-2 overflow-visible">
+          <CurieHeader
+            unreadCount={2}
+            notificationsOpen={notificationsOpen}
+            onToggleNotifications={() => setNotificationsOpen((v) => !v)}
+            notificationPanel={notificationsOpen ? <NotificationsPanelDemo showReset={false} /> : null}
+          />
+        </div>
+      </Section>
+
+      <Section title="Monitoring Bar + Contextual Menu" description="Patient monitoring status row with contextual actions.">
+        <div className="overflow-visible">
+          <MonitoringBarDemo />
+        </div>
+      </Section>
+
+      <Section title="Patient Time Selection" description="Patient appointment slot selector with multi-select interactions.">
+        <div className="overflow-visible">
+          <PatientTimeSelectionDemo />
         </div>
       </Section>
     </DSPage>

@@ -184,9 +184,34 @@ export function HomeInteractiveShowcase() {
 
       <div className="rounded-xl border border-border bg-background/70 p-4">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Components</p>
-        <p className="mt-1 text-sm text-foreground">Working input state with validation.</p>
+        <p className="mt-1 text-sm text-foreground">Conversation between patient and clinician</p>
 
-        <div className="mt-3 space-y-2">
+       
+        <div className="mt-4 rounded-lg border border-border bg-background/80 p-2.5">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-xs font-medium text-foreground">Jane Mullgard</p>
+          </div>
+          <div ref={conversationScrollRef} className="h-36 space-y-1.5 overflow-y-auto pr-1">
+            {visibleConversation.map((line) => {
+              const isPatient = line.speaker === "Patient";
+              return (
+                <div
+                  key={line.id}
+                  className={[
+                    "max-w-[92%] rounded-md px-2 py-1.5 text-xs leading-5",
+                    isPatient
+                      ? "border border-numo-blue-700/10 bg-numo-gray-500 text-numo-blue-900"
+                      : "ml-auto border border-numo-blue-700/05 bg-numo-blue-500 text-numo-gray-400",
+                  ].join(" ")}
+                >
+
+                  {line.text}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+         <div className="mt-3 space-y-2">
           <DSInput
             placeholder="Add note title..."
             value={fieldValue}
@@ -208,31 +233,6 @@ export function HomeInteractiveShowcase() {
           </div>
         </div>
 
-        <div className="mt-4 rounded-lg border border-border bg-background/80 p-2.5">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs font-medium text-foreground">Conversation</p>
-            <p className="text-[11px] text-muted-foreground">Rotating demo</p>
-          </div>
-          <div ref={conversationScrollRef} className="h-36 space-y-1.5 overflow-y-auto pr-1">
-            {visibleConversation.map((line) => {
-              const isPatient = line.speaker === "Patient";
-              return (
-                <div
-                  key={line.id}
-                  className={[
-                    "max-w-[92%] rounded-md px-2 py-1.5 text-xs leading-5",
-                    isPatient
-                      ? "bg-numo-blue-900/10 text-foreground"
-                      : "ml-auto bg-numo-teal-900/15 text-foreground",
-                  ].join(" ")}
-                >
-                  <span className="mr-1.5 font-semibold text-muted-foreground">{line.speaker}:</span>
-                  {line.text}
-                </div>
-              );
-            })}
-          </div>
-        </div>
       </div>
 
       <div className="rounded-xl border border-border bg-background/70 p-4">
