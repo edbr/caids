@@ -16,6 +16,7 @@ import { DSActionLink } from "@/components/ds/action-link";
 import { DSInput } from "@/components/ds/input";
 import { DSBreadcrumb } from "@/components/ds/breadcrumb";
 import { DSAudioPlayButton } from "@/components/ds/audio-play-button";
+import { DSConversationModule } from "@/components/ds/conversation-module";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
 import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
@@ -27,6 +28,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 type ComponentId =
   | "brand-logos"
   | "audio-play-button"
+  | "conversation-module"
   | "breadcrumb"
   | "icon-button"
   | "insight-actions"
@@ -123,6 +125,14 @@ export default function ComponentsPage() {
   durationSeconds={30}
   onToggle={toggleAudio}
 />`,
+    },
+    {
+      id: "conversation-module",
+      label: "Conversation",
+      title: "Conversation Module",
+      description: "Auto-rotating patient/clinician conversation preview.",
+      render: <DSConversationModule title="Jane Mullgard" />,
+      code: `<DSConversationModule title="Jane Mullgard" />`,
     },
     {
       id: "breadcrumb",
@@ -356,8 +366,21 @@ export default function ComponentsPage() {
     },
   ];
 
-  const coreItems = items.filter((item) => item.id !== "brand-logos");
-  const brandItems = items.filter((item) => item.id === "brand-logos");
+  const alphabetical = (a: { label: string }, b: { label: string }) =>
+    a.label.localeCompare(b.label);
+
+  const tabletItems = items
+    .filter((item) => item.id === "monitoring-bar" || item.id === "time-selection")
+    .sort(alphabetical);
+  const clinicalItems = items
+    .filter(
+      (item) =>
+        item.id !== "brand-logos" &&
+        item.id !== "monitoring-bar" &&
+        item.id !== "time-selection"
+    )
+    .sort(alphabetical);
+  const brandItems = items.filter((item) => item.id === "brand-logos").sort(alphabetical);
   const activeItem = items.find((item) => item.id === activeId) ?? items[0];
 
   return (
@@ -370,10 +393,10 @@ export default function ComponentsPage() {
       <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
         <aside className="h-fit rounded-xl border border-border bg-muted/25 p-2 lg:sticky lg:top-24">
           <p className="px-2 pb-2 pt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Components
+            Clinical EMR
           </p>
           <nav className="space-y-1">
-            {coreItems.map((item) => (
+            {clinicalItems.map((item) => (
               <button
                 key={item.id}
                 type="button"
@@ -381,7 +404,7 @@ export default function ComponentsPage() {
                 className={[
                   "w-full rounded-md px-3 py-2 text-left text-sm transition",
                   activeId === item.id
-                    ? "bg-background font-medium text-foreground shadow-sm"
+                    ? "bg-numo-blue-600 text-white font-medium shadow-sm"
                     : "text-muted-foreground hover:bg-background/70 hover:text-foreground",
                 ].join(" ")}
               >
@@ -389,6 +412,29 @@ export default function ComponentsPage() {
               </button>
             ))}
           </nav>
+
+          <div className="mt-3 border-t border-border pt-3">
+            <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Tablet
+            </p>
+            <nav className="space-y-1">
+              {tabletItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setActiveId(item.id)}
+                  className={[
+                    "w-full rounded-md px-3 py-2 text-left text-sm transition",
+                    activeId === item.id
+                      ? "bg-numo-blue-600 text-white font-medium shadow-sm"
+                      : "text-muted-foreground hover:bg-background/70 hover:text-foreground",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </div>
 
           <div className="mt-3 border-t border-border pt-3">
             <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -403,7 +449,7 @@ export default function ComponentsPage() {
                   className={[
                     "w-full rounded-md px-3 py-2 pl-6 text-left text-sm transition",
                     activeId === item.id
-                      ? "bg-background font-medium text-foreground shadow-sm"
+                      ? "bg-numo-blue-600 text-white font-medium shadow-sm"
                       : "text-muted-foreground hover:bg-background/70 hover:text-foreground",
                   ].join(" ")}
                 >

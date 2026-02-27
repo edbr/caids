@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { Activity, RefreshCw } from "lucide-react";
 import { DSInput } from "@/components/ds/input";
+import { DSConversationModule } from "@/components/ds/conversation-module";
 
 type RiskLevel = "High" | "Moderate" | "Low";
 
@@ -12,12 +13,6 @@ type InsightRow = {
   clinic: string;
   risk: RiskLevel;
   abnormalVitals: number;
-};
-
-type ConversationLine = {
-  id: string;
-  speaker: "Patient" | "Clinician";
-  text: string;
 };
 
 const COLOR_GROUPS = [
@@ -45,15 +40,6 @@ const BASE_ROWS: InsightRow[] = [
   { id: "3", patient: "Maya Patel", clinic: "Pulmonology", risk: "Low", abnormalVitals: 1 },
 ];
 
-const CONVERSATION_LINES: ConversationLine[] = [
-  { id: "c1", speaker: "Patient", text: "I had more shortness of breath this morning." },
-  { id: "c2", speaker: "Clinician", text: "Thanks for sharing. Did it happen at rest or with activity?" },
-  { id: "c3", speaker: "Patient", text: "Mostly when walking upstairs, and my cough increased." },
-  { id: "c4", speaker: "Clinician", text: "Understood. We should keep your 3:00 PM follow-up and review inhaler use." },
-  { id: "c5", speaker: "Patient", text: "Okay, I can do that. Should I log symptoms tonight too?" },
-  { id: "c6", speaker: "Clinician", text: "Yes, please track symptoms and oxygen readings before bedtime." },
-];
-
 function formatTime(value: Date) {
   return value.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
@@ -79,8 +65,6 @@ export function HomeInteractiveShowcase() {
   const [rows, setRows] = useState<InsightRow[]>(BASE_ROWS);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [loading, setLoading] = useState(false);
-  const [conversationIndex, setConversationIndex] = useState(2);
-  const conversationScrollRef = useRef<HTMLDivElement | null>(null);
 
   const selectedColor = useMemo(
     () =>
@@ -111,30 +95,6 @@ export function HomeInteractiveShowcase() {
       setLoading(false);
     }, 600);
   }
-
-  useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setConversationIndex((prev) => {
-        const next = prev + 1;
-        return next > CONVERSATION_LINES.length ? 2 : next;
-      });
-    }, 2600);
-
-    return () => window.clearInterval(intervalId);
-  }, []);
-
-  const visibleConversation = useMemo(
-    () => CONVERSATION_LINES.slice(0, conversationIndex),
-    [conversationIndex]
-  );
-
-  useEffect(() => {
-    if (!conversationScrollRef.current) return;
-    conversationScrollRef.current.scrollTo({
-      top: conversationScrollRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [visibleConversation]);
 
   return (
     <div className="mt-8 grid gap-3 md:grid-cols-3">
@@ -186,31 +146,7 @@ export function HomeInteractiveShowcase() {
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Components</p>
         <p className="mt-1 text-sm text-foreground">Conversation between patient and clinician</p>
 
-       
-        <div className="mt-4 rounded-lg border border-border bg-background/80 p-2.5">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs font-medium text-foreground">Jane Mullgard</p>
-          </div>
-          <div ref={conversationScrollRef} className="h-36 space-y-1.5 overflow-y-auto pr-1">
-            {visibleConversation.map((line) => {
-              const isPatient = line.speaker === "Patient";
-              return (
-                <div
-                  key={line.id}
-                  className={[
-                    "max-w-[92%] rounded-md px-2 py-1.5 text-xs leading-5",
-                    isPatient
-                      ? "border border-numo-blue-700/10 bg-numo-gray-500 text-numo-blue-900"
-                      : "ml-auto border border-numo-blue-700/05 bg-numo-blue-500 text-numo-gray-400",
-                  ].join(" ")}
-                >
-
-                  {line.text}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <DSConversationModule title="Jane Mullgard" className="mt-4" />
          <div className="mt-3 space-y-2">
           <DSInput
             placeholder="Add note title..."
