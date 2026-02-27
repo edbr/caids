@@ -20,6 +20,7 @@ import { DSConversationModule } from "@/components/ds/conversation-module";
 import { DSNotesAddButtonDemo } from "@/components/ds/notes-add-button-demo";
 import { DSTabletButtonsDemo } from "@/components/ds/tablet-buttons-demo";
 import { DSTabletCustomIconsDemo } from "@/components/ds/tablet-custom-icons-demo";
+import { DSClinicalEmrGraphsDemo } from "@/components/ds/clinical-emr-graphs-demo";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
 import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
@@ -42,6 +43,7 @@ type ComponentId =
   | "conversation-module"
   | "breadcrumb"
   | "icon-button"
+  | "graphs"
   | "insight-actions"
   | "panel"
   | "input"
@@ -122,10 +124,28 @@ export default function ComponentsPage() {
       description: "Primary product marks and lockups.",
       render: (
         <div className="rounded-xl border border-border bg-background p-6">
-          <Image src="/numoLogo.svg" alt="Numo logo" width={260} height={72} className="h-14 w-auto" priority />
+          <div className="flex flex-wrap items-center gap-8">
+            <Image
+              src="/numoLogo.svg"
+              alt="Numo logo"
+              width={260}
+              height={72}
+              className="h-9 w-auto"
+              priority
+            />
+            <Image
+              src="/Curie_AI_logo.svg"
+              alt="Curie AI logo"
+              width={280}
+              height={80}
+              className="h-20 w-auto"
+              priority
+            />
+          </div>
         </div>
       ),
-      code: `<Image src="/numoLogo.svg" alt="Numo logo" width={260} height={72} className="h-14 w-auto" />`,
+      code: `<Image src="/numoLogo.svg" alt="Numo logo" width={260} height={72} className="h-14 w-auto" />
+<Image src="/Curie_AI_logo.svg" alt="Curie AI logo" width={280} height={80} className="h-14 w-auto" />`,
     },
     {
       id: "audio-play-button",
@@ -199,6 +219,14 @@ export default function ComponentsPage() {
       code: `<DSIconButton aria-label="Schedule follow-up" tooltip="Schedule follow-up">
   <Calendar className="h-4 w-4" />
 </DSIconButton>`,
+    },
+    {
+      id: "graphs",
+      label: "Graphs",
+      title: "Clinical EMR Graphs",
+      description: "Spirometry line chart with hover detail and customizable colors (Chart.js).",
+      render: <DSClinicalEmrGraphsDemo />,
+      code: `<DSClinicalEmrGraphsDemo />`,
     },
     {
       id: "insight-actions",
