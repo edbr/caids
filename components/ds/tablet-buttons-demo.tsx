@@ -9,7 +9,11 @@ export function DSTabletButtonsDemo() {
         Menu
       </button>
 
-      <button className="mt-1 inline-flex rounded-full border border-numo-orange-700 bg-numo-orange-500 px-5 py-2 font-sans text-[20px] font-semibold leading-none tracking-tight text-numo-blue-900 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-orange-700/90">
+      <button className="mt-1 inline-flex rounded-full h-11 items-center border border-numo-orange-700 bg-numo-orange-500 px-5 py-2 font-sans text-[20px] font-semibold leading-none tracking-tight text-numo-blue-900 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-orange-800/90 hover:text-numo-slate-400">
+        Start Check-in
+      </button>
+
+      <button className="mt-1 inline-flex h-11 items-center rounded-full border border-numo-orange-500 bg-transparent px-5 py-2 font-sans text-[20px] font-semibold leading-none tracking-tight text-numo-orange-500 transition-colors hover:bg-numo-orange-500/15">
         Start Check-in
       </button>
 

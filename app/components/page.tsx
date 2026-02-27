@@ -19,6 +19,7 @@ import { DSAudioPlayButton } from "@/components/ds/audio-play-button";
 import { DSConversationModule } from "@/components/ds/conversation-module";
 import { DSNotesAddButtonDemo } from "@/components/ds/notes-add-button-demo";
 import { DSTabletButtonsDemo } from "@/components/ds/tablet-buttons-demo";
+import { DSTabletCustomIconsDemo } from "@/components/ds/tablet-custom-icons-demo";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
 import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
@@ -49,6 +50,7 @@ type ComponentId =
   | "record-tabs"
   | "curie-header"
   | "tablet-buttons"
+  | "tablet-custom-icons"
   | "monitoring-bar"
   | "time-selection"
   | "notes-add-button";
@@ -379,6 +381,36 @@ export default function ComponentsPage() {
 <button className="... rounded-full ..."><CalendarClock /></button>`,
     },
     {
+      id: "tablet-custom-icons",
+      label: "Custom Icons",
+      title: "Tablet Custom Icons",
+      description: "SVG icon set from /public/menuicon for tablet surfaces.",
+      render: <DSTabletCustomIconsDemo />,
+      code: `// 1) Put SVGs in: /public/menuicon
+// Example: /public/menuicon/report.svg
+
+// 2) Use with next/image (recommended in Next.js)
+import Image from "next/image";
+
+<Image
+  src="/menuicon/report.svg"
+  alt="Report"
+  width={32}
+  height={32}
+  className="h-8 w-8"
+/>;
+
+// 3) Or use plain img (simple fallback)
+<img src="/menuicon/report.svg" alt="Report" className="h-8 w-8" />;
+
+// 4) Keep a typed icon map for reuse
+const MENU_ICONS = {
+  report: "/menuicon/report.svg",
+  pulse: "/menuicon/pulse.svg",
+  settings: "/menuicon/settings.svg",
+} as const;`,
+    },
+    {
       id: "monitoring-bar",
       label: "Monitoring Bar",
       title: "Monitoring Bar + Contextual Menu",
@@ -410,6 +442,7 @@ export default function ComponentsPage() {
   const tabletItems = items
     .filter(
       (item) =>
+        item.id === "tablet-custom-icons" ||
         item.id === "monitoring-bar" ||
         item.id === "time-selection" ||
         item.id === "tablet-buttons"
@@ -419,6 +452,7 @@ export default function ComponentsPage() {
     .filter(
       (item) =>
         item.id !== "brand-logos" &&
+        item.id !== "tablet-custom-icons" &&
         item.id !== "tablet-buttons" &&
         item.id !== "monitoring-bar" &&
         item.id !== "time-selection"
