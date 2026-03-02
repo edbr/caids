@@ -61,6 +61,8 @@ type ComponentId =
   | "notes-add-button";
 
 const AUDIO_DURATION_S = 30;
+const BRAND_ASSETS_BASE_URL =
+  process.env.NEXT_PUBLIC_BRAND_ASSETS_BASE_URL ?? "https://lungds.s3.us-east-2.amazonaws.com";
 const BRAND_IMAGE_FILES = [
   "Numo_BrandAssets_V2-6.png",
   "Numo_WarmLeavesStripFinal.png",
@@ -83,6 +85,10 @@ const BRAND_BUSINESS_CARD_FILES = [
   "Numo_BusinessCardsOL_020723_Back.pdf",
   "Numo_BusinessCardsOL_020723_FrontSaba.pdf",
 ] as const;
+
+function brandAssetUrl(folder: "logos" | "images" | "tablet" | "businessCard", file: string) {
+  return `${BRAND_ASSETS_BASE_URL.replace(/\/$/, "")}/${folder}/${encodeURIComponent(file)}`;
+}
 
 function formatAudioTime(totalSeconds: number) {
   const s = Math.max(0, Math.min(AUDIO_DURATION_S, Math.floor(totalSeconds)));
@@ -180,7 +186,7 @@ export default function ComponentsPage() {
             ].map((file) => (
               <div key={file} className="rounded-lg border border-border bg-muted/20 p-3">
                 <Image
-                  src={`/logos/${file}`}
+                  src={brandAssetUrl("logos", file)}
                   alt={file.replace(".png", "").replaceAll("_", " ")}
                   width={420}
                   height={160}
@@ -195,7 +201,7 @@ export default function ComponentsPage() {
       code: `<Image src="/numoLogo.svg" alt="Numo logo" width={260} height={72} className="h-14 w-auto" />
 <Image src="/Curie_AI_logo.svg" alt="Curie AI logo" width={280} height={80} className="h-14 w-auto" />
 {["Numo_Logo_1_Centered_Tagline.png", "..."].map((file) => (
-  <Image key={file} src={\`/logos/\${file}\`} alt={file} width={420} height={160} className="h-16 w-auto" />
+  <Image key={file} src={brandAssetUrl("logos", file)} alt={file} width={420} height={160} className="h-16 w-auto" />
 ))}`,
     },
     {
@@ -209,12 +215,12 @@ export default function ComponentsPage() {
             <article key={file} className="rounded-xl border border-border bg-background p-3">
               <p className="mb-2 text-xs font-medium text-muted-foreground">{file}</p>
               <object
-                data={`/tablet/${file}`}
+                data={brandAssetUrl("tablet", file)}
                 type="application/pdf"
                 className="h-72 w-full rounded-md border border-border bg-muted/20"
               >
                 <a
-                  href={`/tablet/${file}`}
+                  href={brandAssetUrl("tablet", file)}
                   target="_blank"
                   rel="noreferrer"
                   className="text-sm text-numo-blue-700 underline"
@@ -227,7 +233,7 @@ export default function ComponentsPage() {
         </div>
       ),
       code: `{["tablet-2.pdf", "tablet-3.pdf", "tablet-4.pdf", "tablet-5.pdf"].map((file) => (
-  <object key={file} data={\`/tablet/\${file}\`} type="application/pdf" className="h-72 w-full" />
+  <object key={file} data={brandAssetUrl("tablet", file)} type="application/pdf" className="h-72 w-full" />
 ))}`,
     },
     {
@@ -240,7 +246,7 @@ export default function ComponentsPage() {
           {BRAND_IMAGE_FILES.map((file) => (
             <div key={file} className="rounded-lg border border-border bg-background p-3">
               <Image
-                src={`/images/${file}`}
+                src={brandAssetUrl("images", file)}
                 alt={file.replace(".png", "").replaceAll("_", " ")}
                 width={640}
                 height={420}
@@ -252,7 +258,7 @@ export default function ComponentsPage() {
         </div>
       ),
       code: `{BRAND_IMAGE_FILES.map((file) => (
-  <Image key={file} src={\`/images/\${file}\`} alt={file} width={640} height={420} className="h-40 w-full object-contain" />
+  <Image key={file} src={brandAssetUrl("images", file)} alt={file} width={640} height={420} className="h-40 w-full object-contain" />
 ))}`,
     },
     {
@@ -266,12 +272,12 @@ export default function ComponentsPage() {
             <article key={file} className="rounded-xl border border-border bg-background p-3">
               <p className="mb-2 text-xs font-medium text-muted-foreground">{file}</p>
               <object
-                data={`/businessCard/${file}`}
+                data={brandAssetUrl("businessCard", file)}
                 type="application/pdf"
                 className="h-80 w-full rounded-md border border-border bg-muted/20"
               >
                 <a
-                  href={`/businessCard/${file}`}
+                  href={brandAssetUrl("businessCard", file)}
                   target="_blank"
                   rel="noreferrer"
                   className="text-sm text-numo-blue-700 underline"
@@ -284,7 +290,7 @@ export default function ComponentsPage() {
         </div>
       ),
       code: `{BRAND_BUSINESS_CARD_FILES.map((file) => (
-  <object key={file} data={\`/businessCard/\${file}\`} type="application/pdf" className="h-80 w-full" />
+  <object key={file} data={brandAssetUrl("businessCard", file)} type="application/pdf" className="h-80 w-full" />
 ))}`,
     },
     {
