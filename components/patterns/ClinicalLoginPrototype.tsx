@@ -131,7 +131,7 @@ export function ClinicalLoginPrototype() {
                     onClick={() => setMode("signin")}
                     className={[
                       "rounded px-3 py-1.5 transition",
-                      mode === "signin" ? "bg-numo-blue-600 text-white" : "text-numo-blue-800 hover:bg-muted/60",
+                      mode === "signin" ? "bg-numo-blue-800 text-white" : "text-numo-blue-800 hover:bg-muted/60",
                     ].join(" ")}
                   >
                     Sign in
@@ -141,7 +141,7 @@ export function ClinicalLoginPrototype() {
                     onClick={() => setMode("signup")}
                     className={[
                       "rounded px-3 py-1.5 transition",
-                      mode === "signup" ? "bg-numo-blue-600 text-white" : "text-numo-blue-800 hover:bg-muted/60",
+                      mode === "signup" ? "bg-numo-blue-800 text-white" : "text-numo-blue-800 hover:bg-muted/60",
                     ].join(" ")}
                   >
                     Create account

@@ -18,7 +18,7 @@ export function DSPage({
   return (
     <main className={cn("isolate min-h-dvh bg-background text-foreground", className)}>
       <div className="mx-auto max-w-screen-2xl px-6 py-10 space-y-10">
-        <header className="relative z-[300] space-y-3">
+        <header className="relative z-300pace-y-3">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
@@ -34,7 +34,7 @@ export function DSPage({
               ) : null}
             </div>
 
-            <nav className="relative z-[310] hidden items-center gap-2 text-sm md:flex">
+            <nav className="relative z-310 hidden items-center gap-2 text-sm md:flex">
               <NavLink href="/">Home</NavLink>
               <NavLink href="/foundations">Foundations</NavLink>
               <NavLink href="/components">Components</NavLink>
@@ -51,13 +51,13 @@ export function DSPage({
               </NavMenu>
             </nav>
 
-            <div className="relative z-[310] md:hidden">
+            <div className="relative z-310 md:hidden">
               <details className="group">
                 <summary className="inline-flex min-h-11 list-none items-center rounded-md border border-border bg-background px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted/50 hover:text-foreground [&::-webkit-details-marker]:hidden">
                   Menu
                 </summary>
 
-                <div className="absolute right-0 top-[calc(100%+0.4rem)] z-[330] w-72 rounded-lg border border-border bg-background p-2 shadow-md">
+                <div className="absolute right-0 top-[calc(100%+0.4rem)] z-330 w-72 rounded-lg border border-border bg-background p-2 shadow-md">
                   <MobileNavLink href="/">Home</MobileNavLink>
                   <MobileNavLink href="/foundations">Foundations</MobileNavLink>
                   <MobileNavLink href="/components">Components</MobileNavLink>
@@ -105,7 +105,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 
 function NavMenu({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="relative z-[320] group">
+    <div className="relative z-320 group">
       <button
         type="button"
         className="inline-flex min-h-11 items-center rounded-md px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition group-focus-within:text-foreground group-focus-within:bg-muted/50"
@@ -118,7 +118,7 @@ function NavMenu({ label, children }: { label: string; children: React.ReactNode
 
       <div
         className={[
-          "absolute right-0 top-[calc(100%+0.15rem)] z-[330] min-w-44 rounded-lg border border-border bg-background p-1 shadow-md",
+          "absolute right-0 top-[calc(100%+0.15rem)] z-330 min-w-44 rounded-lg border border-border bg-background p-1 shadow-md",
           "invisible translate-y-1 opacity-0 transition duration-150",
           "group-hover:visible group-hover:translate-y-0 group-hover:opacity-100",
           "group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100",
