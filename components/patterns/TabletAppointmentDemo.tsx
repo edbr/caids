@@ -68,7 +68,7 @@ export function TabletAppointmentDemo() {
   return (
     <div
       ref={containerRef}
-      className="relative min-h-190 overflow-hidden rounded-2xl border border-numo-blue-700/50 p-6 md:p-8 xl:p-10"
+      className="relative min-h-168 overflow-hidden rounded-2xl border border-numo-blue-700/50 p-4 sm:p-6 md:min-h-190 md:p-8 xl:p-10"
       style={{ background: "var(--Nu-blue-500, #203946)" }}
     >
       <svg className="pointer-events-none absolute h-0 w-0">
@@ -86,7 +86,7 @@ export function TabletAppointmentDemo() {
         </defs>
       </svg>
 
-      <header className="relative z-20 flex items-center justify-between gap-4">
+      <header className="relative z-20 flex items-center justify-between gap-3 sm:gap-4">
         <Image
           src="/numoW.svg"
           alt="Numo"
@@ -97,7 +97,7 @@ export function TabletAppointmentDemo() {
         />
 
         <div className="flex items-center gap-3">
-          <button className="font-sans inline-flex h-11 items-center rounded-full border border-numo-teal-500 px-6 font-medium text-2xl text-numo-teal-400 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-teal-500/15">
+          <button className="font-sans inline-flex h-10 items-center rounded-full border border-numo-teal-500 px-4 text-base font-medium text-numo-teal-400 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-teal-500/15 md:h-11 md:px-6 md:text-2xl">
             Menu
           </button>
           <button
@@ -118,7 +118,7 @@ export function TabletAppointmentDemo() {
 
       <div
         className={[
-          "relative z-10 mt-14 grid items-start transition-all duration-500 xl:mt-20",
+          "relative z-10 mt-8 grid items-start transition-all duration-500 md:mt-12 xl:mt-20",
           isMinimized ? "xl:grid-cols-1" : "xl:grid-cols-[minmax(0,1fr)_410px]",
         ].join(" ")}
       >
@@ -130,10 +130,10 @@ export function TabletAppointmentDemo() {
             isMinimized ? "mx-auto w-full max-w-5xl pl-0" : "pl-2 xl:pl-8",
           ].join(" ")}
         >
-          <div className="text-center font-sans text-[120px] font-normal leading-none text-[#82B1C9] ">
+          <div className="text-center font-sans text-[68px] font-normal leading-none text-[#82B1C9] sm:text-[92px] md:text-[120px]">
             2:14 PM
           </div>
-          <div className="mt-3 text-center font-sans text-[36px] font-normal leading-normal text-[#82B1C9] ]">
+          <div className="mt-2 text-center font-sans text-[22px] font-normal leading-normal text-[#82B1C9] sm:text-[28px] md:mt-3 md:text-[36px]">
             September 23, 2022
           </div>
         </motion.div>
@@ -146,7 +146,7 @@ export function TabletAppointmentDemo() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 24 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className="relative w-full max-w-102.5 xl:ml-auto"
+              className="relative mt-5 w-full max-w-102.5 xl:ml-auto xl:mt-0"
             >
               <motion.div
                 key="appointment-card"
@@ -155,10 +155,10 @@ export function TabletAppointmentDemo() {
                 animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
                 exit={{ x: travel.x, y: travel.y, scale: 0.18, opacity: 0 }}
                 transition={{ duration: 0.62, ease: [0.2, 0.8, 0.2, 1] }}
-                className="rounded-3xl border border-numo-blue-600/70 bg-numo-blue-900/55 p-5 text-numo-gray-400 shadow-[0_20px_40px_hsl(var(--numo-blue-900)/0.35)] md:p-6"
+                className="rounded-3xl border border-numo-blue-600/70 bg-numo-blue-900/55 p-4 text-numo-gray-400 shadow-[0_20px_40px_hsl(var(--numo-blue-900)/0.35)] sm:p-5 md:p-6"
               >
                 <div className="mb-3.5 flex items-center justify-between border-b border-numo-blue-600/70 pb-3">
-                  <h3 className="font-sans text-[28px] leading-[1.02] tracking-tight text-numo-slate-500">
+                  <h3 className="font-sans text-[22px] leading-[1.02] tracking-tight text-numo-slate-500 sm:text-[24px] md:text-[28px]">
                     Next appointment:
                   </h3>
                   <button
@@ -170,16 +170,16 @@ export function TabletAppointmentDemo() {
                   </button>
                 </div>
 
-                <p className="font-sans text-[26px] font-medium leading-tight tracking-tight text-numo-orange-400">
+                <p className="font-sans text-[21px] font-medium leading-tight tracking-tight text-numo-orange-400 sm:text-[23px] md:text-[26px]">
                   Apr 01, 2023, 3:00 PM
                 </p>
 
-                <button className="mt-4.5 inline-flex rounded-full border border-numo-orange-700 bg-numo-orange-500 px-5 py-2 font-sans text-[20px] font-semibold leading-none tracking-tight text-numo-blue-900 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-orange-700/90">
+                <button className="mt-4 inline-flex rounded-full border border-numo-orange-700 bg-numo-orange-500 px-4 py-2 font-sans text-[17px] font-semibold leading-none tracking-tight text-numo-blue-900 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-orange-700/90 sm:mt-4.5 sm:px-5 sm:text-[20px]">
                   Start Check-in
                 </button>
 
                 <div className="mt-6.5 font-sans">
-                  <div className="mt-1.5 inline-flex items-center gap-2.5 text-[20px] leading-tight tracking-tight text-numo-slate-500">
+                  <div className="mt-1.5 inline-flex items-center gap-2.5 text-[17px] leading-tight tracking-tight text-numo-slate-500 sm:text-[18px] md:text-[20px]">
                     <Phone className="h-5 w-5 " />
                     (480)336-2774
                   </div>
@@ -190,7 +190,7 @@ export function TabletAppointmentDemo() {
         </AnimatePresence>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 z-10 w-[min(1080px,calc(100%-2rem))] -translate-x-1/2">
+      <div className="relative z-10 mt-8 w-full md:absolute md:bottom-8 md:left-1/2 md:mt-0 md:w-[min(1080px,calc(100%-2rem))] md:-translate-x-1/2">
         <MonitoringBarDemo />
       </div>
 

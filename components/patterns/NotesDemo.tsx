@@ -20,7 +20,7 @@ const INITIAL_NOTES: NoteItem[] = [
     author: "Brian Lauson",
     time: "9:06 AM",
     text: "Patient complains of intermittent headaches and dizziness. Symptoms have been occurring for the past 3 days, with no clear triggers identified.",
-    dateLabel: "January 24th, 2022",
+    dateLabel: "01/24/2022",
     type: "all",
   },
   {
@@ -28,7 +28,7 @@ const INITIAL_NOTES: NoteItem[] = [
     author: "Brian Lauson",
     time: "9:08 AM",
     text: "Spoke with patient about recent video consultation. Patient reports that the video quality was poor, making it difficult to communicate effectively. Suggested troubleshooting steps and offered a follow-up call if issues persist.",
-    dateLabel: "January 24th, 2022",
+    dateLabel: "01/24/2022",
     type: "video",
   },
   {
@@ -36,7 +36,7 @@ const INITIAL_NOTES: NoteItem[] = [
     author: "Brian Lauson",
     time: "9:10 AM",
     text: "Reviewed patient's medication list during video consultation. Noted that patient is currently taking medication X, which may contribute to dizziness. Advised patient to monitor symptoms and report any worsening or new side effects.",
-    dateLabel: "January 24th, 2022",
+    dateLabel: "01/24/2022",
     type: "all",
   },
   {
@@ -44,7 +44,7 @@ const INITIAL_NOTES: NoteItem[] = [
     author: "Mariana Krajcik",
     time: "11:32 AM",
     text: "Initial clinical assessment completed. Patient presents with symptoms consistent with viral infection. Recommended supportive care, including hydration and rest. Advised patient to seek medical attention if symptoms worsen or persist beyond 7 days.",
-    dateLabel: "January 22nd, 2022",
+    dateLabel: "01/22/2022",
     type: "all",
   },
   {
@@ -52,17 +52,21 @@ const INITIAL_NOTES: NoteItem[] = [
     author: "Julian Beatty",
     time: "3:28 PM",
     text: "Service innitiation call, tablet working well, patient able to log in and navigate app. Scheduled follow-up for next week to check on progress.",
-    dateLabel: "January 13th, 2022",
+    dateLabel: "01/13/2022",
     type: "video",
   },
 ];
 
 const DATE_VITALS: Record<string, string> = {
-  "January 24th, 2022": "SpO2 91% | RR 22 | HR 98",
-  "January 22nd, 2022": "SpO2 94% | RR 18 | HR 84",
-  "January 13th, 2022": "SpO2 96% | RR 16 | HR 78",
-  Today: "SpO2 93% | RR 20 | HR 88",
+  "01/24/2022": "SpO2 91% | RR 22 | HR 98",
+  "01/22/2022": "SpO2 94% | RR 18 | HR 84",
+  "01/13/2022": "SpO2 96% | RR 16 | HR 78",
 };
+const DEFAULT_VITALS = "SpO2 93% | RR 20 | HR 88";
+
+function getVitalsForDate(dateLabel: string) {
+  return DATE_VITALS[dateLabel] ?? DEFAULT_VITALS;
+}
 
 function groupByDate(notes: NoteItem[]) {
   return notes.reduce<Record<string, NoteItem[]>>((acc, note) => {
@@ -134,6 +138,11 @@ export function NotesDemo() {
         hour: "numeric",
         minute: "2-digit",
       }).format(now);
+      const dateLabel = new Intl.DateTimeFormat("en-US", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric",
+      }).format(now);
 
       setNotes((prev) => [
         {
@@ -141,7 +150,7 @@ export function NotesDemo() {
           author: "Curie Demo",
           time,
           text,
-          dateLabel: "Today",
+          dateLabel,
           type: "all",
         },
         ...prev,
@@ -157,8 +166,8 @@ export function NotesDemo() {
 
       {mode === "browse" ? (
         <>
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-            <div className="flex flex-wrap items-end gap-6">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
+            <div className="flex flex-wrap items-end gap-4">
               <label className="grid gap-2 text-sm">
                 <span className="font-medium">Search</span>
                 <input
@@ -221,7 +230,8 @@ export function NotesDemo() {
                   <h3 className="text-md tracking-tight text-numo-teal-600">{dateLabel}</h3>
                   <p className="inline-flex items-center gap-1.5 rounded-full bg-numo-blue-400/25 px-2 py-0.5 text-[11px] font-medium text-numo-blue-800">
                     <Activity className="h-3 w-3" />
-                    Latest vitals: {DATE_VITALS[dateLabel] ?? "SpO2 -- | RR -- | HR --"}
+                    <span className="hidden sm:inline">Latest vitals: </span>
+                    {getVitalsForDate(dateLabel)}
                   </p>
                 </div>
                 <div className="space-y-0 divide-y divide-border/60">
@@ -243,24 +253,30 @@ export function NotesDemo() {
                           <button
                             type="button"
                             onClick={() => openEditMode(note)}
-                            className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground hover:text-foreground"
+                            aria-label="Edit note"
+                            title="Edit note"
+                            className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-1.5 py-0.5 text-[11px] text-muted-foreground hover:text-foreground sm:px-2"
                           >
                             <Pencil className="h-3 w-3" />
-                            Edit
+                            <span className="hidden sm:inline">Edit</span>
                           </button>
                           <button
                             type="button"
-                            className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground hover:text-foreground"
+                            aria-label="Share note"
+                            title="Share note"
+                            className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-1.5 py-0.5 text-[11px] text-muted-foreground hover:text-foreground sm:px-2"
                           >
                             <Share2 className="h-3 w-3" />
-                            Share note
+                            <span className="hidden sm:inline">Share note</span>
                           </button>
                           <button
                             type="button"
-                            className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 text-[11px] text-muted-foreground hover:text-foreground"
+                            aria-label="Add to monthly report"
+                            title="Add to monthly report"
+                            className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-1.5 py-0.5 text-[11px] text-muted-foreground hover:text-foreground sm:px-2"
                           >
                             <FilePlus2 className="h-3 w-3" />
-                            Add to monthly report
+                            <span className="hidden sm:inline">Add to monthly report</span>
                           </button>
                         </div>
                       </div>

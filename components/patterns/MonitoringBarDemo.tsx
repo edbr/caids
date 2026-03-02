@@ -74,10 +74,10 @@ export function MonitoringBarDemo() {
   const actions = STATE_ACTIONS[state];
 
   return (
-    <div className="rounded-md  bg-numo-blue-800 p-6 md:p-8 overflow-visible">
+    <div className="overflow-visible rounded-md bg-numo-blue-800 p-3 sm:p-4 md:p-8">
       <div className="relative mx-auto w-full max-w-260 overflow-visible" ref={menuRef}>
         <div
-          className="flex items-center gap-6 px-8 py-5"
+          className="flex items-center gap-2 px-3 py-3 sm:gap-3 sm:px-4 sm:py-4 md:gap-6 md:px-8 md:py-5"
           style={{
             borderRadius: "20px",
             border: "2px solid hsl(var(--numo-teal-900))",
@@ -88,7 +88,7 @@ export function MonitoringBarDemo() {
         >
           <motion.svg
             viewBox="0 0 240 96"
-            className="h-18 w-54 shrink-0 "
+            className="h-10 w-24 shrink-0 sm:h-12 sm:w-32 md:h-18 md:w-54"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="none"
@@ -172,7 +172,7 @@ export function MonitoringBarDemo() {
             />
           </motion.svg>
 
-          <p className="flex-1 text-left font-sans px-6 text-[26px] leading-none text-numo-slate-400">
+          <p className="flex-1 px-1 text-left font-sans text-[15px] leading-tight text-numo-slate-400 sm:px-2 sm:text-[18px] md:px-6 md:text-[26px] md:leading-none">
             {STATE_COPY[state]}
           </p>
 
@@ -181,14 +181,14 @@ export function MonitoringBarDemo() {
             onClick={() => setMenuOpen((v) => !v)}
             aria-expanded={menuOpen}
             aria-label="Open monitoring menu"
-            className="shrink-0 self-center inline-flex h-14 w-14 items-center justify-center rounded-xl border-2 border-numo-slate-500/30 bg-numo-blue-900/35 text-numo-gray-400 transition hover:border-numo-orange-500 hover:bg-numo-blue-800/55 hover:text-numo-orange-400"
+            className="inline-flex h-10 w-10 shrink-0 self-center items-center justify-center rounded-lg border border-numo-slate-500/35 bg-numo-blue-900/35 text-numo-gray-400 transition hover:border-numo-orange-500 hover:bg-numo-blue-800/55 hover:text-numo-orange-400 sm:h-11 sm:w-11 md:h-14 md:w-14 md:rounded-xl md:border-2"
           >
-            <Ellipsis className="h-7 w-7" />
+            <Ellipsis className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
           </button>
         </div>
 
         {menuOpen ? (
-          <div className="absolute right-0 top-full z-20 mt-3 w-90">
+          <div className="absolute right-0 top-full z-20 mt-2 w-[min(22rem,calc(100vw-1.5rem))] sm:mt-3 md:w-90">
             <div className="rounded-2xl border border-numo-blue-700/70 bg-numo-blue-900/95 p-2.5 shadow-[0_10px_24px_hsl(var(--numo-blue-900)/0.45),0_2px_8px_hsl(var(--numo-blue-900)/0.35)] backdrop-blur-sm">
             <div className="space-y-1.5">
               {actions.map((action) => (
@@ -199,10 +199,10 @@ export function MonitoringBarDemo() {
                     setState(action.nextState);
                     setMenuOpen(false);
                   }}
-                  className="group flex min-h-14 w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-base font-medium text-numo-slate-400 transition-all duration-150 hover:bg-numo-blue-700/80 active:scale-[0.99] active:bg-numo-blue-700"
+                  className="group flex min-h-12 w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-numo-slate-400 transition-all duration-150 hover:bg-numo-blue-700/80 active:scale-[0.99] active:bg-numo-blue-700 md:min-h-14 md:gap-3 md:px-4 md:py-3 md:text-base"
                 >
-                  <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-numo-blue-800/70 text-numo-slate-500 transition-colors group-hover:bg-numo-blue-800 group-hover:text-numo-gray-400">
-                    <action.icon className="h-6 w-6" />
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-numo-blue-800/70 text-numo-slate-500 transition-colors group-hover:bg-numo-blue-800 group-hover:text-numo-gray-400 md:h-9 md:w-9">
+                    <action.icon className="h-5 w-5 md:h-6 md:w-6" />
                   </span>
                   {action.label}
                 </button>

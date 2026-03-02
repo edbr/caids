@@ -228,7 +228,7 @@ export function UserPreferencesPrototype() {
   return (
     <section className="rounded-xl border border-border bg-muted/25 p-5 md:p-8">
       <div className="rounded-xl border border-border bg-background p-6 shadow-sm md:p-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="mb-6 flex flex-col-reverse items-start justify-between gap-3 md:flex-row md:items-center md:gap-4">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-numo-blue-900">User Preferences</h2>
             <p className="mt-1 text-sm text-muted-foreground">
