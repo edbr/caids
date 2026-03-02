@@ -493,6 +493,7 @@ const MENU_ICONS = {
     <DSPage
       title="Components"
       description="Primitives you'll reuse everywhere. Keep these boring, consistent, and token-driven."
+      hideDescriptionOnMobile
     >
       
 

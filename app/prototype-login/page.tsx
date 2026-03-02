@@ -8,9 +8,9 @@ export default function PrototypeLoginPage() {
     <DSPage
       title="Prototypes"
       description="Login experience prototype aligned with the clinical dashboard visual language."
+      hideDescriptionOnMobile
     >
       <ClinicalLoginPrototype />
     </DSPage>
   );
 }
-

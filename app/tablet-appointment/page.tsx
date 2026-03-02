@@ -6,6 +6,7 @@ export default function TabletAppointmentPage() {
     <DSPage
       title="Tablet Appointment"
       description="Prototype: minimize next appointment into nav appointment icon with gooey motion."
+      hideDescriptionOnMobile
     >
       <TabletAppointmentDemo />
     </DSPage>

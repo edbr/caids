@@ -5,27 +5,36 @@ import { cn } from "@/lib/utils";
 export function DSPage({
   title,
   description,
+  hideDescriptionOnMobile = false,
   children,
   className,
 }: {
   title: string;
   description?: string;
+  hideDescriptionOnMobile?: boolean;
   children: React.ReactNode;
   className?: string;
 }) {
   return (
-    <main className={cn("min-h-dvh bg-background text-foreground", className)}>
+    <main className={cn("isolate min-h-dvh bg-background text-foreground", className)}>
       <div className="mx-auto max-w-screen-2xl px-6 py-10 space-y-10">
-        <header className="space-y-3">
+        <header className="relative z-[300] space-y-3">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
               {description ? (
-                <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+                <p
+                  className={[
+                    "mt-2 text-sm text-muted-foreground",
+                    hideDescriptionOnMobile ? "hidden sm:block" : "",
+                  ].join(" ")}
+                >
+                  {description}
+                </p>
               ) : null}
             </div>
 
-            <nav className="flex items-center gap-2 text-sm">
+            <nav className="relative z-[310] hidden items-center gap-2 text-sm md:flex">
               <NavLink href="/">Home</NavLink>
               <NavLink href="/foundations">Foundations</NavLink>
               <NavLink href="/components">Components</NavLink>
@@ -41,6 +50,39 @@ export function DSPage({
                 <NavMenuLink href="/user-preferences">User Preferences</NavMenuLink>
               </NavMenu>
             </nav>
+
+            <div className="relative z-[310] md:hidden">
+              <details className="group">
+                <summary className="inline-flex min-h-11 list-none items-center rounded-md border border-border bg-background px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted/50 hover:text-foreground [&::-webkit-details-marker]:hidden">
+                  Menu
+                </summary>
+
+                <div className="absolute right-0 top-[calc(100%+0.4rem)] z-[330] w-72 rounded-lg border border-border bg-background p-2 shadow-md">
+                  <MobileNavLink href="/">Home</MobileNavLink>
+                  <MobileNavLink href="/foundations">Foundations</MobileNavLink>
+                  <MobileNavLink href="/components">Components</MobileNavLink>
+
+                  <div className="mt-2 border-t border-border pt-2">
+                    <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Patterns
+                    </p>
+                    <MobileNavLink href="/patterns/clinical">Clinical</MobileNavLink>
+                    <MobileNavLink href="/patterns/patient">Patient</MobileNavLink>
+                  </div>
+
+                  <div className="mt-2 border-t border-border pt-2">
+                    <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Prototypes
+                    </p>
+                    <MobileNavLink href="/numo-home">Clinical Dashboard</MobileNavLink>
+                    <MobileNavLink href="/notes">Notes</MobileNavLink>
+                    <MobileNavLink href="/tablet-appointment">Tablet Appointment</MobileNavLink>
+                    <MobileNavLink href="/prototype-login">Login Experience</MobileNavLink>
+                    <MobileNavLink href="/user-preferences">User Preferences</MobileNavLink>
+                  </div>
+                </div>
+              </details>
+            </div>
           </div>
         </header>
 
@@ -63,7 +105,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 
 function NavMenu({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="relative group">
+    <div className="relative z-[320] group">
       <button
         type="button"
         className="inline-flex min-h-11 items-center rounded-md px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition group-focus-within:text-foreground group-focus-within:bg-muted/50"
@@ -76,7 +118,7 @@ function NavMenu({ label, children }: { label: string; children: React.ReactNode
 
       <div
         className={[
-          "absolute right-0 top-[calc(100%+0.15rem)] z-40 min-w-44 rounded-lg border border-border bg-background p-1 shadow-md",
+          "absolute right-0 top-[calc(100%+0.15rem)] z-[330] min-w-44 rounded-lg border border-border bg-background p-1 shadow-md",
           "invisible translate-y-1 opacity-0 transition duration-150",
           "group-hover:visible group-hover:translate-y-0 group-hover:opacity-100",
           "group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100",
@@ -86,6 +128,17 @@ function NavMenu({ label, children }: { label: string; children: React.ReactNode
         {children}
       </div>
     </div>
+  );
+}
+
+function MobileNavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="block rounded-md px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted/60 hover:text-foreground"
+    >
+      {children}
+    </Link>
   );
 }
 

@@ -101,6 +101,7 @@ export default function FoundationsPage() {
     <DSPage
       title="Foundations"
       description="Tokens → semantic variables → UI. This page is the living reference for colors, radius, and typography."
+      hideDescriptionOnMobile
     >
 
             <section className="space-y-4">

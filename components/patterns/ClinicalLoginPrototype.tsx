@@ -4,10 +4,11 @@ import * as React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Loader2, ShieldCheck } from "lucide-react";
+import { PrimaryBtn } from "@/components/ds/button";
 
 export function ClinicalLoginPrototype() {
   const router = useRouter();
-  const [mode, setMode] = React.useState<"signin" | "signup">("signin");
+  const [mode, setMode] = React.useState<"signin" | "signup">("signup");
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -92,109 +93,127 @@ export function ClinicalLoginPrototype() {
     <section className="rounded-xl border border-border bg-muted/25 p-5 md:p-8">
       <div className="rounded-xl border border-border bg-background p-6 text-foreground shadow-sm md:p-8">
         <div className="mb-8 flex items-center justify-between gap-4">
-          <Image src="/Curie_AI_logo.svg" alt="Curie AI" width={200} height={28} className="h-9 w-auto" priority />
+          <Image src="/Curie_AI_logo.svg" alt="Curie AI" width={300} height={48} className="h-16 w-auto" priority />
           <span className="inline-flex items-center gap-1 rounded-full border border-numo-teal-500/40 bg-numo-teal-100/40 px-3 py-1 text-xs text-numo-teal-700">
             <ShieldCheck className="h-3.5 w-3.5" />
             Secure Sign In
           </span>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-[1.1fr_1fr]">
-          <div className="space-y-3">
-            <h2 className="text-2xl font-semibold tracking-tight text-numo-blue-900 md:text-3xl">Welcome to Curie Clinical</h2>
-            <p className="max-w-md text-sm text-muted-foreground">
-              Sign in with email and password to access the clinical dashboard, patient insights, and daily risk signals.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-border bg-muted/20 p-4 md:p-5">
-            <div className="mb-3 inline-flex rounded-md border border-border bg-background p-0.5 text-xs">
-              <button
-                type="button"
-                onClick={() => setMode("signin")}
-                className={[
-                  "rounded px-3 py-1.5 transition",
-                  mode === "signin" ? "bg-numo-blue-600 text-white" : "text-numo-blue-800 hover:bg-muted/60",
-                ].join(" ")}
-              >
-                Sign in
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("signup")}
-                className={[
-                  "rounded px-3 py-1.5 transition",
-                  mode === "signup" ? "bg-numo-blue-600 text-white" : "text-numo-blue-800 hover:bg-muted/60",
-                ].join(" ")}
-              >
-                Create account
-              </button>
+        <div className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-[1fr_1fr]">
+            <div className="relative self-stretch overflow-hidden rounded-xl border border-border bg-muted/20">
+              <Image
+                src="/clinical.webp"
+                alt="Clinical care overview"
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="h-full w-full object-cover object-bottom"
+                priority
+              />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-2.5">
-              {mode === "signup" ? (
-                <label className="block space-y-1">
-                  <span className="text-xs font-medium text-numo-blue-900">Full name</span>
-                  <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500"
-                    placeholder="Jane Smith"
-                    autoComplete="name"
-                  />
-                </label>
-              ) : null}
-
-              <label className="block space-y-1">
-                <span className="text-xs font-medium text-numo-blue-900">Email</span>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500"
-                  placeholder="you@clinic.com"
-                  autoComplete="email"
-                />
-              </label>
-
-              <label className="block space-y-1">
-                <span className="text-xs font-medium text-numo-blue-900">Password</span>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500"
-                  placeholder={mode === "signup" ? "Create a password" : "Enter your password"}
-                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                />
-              </label>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-numo-blue-300 bg-background px-4 py-2.5 text-sm font-medium text-numo-blue-800 transition hover:border-numo-blue-500 hover:bg-numo-blue-50 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {mode === "signup" ? "Create account" : "Sign in"}
-              </button>
-            </form>
-
-            <p className="mt-2 text-[11px] text-muted-foreground">
-              {mode === "signup"
-                ? "Password must be at least 6 characters."
-                : "Use the credentials created in your Supabase project."}
-            </p>
-
-            {missingEnv.length > 0 ? (
-              <p className="mt-3 text-xs text-numo-orange-700">
-                Missing env: <span className="font-semibold">{missingEnv.join(", ")}</span>
+            <div className="space-y-2.5">
+              <p className="inline-flex rounded-full border border-numo-blue-300/70 bg-numo-blue-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-numo-blue-700">
+                Curie AI Clinical Access
               </p>
-            ) : null}
-            {error ? <p className="mt-2 text-xs text-numo-red-500">{error}</p> : null}
-            {status ? <p className="mt-2 text-xs text-numo-teal-700">{status}</p> : null}
+              <h2 className="text-[34px] font-semibold leading-[1.03] tracking-tight text-numo-blue-900">
+                Welcome to Curie Clinical
+              </h2>
+              <p className="max-w-xl text-[15px] leading-6 text-numo-slate-700">
+                Sign in to review patient insights, monitor risk signals, and continue coordinated care decisions in one secure workspace.
+              </p>
+
+              <div className="mt-6 rounded-xl border border-border bg-muted/20 p-4 md:p-5">
+                <div className="mb-3 inline-flex rounded-md border border-border bg-background p-0.5 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setMode("signin")}
+                    className={[
+                      "rounded px-3 py-1.5 transition",
+                      mode === "signin" ? "bg-numo-blue-600 text-white" : "text-numo-blue-800 hover:bg-muted/60",
+                    ].join(" ")}
+                  >
+                    Sign in
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMode("signup")}
+                    className={[
+                      "rounded px-3 py-1.5 transition",
+                      mode === "signup" ? "bg-numo-blue-600 text-white" : "text-numo-blue-800 hover:bg-muted/60",
+                    ].join(" ")}
+                  >
+                    Create account
+                  </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-2.5">
+                  {mode === "signup" ? (
+                    <label className="block space-y-1">
+                      <span className="text-xs font-medium text-numo-blue-900">Full name</span>
+                      <input
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500"
+                        placeholder="Jane Smith"
+                        autoComplete="name"
+                      />
+                    </label>
+                  ) : null}
+
+                  <label className="block space-y-1">
+                    <span className="text-xs font-medium text-numo-blue-900">Email</span>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500"
+                      placeholder="you@clinic.com"
+                      autoComplete="email"
+                    />
+                  </label>
+
+                  <label className="block space-y-1">
+                    <span className="text-xs font-medium text-numo-blue-900">Password</span>
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500"
+                      placeholder={mode === "signup" ? "Create a password" : "Enter your password"}
+                      autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                    />
+                  </label>
+
+                  <PrimaryBtn
+                    type="submit"
+                    disabled={loading}
+                    className="w-full justify-center py-2.5 disabled:cursor-not-allowed disabled:opacity-60 mt-6"
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                    {mode === "signup" ? "Create account" : "Sign in"}
+                  </PrimaryBtn>
+                </form>
+
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  {mode === "signup"
+                    ? "Password must be at least 6 characters."
+                    : "Use the credentials created in your Supabase project."}
+                </p>
+
+                {missingEnv.length > 0 ? (
+                  <p className="mt-3 text-xs text-numo-orange-700">
+                    Missing env: <span className="font-semibold">{missingEnv.join(", ")}</span>
+                  </p>
+                ) : null}
+                {error ? <p className="mt-2 text-xs text-numo-red-500">{error}</p> : null}
+                {status ? <p className="mt-2 text-xs text-numo-teal-700">{status}</p> : null}
+              </div>
+            </div>
           </div>
         </div>
       </div>

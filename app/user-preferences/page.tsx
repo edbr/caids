@@ -8,9 +8,9 @@ export default function UserPreferencesPage() {
     <DSPage
       title="Prototypes"
       description="User preferences workflow after clinical login."
+      hideDescriptionOnMobile
     >
       <UserPreferencesPrototype />
     </DSPage>
   );
 }
-

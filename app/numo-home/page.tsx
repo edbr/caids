@@ -15,6 +15,7 @@ export default function NumoHomePage() {
     <DSPage
       title="Protypes"
       description="Composed pages that reuses the patterns components: home header, bell notifications, and actionable insights."
+      hideDescriptionOnMobile
     >
       <section className="rounded-xl border border-border bg-muted/25 p-5 md:p-8">
         <div className="relative overflow-visible rounded-xl bg-background">

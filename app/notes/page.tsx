@@ -15,6 +15,7 @@ export default function NotesPage() {
     <DSPage
       title="Notes"
       description="Prototype for note interactions: browse, search/filter, add note, and edit note."
+      hideDescriptionOnMobile
     >
       <section className="rounded-xl border border-border bg-muted/25 p-5 md:p-8">
         <div className="relative overflow-visible rounded-xl bg-background">

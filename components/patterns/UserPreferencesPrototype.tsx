@@ -2,7 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Loader2, LogOut, ShieldCheck } from "lucide-react";
+import { SecondaryBtn } from "@/components/ds/button";
 
 const PERMISSION_OPTIONS = [
   { key: "clinical_dashboard", label: "Clinical Dashboard" },
@@ -22,9 +24,13 @@ type UserPayload = {
 };
 
 export function UserPreferencesPrototype() {
+  const router = useRouter();
+  const [mounted, setMounted] = React.useState(false);
+  const [accessToken, setAccessToken] = React.useState("");
   const [loadingUser, setLoadingUser] = React.useState(true);
   const [savingProfile, setSavingProfile] = React.useState(false);
   const [savingPassword, setSavingPassword] = React.useState(false);
+  const [signingOut, setSigningOut] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [status, setStatus] = React.useState<string | null>(null);
   const [name, setName] = React.useState("");
@@ -36,9 +42,9 @@ export function UserPreferencesPrototype() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const accessToken = React.useMemo(() => {
-    if (typeof window === "undefined") return "";
-    return localStorage.getItem("supabase_access_token") ?? "";
+  React.useEffect(() => {
+    setMounted(true);
+    setAccessToken(localStorage.getItem("supabase_access_token") ?? "");
   }, []);
 
   React.useEffect(() => {
@@ -167,6 +173,37 @@ export function UserPreferencesPrototype() {
     }
   };
 
+  const signOut = async () => {
+    setError(null);
+    setStatus(null);
+    try {
+      setSigningOut(true);
+      if (supabaseUrl && anonKey && accessToken) {
+        await fetch(`${supabaseUrl.replace(/\/$/, "")}/auth/v1/logout`, {
+          method: "POST",
+          headers: {
+            apikey: anonKey,
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+      }
+    } finally {
+      localStorage.removeItem("supabase_access_token");
+      localStorage.removeItem("supabase_refresh_token");
+      setAccessToken("");
+      setSigningOut(false);
+      router.push("/prototype-login");
+    }
+  };
+
+  if (!mounted) {
+    return (
+      <div className="rounded-xl border border-border bg-background p-5">
+        <p className="text-sm text-muted-foreground">Loading preferences...</p>
+      </div>
+    );
+  }
+
   if (!supabaseUrl || !anonKey) {
     return (
       <div className="rounded-xl border border-border bg-background p-5">
@@ -202,6 +239,17 @@ export function UserPreferencesPrototype() {
             <ShieldCheck className="h-3.5 w-3.5" />
             Account Settings
           </span>
+        </div>
+        <div className="mb-4 flex justify-end">
+          <SecondaryBtn
+            type="button"
+            onClick={signOut}
+            disabled={signingOut}
+            className="px-3 py-1.5 text-xs disabled:opacity-60"
+          >
+            {signingOut ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <LogOut className="h-4 w-4" />}
+            Sign out
+          </SecondaryBtn>
         </div>
 
         {loadingUser ? (
@@ -306,4 +354,3 @@ export function UserPreferencesPrototype() {
     </section>
   );
 }
-

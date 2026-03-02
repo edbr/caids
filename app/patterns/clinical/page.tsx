@@ -9,6 +9,7 @@ export default function ClinicalPatternsPage() {
     <DSPage
       title="Clinical Patterns"
       description="Composed interactions for clinician-facing workflows."
+      hideDescriptionOnMobile
     >
       <section className="rounded-xl border border-border bg-muted/30 p-6">
         <h2 className="mb-4 text-lg font-semibold">Curie App Header</h2>

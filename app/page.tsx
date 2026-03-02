@@ -7,6 +7,7 @@ export default function Home() {
     <DSPage
       title="Design System"
       description="A clinical-grade UI foundation for consistent, fast product delivery."
+      hideDescriptionOnMobile
     >
       <section className="rounded-2xl border border-border bg-[radial-gradient(120%_120%_at_10%_0%,hsl(var(--numo-teal-400)/0.18),hsl(var(--numo-blue-900)/0.04)_40%,transparent)] px-6 py-8 md:px-10 md:py-12">
         <p className="inline-flex rounded-full border border-numo-teal-500/60 bg-numo-teal-900/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-numo-teal-600">

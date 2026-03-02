@@ -8,6 +8,7 @@ export default function PatientPatternsPage() {
     <DSPage
       title="Patient Patterns"
       description="Composed interactions for patient-facing experiences."
+      hideDescriptionOnMobile
     >
       <section className="rounded-xl border border-border bg-muted/30 p-6 overflow-visible">
         <h2 className="mb-4 text-lg font-semibold">Monitoring Bar + Contextual Menu</h2>
