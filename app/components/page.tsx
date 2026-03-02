@@ -39,6 +39,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 type ComponentId =
   | "brand-logos"
+  | "brand-illustration"
+  | "brand-images"
+  | "brand-business-card"
   | "audio-play-button"
   | "conversation-module"
   | "breadcrumb"
@@ -58,6 +61,28 @@ type ComponentId =
   | "notes-add-button";
 
 const AUDIO_DURATION_S = 30;
+const BRAND_IMAGE_FILES = [
+  "Numo_BrandAssets_V2-6.png",
+  "Numo_WarmLeavesStripFinal.png",
+  "image1-8.jpeg",
+  "image2-9.jpeg",
+  "image3-10.jpeg",
+  "image4-11.jpeg",
+  "image5-12.jpeg",
+  "image6-13.jpeg",
+  "image7-14.jpeg",
+  "image8-15.jpeg",
+  "tablet-1.png",
+  "tablet-2.png",
+  "tablet-3.png",
+  "tablet-4.png",
+  "tablet-5.png",
+  "tablet-frontView.png",
+] as const;
+const BRAND_BUSINESS_CARD_FILES = [
+  "Numo_BusinessCardsOL_020723_Back.pdf",
+  "Numo_BusinessCardsOL_020723_FrontSaba.pdf",
+] as const;
 
 function formatAudioTime(totalSeconds: number) {
   const s = Math.max(0, Math.min(AUDIO_DURATION_S, Math.floor(totalSeconds)));
@@ -123,7 +148,7 @@ export default function ComponentsPage() {
       title: "Brand Logos",
       description: "Primary product marks and lockups.",
       render: (
-        <div className="rounded-xl border border-border bg-background p-6">
+        <div className="space-y-4 rounded-xl border border-border bg-background p-6">
           <div className="flex flex-wrap items-center gap-8">
             <Image
               src="/numoLogo.svg"
@@ -142,10 +167,125 @@ export default function ComponentsPage() {
               priority
             />
           </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              "Numo_Logo_1_Centered_Tagline.png",
+              "Numo_Logo_2_LeftAligned_Tagline.png",
+              "Numo_Logo_3_Centered.png",
+              "Numo_Logo_4_LeftAligned.png",
+              "Numo_Logo_Icon1_Transparent.png",
+              "Numo_Logo_Icon2_Circle.png",
+              "Numo_Logo_Icon3_Square.png",
+            ].map((file) => (
+              <div key={file} className="rounded-lg border border-border bg-muted/20 p-3">
+                <Image
+                  src={`/logos/${file}`}
+                  alt={file.replace(".png", "").replaceAll("_", " ")}
+                  width={420}
+                  height={160}
+                  className="h-16 w-auto object-contain"
+                />
+                <p className="mt-2 text-[11px] text-muted-foreground">{file}</p>
+              </div>
+            ))}
+          </div>
         </div>
       ),
       code: `<Image src="/numoLogo.svg" alt="Numo logo" width={260} height={72} className="h-14 w-auto" />
-<Image src="/Curie_AI_logo.svg" alt="Curie AI logo" width={280} height={80} className="h-14 w-auto" />`,
+<Image src="/Curie_AI_logo.svg" alt="Curie AI logo" width={280} height={80} className="h-14 w-auto" />
+{["Numo_Logo_1_Centered_Tagline.png", "..."].map((file) => (
+  <Image key={file} src={\`/logos/\${file}\`} alt={file} width={420} height={160} className="h-16 w-auto" />
+))}`,
+    },
+    {
+      id: "brand-illustration",
+      label: "Illustration",
+      title: "Brand Illustration",
+      description: "Tablet illustration assets from /public/tablet.",
+      render: (
+        <div className="grid gap-4 md:grid-cols-2">
+          {["tablet-2.pdf", "tablet-3.pdf", "tablet-4.pdf", "tablet-5.pdf"].map((file) => (
+            <article key={file} className="rounded-xl border border-border bg-background p-3">
+              <p className="mb-2 text-xs font-medium text-muted-foreground">{file}</p>
+              <object
+                data={`/tablet/${file}`}
+                type="application/pdf"
+                className="h-72 w-full rounded-md border border-border bg-muted/20"
+              >
+                <a
+                  href={`/tablet/${file}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-numo-blue-700 underline"
+                >
+                  Open {file}
+                </a>
+              </object>
+            </article>
+          ))}
+        </div>
+      ),
+      code: `{["tablet-2.pdf", "tablet-3.pdf", "tablet-4.pdf", "tablet-5.pdf"].map((file) => (
+  <object key={file} data={\`/tablet/\${file}\`} type="application/pdf" className="h-72 w-full" />
+))}`,
+    },
+    {
+      id: "brand-images",
+      label: "Images",
+      title: "Brand Images",
+      description: "Additional brand imagery from /public/images.",
+      render: (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {BRAND_IMAGE_FILES.map((file) => (
+            <div key={file} className="rounded-lg border border-border bg-background p-3">
+              <Image
+                src={`/images/${file}`}
+                alt={file.replace(".png", "").replaceAll("_", " ")}
+                width={640}
+                height={420}
+                className="h-40 w-full rounded-md object-contain bg-muted/20"
+              />
+              <p className="mt-2 text-[11px] text-muted-foreground">{file}</p>
+            </div>
+          ))}
+        </div>
+      ),
+      code: `{BRAND_IMAGE_FILES.map((file) => (
+  <Image key={file} src={\`/images/\${file}\`} alt={file} width={640} height={420} className="h-40 w-full object-contain" />
+))}`,
+    },
+    {
+      id: "brand-business-card",
+      label: "Business Card",
+      title: "Brand Business Card",
+      description: "Business card artwork from /public/businessCard.",
+      render: (
+        <div className="grid gap-4 md:grid-cols-2">
+          {BRAND_BUSINESS_CARD_FILES.map((file) => (
+            <article key={file} className="rounded-xl border border-border bg-background p-3">
+              <p className="mb-2 text-xs font-medium text-muted-foreground">{file}</p>
+              <object
+                data={`/businessCard/${file}`}
+                type="application/pdf"
+                className="h-80 w-full rounded-md border border-border bg-muted/20"
+              >
+                <a
+                  href={`/businessCard/${file}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-numo-blue-700 underline"
+                >
+                  Open {file}
+                </a>
+              </object>
+            </article>
+          ))}
+        </div>
+      ),
+      code: `{BRAND_BUSINESS_CARD_FILES.map((file) => (
+  <object key={file} data={\`/businessCard/\${file}\`} type="application/pdf" className="h-80 w-full" />
+))}`,
     },
     {
       id: "audio-play-button",
@@ -480,13 +620,24 @@ const MENU_ICONS = {
     .filter(
       (item) =>
         item.id !== "brand-logos" &&
+        item.id !== "brand-illustration" &&
+        item.id !== "brand-images" &&
+        item.id !== "brand-business-card" &&
         item.id !== "tablet-custom-icons" &&
         item.id !== "tablet-buttons" &&
         item.id !== "monitoring-bar" &&
         item.id !== "time-selection"
     )
     .sort(alphabetical);
-  const brandItems = items.filter((item) => item.id === "brand-logos").sort(alphabetical);
+  const brandItems = items
+    .filter(
+      (item) =>
+        item.id === "brand-logos" ||
+        item.id === "brand-illustration" ||
+        item.id === "brand-images" ||
+        item.id === "brand-business-card"
+    )
+    .sort(alphabetical);
   const activeItem = items.find((item) => item.id === activeId) ?? items[0];
 
   return (

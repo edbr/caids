@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { PrimaryBtn } from "@/components/ds/button";
+import { DSInput } from "@/components/ds/input";
 
 export function ClinicalLoginPrototype() {
   const router = useRouter();
@@ -152,10 +153,10 @@ export function ClinicalLoginPrototype() {
                   {mode === "signup" ? (
                     <label className="block space-y-1">
                       <span className="text-xs font-medium text-numo-blue-900">Full name</span>
-                      <input
+                      <DSInput
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500"
+                        className="h-10 focus-visible:ring-0 focus:border-numo-blue-500"
                         placeholder="Jane Smith"
                         autoComplete="name"
                       />
@@ -164,12 +165,12 @@ export function ClinicalLoginPrototype() {
 
                   <label className="block space-y-1">
                     <span className="text-xs font-medium text-numo-blue-900">Email</span>
-                    <input
+                    <DSInput
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500"
+                      className="h-10 focus-visible:ring-0 focus:border-numo-blue-500"
                       placeholder="you@clinic.com"
                       autoComplete="email"
                     />
@@ -177,13 +178,13 @@ export function ClinicalLoginPrototype() {
 
                   <label className="block space-y-1">
                     <span className="text-xs font-medium text-numo-blue-900">Password</span>
-                    <input
+                    <DSInput
                       type="password"
                       required
                       minLength={6}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500"
+                      className="h-10 focus-visible:ring-0 focus:border-numo-blue-500"
                       placeholder={mode === "signup" ? "Create a password" : "Enter your password"}
                       autoComplete={mode === "signup" ? "new-password" : "current-password"}
                     />
