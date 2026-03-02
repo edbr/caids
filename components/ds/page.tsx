@@ -37,6 +37,8 @@ export function DSPage({
                 <NavMenuLink href="/numo-home">Clinical Dashboard</NavMenuLink>
                 <NavMenuLink href="/notes">Notes</NavMenuLink>
                 <NavMenuLink href="/tablet-appointment">Tablet Appointment</NavMenuLink>
+                <NavMenuLink href="/prototype-login">Login Experience</NavMenuLink>
+                <NavMenuLink href="/user-preferences">User Preferences</NavMenuLink>
               </NavMenu>
             </nav>
           </div>

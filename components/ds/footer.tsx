@@ -23,6 +23,8 @@ const SITEMAP_GROUPS = [
       { href: "/numo-home", label: "Clinical Dashboard" },
       { href: "/notes", label: "Notes" },
       { href: "/tablet-appointment", label: "Tablet Appointment" },
+      { href: "/prototype-login", label: "Login Experience" },
+      { href: "/user-preferences", label: "User Preferences" },
     ],
   },
 ];
