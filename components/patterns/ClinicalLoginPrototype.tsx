@@ -91,48 +91,37 @@ export function ClinicalLoginPrototype() {
   };
 
   return (
-    <section className="rounded-xl border border-border bg-muted/25 p-5 gap-12 md:p-8">
-      <div className="rounded-xl border border-border bg-background p-6 text-foreground shadow-sm md:p-8">
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <Image src="/Curie_AI_logo.svg" alt="Curie AI" width={300} height={48} className="h-16 w-auto" priority />
-          <span className="inline-flex items-center gap-1 rounded-full border border-numo-teal-500/40 bg-numo-teal-100/40 px-3 py-1 text-xs text-numo-teal-700">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Secure Sign In
-          </span>
-        </div>
+    <section className="flex min-h-[calc(100vh-2rem)] items-center justify-center bg-numo-slate-400 px-4 py-8 md:px-8 md:py-12">
+      <div className="w-full max-w-300 overflow-hidden rounded-3xl border border-border bg-background text-foreground shadow-xl lg:w-2/3">
+        <div className="grid md:grid-cols-2">
+          <div className="flex items-center justify-center p-6 md:p-10 lg:p-12">
+            <div className="w-full max-w-md space-y-4">
+              <div className="mb-5 flex items-center justify-between gap-4">
+                <Image src="/Curie_AI_logo.svg" alt="Curie AI" width={220} height={40} className="h-16 w-auto" priority />
+                <span className="inline-flex items-center gap-1 rounded-full border border-numo-teal-500/40 bg-numo-teal-100/40 px-3 py-1 text-xs text-numo-teal-700">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  Secure
+                </span>
+              </div>
 
-        <div className="space-y-4">
-          <div className="grid gap-20 md:grid-cols-[5fr_2fr]">
-            <div className="relative self-stretch overflow-hidden rounded-xl border border-border bg-muted/20">
-              <Image
-                src="/clinical.webp"
-                alt="Clinical care overview"
-                fill
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="h-full w-full object-cover object-[50%_76%]"
-                priority
-              />
-            </div>
-
-            <div className="space-y-2.5">
               <p className="inline-flex rounded-full border border-numo-blue-300/70 bg-numo-blue-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-numo-blue-700">
                 Curie AI Clinical Access
               </p>
-              <h2 className="text-[34px] font-semibold leading-[1.03] tracking-tight text-numo-blue-900">
-                Welcome to Curie Clinical
-              </h2>
-              <p className="max-w-xl text-[15px] leading-6 text-numo-slate-700">
-                Sign in to review patient insights, monitor risk signals, and continue coordinated care decisions in one secure workspace.
-              </p>
-
-              <div className="mt-6 rounded-xl border border-border bg-muted/20 p-4 md:p-5">
-                <div className="mb-3 inline-flex rounded-md border border-border bg-background p-0.5 text-xs">
+              <div className="mt-5 rounded-xl border border-border bg-muted/20 p-4 md:p-5">
+                <div className="relative mb-3 grid grid-cols-2 rounded-md border border-border bg-background p-0.5 text-xs">
+                  <span
+                    aria-hidden
+                    className={[
+                      "pointer-events-none absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded bg-numo-blue-600 shadow-sm transition-transform duration-300 ease-out",
+                      mode === "signup" ? "translate-x-full" : "translate-x-0",
+                    ].join(" ")}
+                  />
                   <button
                     type="button"
                     onClick={() => setMode("signin")}
                     className={[
-                      "rounded px-3 py-1.5 transition",
-                      mode === "signin" ? "bg-numo-blue-800 text-white" : "text-numo-blue-800 hover:bg-muted/60",
+                      "relative z-10 rounded px-3 py-1.5 transition-colors duration-300",
+                      mode === "signin" ? "text-white" : "text-numo-blue-800 hover:bg-muted/60",
                     ].join(" ")}
                   >
                     Sign in
@@ -141,8 +130,8 @@ export function ClinicalLoginPrototype() {
                     type="button"
                     onClick={() => setMode("signup")}
                     className={[
-                      "rounded px-3 py-1.5 transition",
-                      mode === "signup" ? "bg-numo-blue-800 text-white" : "text-numo-blue-800 hover:bg-muted/60",
+                      "relative z-10 rounded px-3 py-1.5 transition-colors duration-300",
+                      mode === "signup" ? "text-white" : "text-numo-blue-800 hover:bg-muted/60",
                     ].join(" ")}
                   >
                     Create account
@@ -150,18 +139,25 @@ export function ClinicalLoginPrototype() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-2.5">
-                  {mode === "signup" ? (
-                    <label className="block space-y-1">
-                      <span className="text-xs font-medium text-numo-blue-900">Full name</span>
-                      <DSInput
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="h-10 focus-visible:ring-0 focus:border-numo-blue-500"
-                        placeholder="Jane Smith"
-                        autoComplete="name"
-                      />
-                    </label>
-                  ) : null}
+                  <div
+                    className={[
+                      "grid transition-all duration-300 ease-out",
+                      mode === "signup" ? "grid-rows-[1fr] opacity-100" : "pointer-events-none grid-rows-[0fr] opacity-0",
+                    ].join(" ")}
+                  >
+                    <div className="overflow-hidden">
+                      <label className="block space-y-1 pb-1">
+                        <span className="text-xs font-medium text-numo-blue-900">Full name</span>
+                        <DSInput
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="h-10 focus-visible:ring-0 focus:border-numo-blue-500"
+                          placeholder="Jane Smith"
+                          autoComplete="name"
+                        />
+                      </label>
+                    </div>
+                  </div>
 
                   <label className="block space-y-1">
                     <span className="text-xs font-medium text-numo-blue-900">Email</span>
@@ -189,22 +185,23 @@ export function ClinicalLoginPrototype() {
                       autoComplete={mode === "signup" ? "new-password" : "current-password"}
                     />
                   </label>
+                                  <p className="mt-2 text-[11px] text-muted-foreground">
+                  {mode === "signup"
+                    ? "Password must be at least 6 characters."
+                    : "Use the credentials created in your Supabase project."}
+                </p>
 
                   <PrimaryBtn
                     type="submit"
                     disabled={loading}
-                    className="w-full justify-center py-2.5 disabled:cursor-not-allowed disabled:opacity-60 mt-6"
+                    className="mt-6 w-full justify-center py-2.5 disabled:cursor-not-allowed disabled:opacity-60 bg-numo-warm-blue-700"
                   >
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                     {mode === "signup" ? "Create account" : "Sign in"}
                   </PrimaryBtn>
                 </form>
 
-                <p className="mt-2 text-[11px] text-muted-foreground">
-                  {mode === "signup"
-                    ? "Password must be at least 6 characters."
-                    : "Use the credentials created in your Supabase project."}
-                </p>
+
 
                 {missingEnv.length > 0 ? (
                   <p className="mt-3 text-xs text-numo-orange-700">
@@ -215,6 +212,17 @@ export function ClinicalLoginPrototype() {
                 {status ? <p className="mt-2 text-xs text-numo-teal-700">{status}</p> : null}
               </div>
             </div>
+          </div>
+
+          <div className="relative min-h-90 bg-[#63b842] md:min-h-170">
+            <Image
+              src="https://lungds.s3.us-east-2.amazonaws.com/images/image8-15.jpeg"
+              alt="Clinical care overview"
+              fill
+              sizes="(min-width: 1024px) 34vw, (min-width: 768px) 50vw, 100vw"
+              className="object-cover object-center"
+              priority
+            />
           </div>
         </div>
       </div>

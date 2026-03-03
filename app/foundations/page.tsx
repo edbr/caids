@@ -94,6 +94,17 @@ const PALETTE = [
       ["Blue 400", "--numo-blue-400"],
     ] as const,
   },
+  {
+    title: "Warm Blue",
+    items: [
+      ["Warm Blue 900", "--numo-warm-blue-900"],
+      ["Warm Blue 800", "--numo-warm-blue-800"],
+      ["Warm Blue 700", "--numo-warm-blue-700"],
+      ["Warm Blue 600", "--numo-warm-blue-600"],
+      ["Warm Blue 500", "--numo-warm-blue-500"],
+      ["Warm Blue 400", "--numo-warm-blue-400"],
+    ] as const,
+  },
 ] as const;
 
 export default function FoundationsPage() {

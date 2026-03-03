@@ -59,6 +59,14 @@
   --numo-blue-500: 200 38% 50%;
   --numo-blue-400: 200 40% 65%;
 
+  /* Warm Blue (slightly violet-leaning) */
+  --numo-warm-blue-900: 224 36% 18%;
+  --numo-warm-blue-800: 224 40% 26%;
+  --numo-warm-blue-700: 224 46% 36%;
+  --numo-warm-blue-600: 224 58% 48%;
+  --numo-warm-blue-500: 224 66% 60%;
+  --numo-warm-blue-400: 224 74% 72%;
+
   /* =========================
      DS semantic (intent tokens)
      ========================= */

@@ -82,6 +82,13 @@
   --color-numo-blue-500: hsl(var(--numo-blue-500));
   --color-numo-blue-400: hsl(var(--numo-blue-400));
 
+  --color-numo-warm-blue-900: hsl(var(--numo-warm-blue-900));
+  --color-numo-warm-blue-800: hsl(var(--numo-warm-blue-800));
+  --color-numo-warm-blue-700: hsl(var(--numo-warm-blue-700));
+  --color-numo-warm-blue-600: hsl(var(--numo-warm-blue-600));
+  --color-numo-warm-blue-500: hsl(var(--numo-warm-blue-500));
+  --color-numo-warm-blue-400: hsl(var(--numo-warm-blue-400));
+
   /* Radius scale (driven by --radius below) */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

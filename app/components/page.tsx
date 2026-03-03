@@ -139,6 +139,17 @@ function AudioPlayButtonDemo() {
 export default function ComponentsPage() {
   const [notificationsOpen, setNotificationsOpen] = React.useState(false);
   const [activeId, setActiveId] = React.useState<ComponentId>("audio-play-button");
+  const [copiedFile, setCopiedFile] = React.useState<string | null>(null);
+
+  const copyFileName = React.useCallback(async (file: string) => {
+    try {
+      await navigator.clipboard.writeText(file);
+      setCopiedFile(file);
+      window.setTimeout(() => setCopiedFile((current) => (current === file ? null : current)), 1400);
+    } catch {
+      setCopiedFile(null);
+    }
+  }, []);
 
   const items: Array<{
     id: ComponentId;
@@ -184,7 +195,7 @@ export default function ComponentsPage() {
               "Numo_Logo_Icon2_Circle.png",
               "Numo_Logo_Icon3_Square.png",
             ].map((file) => (
-              <div key={file} className="rounded-lg border border-border bg-muted/20 p-3">
+              <div key={file} className="group relative rounded-lg border border-border bg-muted/20 p-3">
                 <Image
                   src={brandAssetUrl("logos", file)}
                   alt={file.replace(".png", "").replaceAll("_", " ")}
@@ -192,7 +203,14 @@ export default function ComponentsPage() {
                   height={160}
                   className="h-16 w-auto object-contain"
                 />
-                <p className="mt-2 text-[11px] text-muted-foreground">{file}</p>
+                <button
+                  type="button"
+                  title={file}
+                  onClick={() => copyFileName(file)}
+                  className="absolute bottom-2 left-2 right-2 truncate rounded-md bg-numo-blue-900/90 px-2 py-1 text-left text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100"
+                >
+                  {copiedFile === file ? "Copied" : file}
+                </button>
               </div>
             ))}
           </div>
@@ -212,8 +230,7 @@ export default function ComponentsPage() {
       render: (
         <div className="grid gap-4 md:grid-cols-2">
           {["tablet-2.pdf", "tablet-3.pdf", "tablet-4.pdf", "tablet-5.pdf"].map((file) => (
-            <article key={file} className="rounded-xl border border-border bg-background p-3">
-              <p className="mb-2 text-xs font-medium text-muted-foreground">{file}</p>
+            <article key={file} className="group relative rounded-xl border border-border bg-background p-3">
               <object
                 data={brandAssetUrl("tablet", file)}
                 type="application/pdf"
@@ -225,9 +242,17 @@ export default function ComponentsPage() {
                   rel="noreferrer"
                   className="text-sm text-numo-blue-700 underline"
                 >
-                  Open {file}
+                  Open illustration PDF
                 </a>
               </object>
+              <button
+                type="button"
+                title={file}
+                onClick={() => copyFileName(file)}
+                className="absolute bottom-5 left-5 right-5 truncate rounded-md bg-numo-blue-900/90 px-2 py-1 text-left text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100"
+              >
+                {copiedFile === file ? "Copied" : file}
+              </button>
             </article>
           ))}
         </div>
@@ -244,7 +269,7 @@ export default function ComponentsPage() {
       render: (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {BRAND_IMAGE_FILES.map((file) => (
-            <div key={file} className="rounded-lg border border-border bg-background p-3">
+            <div key={file} className="group relative rounded-lg border border-border bg-background p-3">
               <Image
                 src={brandAssetUrl("images", file)}
                 alt={file.replace(".png", "").replaceAll("_", " ")}
@@ -252,7 +277,14 @@ export default function ComponentsPage() {
                 height={420}
                 className="h-40 w-full rounded-md object-contain bg-muted/20"
               />
-              <p className="mt-2 text-[11px] text-muted-foreground">{file}</p>
+              <button
+                type="button"
+                title={file}
+                onClick={() => copyFileName(file)}
+                className="absolute bottom-2 left-2 right-2 truncate rounded-md bg-numo-blue-900/90 px-2 py-1 text-left text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100"
+              >
+                {copiedFile === file ? "Copied" : file}
+              </button>
             </div>
           ))}
         </div>
@@ -269,8 +301,7 @@ export default function ComponentsPage() {
       render: (
         <div className="grid gap-4 md:grid-cols-2">
           {BRAND_BUSINESS_CARD_FILES.map((file) => (
-            <article key={file} className="rounded-xl border border-border bg-background p-3">
-              <p className="mb-2 text-xs font-medium text-muted-foreground">{file}</p>
+            <article key={file} className="group relative rounded-xl border border-border bg-background p-3">
               <object
                 data={brandAssetUrl("businessCard", file)}
                 type="application/pdf"
@@ -282,9 +313,17 @@ export default function ComponentsPage() {
                   rel="noreferrer"
                   className="text-sm text-numo-blue-700 underline"
                 >
-                  Open {file}
+                  Open business card PDF
                 </a>
               </object>
+              <button
+                type="button"
+                title={file}
+                onClick={() => copyFileName(file)}
+                className="absolute bottom-5 left-5 right-5 truncate rounded-md bg-numo-blue-900/90 px-2 py-1 text-left text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100"
+              >
+                {copiedFile === file ? "Copied" : file}
+              </button>
             </article>
           ))}
         </div>
