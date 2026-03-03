@@ -214,13 +214,13 @@ export function ClinicalLoginPrototype() {
             </div>
           </div>
 
-          <div className="relative min-h-90 bg-[#63b842] md:min-h-170">
+          <div className="relative min-h-90 md:min-h-170">
             <Image
               src="https://lungds.s3.us-east-2.amazonaws.com/images/image8-15.jpeg"
               alt="Clinical care overview"
               fill
               sizes="(min-width: 1024px) 34vw, (min-width: 768px) 50vw, 100vw"
-              className="object-cover object-center"
+              className="object-cover object-center opacity-85"
               priority
             />
           </div>
