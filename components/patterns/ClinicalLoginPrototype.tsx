@@ -91,7 +91,7 @@ export function ClinicalLoginPrototype() {
   };
 
   return (
-    <section className="rounded-xl border border-border bg-muted/25 p-5 md:p-8">
+    <section className="rounded-xl border border-border bg-muted/25 p-5 gap-12 md:p-8">
       <div className="rounded-xl border border-border bg-background p-6 text-foreground shadow-sm md:p-8">
         <div className="mb-8 flex items-center justify-between gap-4">
           <Image src="/Curie_AI_logo.svg" alt="Curie AI" width={300} height={48} className="h-16 w-auto" priority />
@@ -102,14 +102,14 @@ export function ClinicalLoginPrototype() {
         </div>
 
         <div className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-[1fr_1fr]">
+          <div className="grid gap-20 md:grid-cols-[5fr_2fr]">
             <div className="relative self-stretch overflow-hidden rounded-xl border border-border bg-muted/20">
               <Image
                 src="/clinical.webp"
                 alt="Clinical care overview"
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"
-                className="h-full w-full object-cover object-bottom"
+                className="h-full w-full object-cover object-[50%_76%]"
                 priority
               />
             </div>
