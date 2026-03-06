@@ -8,7 +8,7 @@ import { DSClinicalEmrGraphsDemo } from "@/components/ds/clinical-emr-graphs-dem
 import { DSInput } from "@/components/ds/input";
 import { PrimaryBtn, SecondaryBtn } from "@/components/ds/button";
 import Link from "next/link";
-import { ArrowRight, Blocks, HeartPulse, Layers2, Sparkles, Stethoscope } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 const COLOR_GROUPS = [
   { family: "Teal", shades: ["900", "800", "700", "600", "500", "400"] },
@@ -19,40 +19,6 @@ const COLOR_GROUPS = [
 
 export default function Home() {
   const [selectedToken, setSelectedToken] = useState("--numo-teal-500");
-  const foundationLinks = [
-    {
-      href: "/foundations",
-      title: "Foundations",
-      description: "Color, typography, spacing, radius, and motion tokens for consistent UI behavior.",
-      icon: Layers2,
-      tone:
-        "border-numo-blue-400/40 bg-[linear-gradient(135deg,hsl(var(--numo-blue-400)/0.16),hsl(var(--numo-teal-400)/0.1))] dark:bg-[linear-gradient(135deg,hsl(var(--numo-blue-900)/0.45),hsl(var(--numo-teal-900)/0.35))]",
-    },
-    {
-      href: "/components",
-      title: "Components",
-      description: "Reusable building blocks with clear APIs and production-focused defaults.",
-      icon: Blocks,
-      tone:
-        "border-numo-teal-400/40 bg-[linear-gradient(135deg,hsl(var(--numo-teal-400)/0.16),hsl(var(--numo-slate-400)/0.1))] dark:bg-[linear-gradient(135deg,hsl(var(--numo-teal-900)/0.45),hsl(var(--numo-blue-900)/0.35))]",
-    },
-    {
-      href: "/patterns/clinical",
-      title: "Clinical Patterns",
-      description: "Structured workflows for clinician-facing interactions and dense information views.",
-      icon: Stethoscope,
-      tone:
-        "border-numo-orange-400/45 bg-[linear-gradient(135deg,hsl(var(--numo-orange-400)/0.16),hsl(var(--numo-yellow-400)/0.1))] dark:bg-[linear-gradient(135deg,hsl(var(--numo-orange-900)/0.45),hsl(var(--numo-yellow-900)/0.35))]",
-    },
-    {
-      href: "/patterns/patient",
-      title: "Patient Patterns",
-      description: "Accessible patient-first flows covering onboarding, tasks, and home monitoring.",
-      icon: HeartPulse,
-      tone:
-        "border-numo-warm-blue-400/40 bg-[linear-gradient(135deg,hsl(var(--numo-warm-blue-400)/0.16),hsl(var(--numo-blue-400)/0.1))] dark:bg-[linear-gradient(135deg,hsl(var(--numo-warm-blue-900)/0.45),hsl(var(--numo-blue-900)/0.35))]",
-    },
-  ];
 
   const selectedColor = useMemo(
     () =>
@@ -64,6 +30,22 @@ export default function Home() {
       ).find((c) => c.token === selectedToken) ?? { token: "--numo-teal-500", label: "Teal 500" },
     [selectedToken],
   );
+
+  const codebaseInventory = [
+    { category: "Source files tracked", count: 59, scope: "ts/tsx/css/json/md" },
+    { category: "Route pages", count: 13, scope: "app/**/page.tsx" },
+    { category: "Pattern pages", count: 3, scope: "app/patterns/**" },
+    { category: "Prototype pages", count: 6, scope: "prototype routes" },
+    { category: "DS components", count: 16, scope: "components/ds/*.tsx" },
+    { category: "Pattern components", count: 16, scope: "components/patterns/*.tsx" },
+    { category: "UI primitives", count: 3, scope: "components/ui/*.tsx" },
+    { category: "Total component files", count: 35, scope: "components/**/*" },
+    { category: "Public assets", count: 25, scope: "public/**/*" },
+    { category: "Design tokens", count: 77, scope: "tokens.css unique vars" },
+    { category: "TSX files", count: 49, scope: "repo-wide" },
+    { category: "TS files", count: 3, scope: "repo-wide" },
+    { category: "CSS files", count: 2, scope: "repo-wide" },
+  ];
 
   return (
     <DSPage
@@ -265,32 +247,37 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mt-8 px-6 py-7 md:px-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Components and info</p>
-        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {foundationLinks.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`group rounded-md border p-4 transition hover:border-numo-slate-700 hover:brightness-[1.03] ${item.tone}`}
-              >
-                <div className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border/50 bg-background/60 dark:bg-black/25">
-                  <Icon className="h-4 w-4 text-numo-blue-700 dark:text-numo-blue-400" />
-                </div>
-                <p className="mt-3 text-sm font-semibold text-foreground">{item.title}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{item.description}</p>
-                <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-numo-blue-700">
-                  Open
-                  <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-                </span>
-              </Link>
-            );
-          })}
+      <section className="mt-8  px-6 py-7 md:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Codebase Inventory</p>
+          <p className="text-xs text-muted-foreground">Local workspace snapshot</p>
+        </div>
+        <div className="mt-5 overflow-hidden rounded-xl border border-border/70 bg-background">
+          <table className="w-full text-left">
+            <thead className="bg-muted/45">
+              <tr className="border-b border-border/70 text-xs uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-3 font-semibold">Category</th>
+                <th className="px-4 py-3 font-semibold">Count</th>
+                <th className="px-4 py-3 font-semibold">Scope</th>
+              </tr>
+            </thead>
+            <tbody>
+              {codebaseInventory.map((row) => (
+                <tr key={row.category} className="border-b border-border/60 last:border-b-0">
+                  <td className="px-4 py-3 text-sm font-medium text-foreground">{row.category}</td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex min-w-12 justify-center rounded-full bg-numo-blue-500/12 px-2.5 py-0.5 text-xs font-semibold text-numo-blue-700">
+                      {row.count}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground">{row.scope}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
-
+<div className="h-12" />
       <DSFooter />
     </DSPage>
   );

@@ -31,21 +31,7 @@ const SITEMAP_GROUPS = [
 
 export function DSFooter() {
   return (
-    <footer className="rounded-2xl border border-border bg-muted/30 px-5 py-6 md:px-6">
-      <div className="flex flex-col py-10 pt-4">
-        <p className="text-md text-muted-foreground ">
-          Designed by{" "}
-          <a
-            href="https://edbelluti.com/"
-            target="_blank"
-            rel="noreferrer"
-            className="font-medium text-foreground transition hover:text-numo-teal-400"
-          >
-            edbelluti.com
-          </a>
-        </p>
-        <div className="mt-12 border-t border-border" />
-      </div>
+    <footer className="border-t border-border px-5 py-16 md:px-6">
       <div className="inline-grid grid-cols-1 items-start gap-x-10 gap-y-4 md:grid-cols-3">
         {SITEMAP_GROUPS.map((group) => (
           <section key={group.title}>
@@ -64,6 +50,20 @@ export function DSFooter() {
             </ul>
           </section>
         ))}
+      </div>
+
+      <div className="mt-8 flex justify-end">
+        <p className="text-sm text-muted-foreground">
+          Designed by{" "}
+          <a
+            href="https://edbelluti.com/"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-foreground transition hover:text-numo-teal-400"
+          >
+            edbelluti
+          </a>
+        </p>
       </div>
     </footer>
   );
