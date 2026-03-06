@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Activity, ChevronDown, FilePlus2, NotebookPen, Pencil, Plus, Share2 } from "lucide-react";
+import { PrimaryBtn, SecondaryBtn } from "@/components/ds/button";
 
 type NoteType = "all" | "video";
 
@@ -213,14 +214,10 @@ export function NotesDemo() {
               </label>
             </div>
 
-            <button
-              type="button"
-              onClick={openAddMode}
-              className="group inline-flex items-center gap-1.5 rounded-md border border-numo-blue-500 bg-numo-blue-600 px-5 py-2 text-sm font-medium text-white transition-all duration-200 ease-out hover:border-numo-blue-400 hover:bg-numo-blue-600 hover:shadow-[0_0_0_1px_hsl(var(--numo-blue-400)/0.35),0_8px_18px_hsl(var(--numo-blue-500)/0.28)] active:opacity-95"
-            >
+            <PrimaryBtn type="button" onClick={openAddMode}>
               <NotebookPen className="h-4 w-4 transition-all duration-200 ease-out group-hover:scale-105 group-hover:opacity-95" />
               Add note
-            </button>
+            </PrimaryBtn>
           </div>
 
           <div className="space-y-4">
@@ -307,21 +304,17 @@ export function NotesDemo() {
       ) : (
         <>
           <div className="mb-4 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={cancelCompose}
-              className="rounded-md border border-numo-blue-500 bg-background px-5 py-2 text-sm text-numo-blue-500 hover:bg-numo-blue-400/25"
-            >
+            <SecondaryBtn type="button" onClick={cancelCompose}>
               Cancel
-            </button>
-            <button
+            </SecondaryBtn>
+            <PrimaryBtn
               type="button"
               onClick={saveNote}
               disabled={draft.trim().length === 0}
-              className="rounded-md bg-numo-blue-500 px-8 py-2 text-sm font-medium text-white hover:bg-numo-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+              className="px-8 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Save
-            </button>
+            </PrimaryBtn>
           </div>
 
           <div className="rounded-lg border border-border bg-background p-4">

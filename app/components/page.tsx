@@ -707,7 +707,7 @@ const MENU_ICONS = {
                 className={[
                   "w-full rounded-md px-3 py-2 text-left text-sm transition",
                   activeId === item.id
-                    ? "bg-numo-blue-600 text-white font-medium shadow-sm"
+                    ? "bg-numo-warm-blue-600 text-white font-medium shadow-sm"
                     : "text-muted-foreground hover:bg-background/70 hover:text-foreground",
                 ].join(" ")}
               >
