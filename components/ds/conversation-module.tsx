@@ -20,7 +20,7 @@ const DEFAULT_LINES: ConversationLine[] = [
 export function DSConversationModule({
   title = "Jane Mullgard",
   lines = DEFAULT_LINES,
-  intervalMs = 2600,
+  intervalMs = 3600,
   className,
 }: {
   title?: string;
@@ -56,28 +56,73 @@ export function DSConversationModule({
   }, [visibleConversation]);
 
   return (
-    <div className={["rounded-lg border border-border bg-background/80 p-2.5", className ?? ""].join(" ")}>
-      <div className="mb-2 flex items-center justify-between">
-        <p className="text-xs font-medium text-foreground">{title}</p>
+    <div className={["rounded-lg bg-background/80 p-1.5", className ?? ""].join(" ")}>
+      <div className="mb-2 flex items-center justify-center pb-1.5">
+        <p className="text-sm font-semibold tracking-tight text-foreground">{title}</p>
       </div>
-      <div ref={conversationScrollRef} className="h-36 space-y-1.5 overflow-y-auto pr-1">
+      <div ref={conversationScrollRef} className="h-60 space-y-5 overflow-y-auto pr-1">
         {visibleConversation.map((line) => {
           const isPatient = line.speaker === "Patient";
+          const initials = isPatient ? "JM" : "SO";
           return (
             <div
               key={line.id}
-              className={[
-                "max-w-[92%] rounded-md px-2 py-1.5 text-xs leading-5",
-                isPatient
-                  ? "border border-numo-blue-700/10 bg-numo-gray-500 text-numo-blue-900"
-                  : "ml-auto border border-numo-blue-700/5 bg-numo-blue-500 text-numo-gray-400",
-              ].join(" ")}
+              className={["conversation-line--enter flex items-end gap-2", isPatient ? "" : "justify-end"].join(" ")}
             >
-              {line.text}
+              {isPatient ? (
+                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-numo-blue-700/20 bg-background text-[10px] font-semibold tracking-wide text-numo-blue-700">
+                  {initials}
+                </span>
+              ) : null}
+
+              <div className="relative max-w-[85%]">
+                <div
+                  className={[
+                    "rounded-lg px-3 py-2 text-[13px] leading-[1.4]",
+                    isPatient
+                      ? "border border-numo-blue-700/10 bg-numo-gray-500 text-numo-blue-900"
+                      : "border border-[#007AFF]/70 bg-[#007AFF] text-white",
+                  ].join(" ")}
+                >
+                  {line.text}
+                </div>
+                <span
+                  aria-hidden
+                  className={[
+                    "absolute bottom-2 h-2.5 w-2.5 rotate-45",
+                    isPatient
+                      ? "-left-1 border-l border-b border-numo-blue-700/10 bg-numo-gray-500"
+                      : "-right-1 border-r border-b border-[#007AFF]/70 bg-[#007AFF]",
+                  ].join(" ")}
+                />
+              </div>
+
+              {!isPatient ? (
+                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#007AFF]/45 bg-[#007AFF]/10 text-[10px] font-semibold tracking-wide text-[#007AFF]">
+                  {initials}
+                </span>
+              ) : null}
             </div>
           );
         })}
       </div>
+
+      <style jsx>{`
+        .conversation-line--enter {
+          animation: bubble-enter 320ms ease-out both;
+        }
+
+        @keyframes bubble-enter {
+          0% {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }

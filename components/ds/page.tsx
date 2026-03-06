@@ -1,5 +1,9 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Github, Globe, Moon, Shapes, SunMedium } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function DSPage({
@@ -15,74 +19,158 @@ export function DSPage({
   children: React.ReactNode;
   className?: string;
 }) {
+  const pathname = usePathname();
+  const [isDark, setIsDark] = React.useState(false);
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  React.useEffect(() => {
+    const savedTheme = window.localStorage.getItem("curie-theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const shouldUseDark = savedTheme ? savedTheme === "dark" : prefersDark;
+    document.documentElement.classList.toggle("dark", shouldUseDark);
+    setIsDark(shouldUseDark);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextIsDark = !isDark;
+    document.documentElement.classList.toggle("dark", nextIsDark);
+    window.localStorage.setItem("curie-theme", nextIsDark ? "dark" : "light");
+    setIsDark(nextIsDark);
+  };
+
   return (
     <main className={cn("isolate min-h-dvh bg-background text-foreground", className)}>
       <div className="mx-auto max-w-screen-2xl px-6 py-10 space-y-10">
-        <header className="relative z-300pace-y-3">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-              {description ? (
-                <p
-                  className={[
-                    "mt-2 text-sm text-muted-foreground",
-                    hideDescriptionOnMobile ? "hidden sm:block" : "",
-                  ].join(" ")}
+        <header className="relative space-y-5">
+          <div className="rounded-xl border border-border bg-[linear-gradient(135deg,hsl(var(--numo-slate-400)/0.35)_0%,var(--background)_45%,hsl(var(--numo-slate-400)/0.28)_100%)] px-3 py-2 backdrop-blur dark:bg-[linear-gradient(135deg,hsl(var(--numo-slate-900)/0.3)_0%,var(--background)_45%,hsl(var(--numo-slate-900)/0.22)_100%)]">
+            <div className="hidden items-center justify-between gap-3 md:flex">
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-2 rounded-md border border-border/80 bg-background px-2.5 py-1.5 text-sm font-semibold tracking-tight text-foreground transition hover:bg-muted/55"
                 >
-                  {description}
-                </p>
-              ) : null}
+                  <Shapes className="h-4 w-4 text-numo-blue-700" />
+                  Curie DS
+                </Link>
+                <div className="h-5 w-px bg-border" />
+                <span className="text-xs text-muted-foreground">Eduardo</span>
+              </div>
+
+              <nav className="flex items-center gap-1 rounded-full border border-border/80 bg-background/70 p-1 text-sm">
+                <CenterNavLink href="/foundations" active={isActive("/foundations")}>
+                  Foundations
+                </CenterNavLink>
+                <CenterNavLink href="/components" active={isActive("/components")}>
+                  Components
+                </CenterNavLink>
+                <CenterNavLink href="/patterns" active={isActive("/patterns")}>
+                  Patterns
+                </CenterNavLink>
+                <CenterNavLink
+                  href="/prototypes"
+                  active={
+                    isActive("/prototypes") ||
+                    isActive("/prototype-login") ||
+                    isActive("/numo-home") ||
+                    isActive("/notes") ||
+                    isActive("/tablet-appointment") ||
+                    isActive("/user-preferences")
+                  }
+                >
+                  Prototypes
+                </CenterNavLink>
+              </nav>
+
+              <div className="flex items-center gap-1">
+                <Link
+                  href="https://edbelluti.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-background hover:text-foreground"
+                  aria-label="Website"
+                >
+                  <Globe className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="https://github.com/edbr"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-background hover:text-foreground"
+                  aria-label="GitHub"
+                >
+                  <Github className="h-4 w-4" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-background hover:text-foreground"
+                  aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                >
+                  {isDark ? <SunMedium className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
-            <nav className="relative z-310 hidden items-center gap-2 text-sm md:flex">
-              <NavLink href="/">Home</NavLink>
-              <NavLink href="/foundations">Foundations</NavLink>
-              <NavLink href="/components">Components</NavLink>
-              <NavMenu label="Patterns">
-                <NavMenuLink href="/patterns/clinical">Clinical</NavMenuLink>
-                <NavMenuLink href="/patterns/patient">Patient</NavMenuLink>
-              </NavMenu>
-              <NavMenu label="Protoypes">
-                <NavMenuLink href="/numo-home">Clinical Dashboard</NavMenuLink>
-                <NavMenuLink href="/notes">Notes</NavMenuLink>
-                <NavMenuLink href="/tablet-appointment">Tablet Appointment</NavMenuLink>
-                <NavMenuLink href="/prototype-login">Login Experience</NavMenuLink>
-                <NavMenuLink href="/user-preferences">User Preferences</NavMenuLink>
-              </NavMenu>
-            </nav>
+            <div className="flex items-center justify-between gap-3 md:hidden">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 rounded-md border border-border/80 bg-background px-2.5 py-1.5 text-sm font-semibold tracking-tight text-foreground"
+              >
+                <Shapes className="h-4 w-4 text-numo-blue-700" />
+                Curie DS
+              </Link>
+              <div className="relative z-310">
+                <details className="group">
+                  <summary className="inline-flex min-h-10 list-none items-center rounded-md border border-border bg-background px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted/50 hover:text-foreground [&::-webkit-details-marker]:hidden">
+                    Menu
+                  </summary>
 
-            <div className="relative z-310 md:hidden">
-              <details className="group">
-                <summary className="inline-flex min-h-11 list-none items-center rounded-md border border-border bg-background px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted/50 hover:text-foreground [&::-webkit-details-marker]:hidden">
-                  Menu
-                </summary>
+                  <div className="absolute right-0 top-[calc(100%+0.4rem)] z-330 w-72 rounded-lg border border-border bg-background p-2 shadow-md">
+                    <MobileNavLink href="/">Home</MobileNavLink>
+                    <MobileNavLink href="/foundations">Foundations</MobileNavLink>
+                    <MobileNavLink href="/components">Components</MobileNavLink>
 
-                <div className="absolute right-0 top-[calc(100%+0.4rem)] z-330 w-72 rounded-lg border border-border bg-background p-2 shadow-md">
-                  <MobileNavLink href="/">Home</MobileNavLink>
-                  <MobileNavLink href="/foundations">Foundations</MobileNavLink>
-                  <MobileNavLink href="/components">Components</MobileNavLink>
+                    <div className="mt-2 border-t border-border pt-2">
+                      <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        Patterns
+                      </p>
+                      <MobileNavLink href="/patterns/clinical">Clinical</MobileNavLink>
+                      <MobileNavLink href="/patterns/patient">Patient</MobileNavLink>
+                    </div>
 
-                  <div className="mt-2 border-t border-border pt-2">
-                    <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                      Patterns
-                    </p>
-                    <MobileNavLink href="/patterns/clinical">Clinical</MobileNavLink>
-                    <MobileNavLink href="/patterns/patient">Patient</MobileNavLink>
+                    <div className="mt-2 border-t border-border pt-2">
+                      <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        Prototypes
+                      </p>
+                      <MobileNavLink href="/prototypes">All Prototypes</MobileNavLink>
+                      <MobileNavLink href="/numo-home">Clinical Dashboard</MobileNavLink>
+                      <MobileNavLink href="/notes">Notes</MobileNavLink>
+                      <MobileNavLink href="/tablet-appointment">Tablet Appointment</MobileNavLink>
+                      <MobileNavLink href="/prototype-login">Login Experience</MobileNavLink>
+                      <MobileNavLink href="/user-preferences">User Preferences</MobileNavLink>
+                    </div>
                   </div>
-
-                  <div className="mt-2 border-t border-border pt-2">
-                    <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                      Prototypes
-                    </p>
-                    <MobileNavLink href="/numo-home">Clinical Dashboard</MobileNavLink>
-                    <MobileNavLink href="/notes">Notes</MobileNavLink>
-                    <MobileNavLink href="/tablet-appointment">Tablet Appointment</MobileNavLink>
-                    <MobileNavLink href="/prototype-login">Login Experience</MobileNavLink>
-                    <MobileNavLink href="/user-preferences">User Preferences</MobileNavLink>
-                  </div>
-                </div>
-              </details>
+                </details>
+              </div>
             </div>
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+            {description ? (
+              <p
+                className={[
+                  "mt-2 text-sm text-muted-foreground",
+                  hideDescriptionOnMobile ? "hidden sm:block" : "",
+                ].join(" ")}
+              >
+                {description}
+              </p>
+            ) : null}
           </div>
         </header>
 
@@ -92,42 +180,27 @@ export function DSPage({
   );
 }
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+function CenterNavLink({
+  href,
+  children,
+  active = false,
+}: {
+  href: string;
+  children: React.ReactNode;
+  active?: boolean;
+}) {
   return (
     <Link
       href={href}
-      className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition"
+      className={cn(
+        "rounded-full px-3 py-1.5 text-sm transition",
+        active
+          ? "bg-numo-blue-900 text-white"
+          : "text-muted-foreground hover:bg-background hover:text-foreground",
+      )}
     >
       {children}
     </Link>
-  );
-}
-
-function NavMenu({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="relative z-320 group">
-      <button
-        type="button"
-        className="inline-flex min-h-11 items-center rounded-md px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition group-focus-within:text-foreground group-focus-within:bg-muted/50"
-        aria-haspopup="menu"
-      >
-        {label}
-      </button>
-
-      <div aria-hidden className="absolute right-0 top-full h-3 w-44" />
-
-      <div
-        className={[
-          "absolute right-0 top-[calc(100%+0.15rem)] z-330 min-w-44 rounded-lg border border-border bg-background p-1 shadow-md",
-          "invisible translate-y-1 opacity-0 transition duration-150",
-          "group-hover:visible group-hover:translate-y-0 group-hover:opacity-100",
-          "group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100",
-        ].join(" ")}
-        role="menu"
-      >
-        {children}
-      </div>
-    </div>
   );
 }
 
@@ -136,18 +209,6 @@ function MobileNavLink({ href, children }: { href: string; children: React.React
     <Link
       href={href}
       className="block rounded-md px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted/60 hover:text-foreground"
-    >
-      {children}
-    </Link>
-  );
-}
-
-function NavMenuLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      role="menuitem"
-      className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted/60 hover:text-foreground transition"
     >
       {children}
     </Link>

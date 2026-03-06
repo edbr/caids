@@ -46,7 +46,11 @@ function resolveTokenToCanvasColor(token: TokenKey) {
   return `hsl(${raw})`;
 }
 
-export function DSClinicalEmrGraphsDemo() {
+export function DSClinicalEmrGraphsDemo({
+  showPatientMonitoringBars = true,
+}: {
+  showPatientMonitoringBars?: boolean;
+} = {}) {
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const chartRef = React.useRef<{ destroy: () => void } | null>(null);
   const radialCanvasRef = React.useRef<HTMLCanvasElement | null>(null);
@@ -110,7 +114,7 @@ export function DSClinicalEmrGraphsDemo() {
         const Chart = window.Chart;
         const ctx = canvasRef.current.getContext("2d");
         const radialCtx = radialCanvasRef.current?.getContext("2d");
-        if (!ctx || !radialCtx || !Chart) return;
+        if (!ctx || !Chart) return;
 
         chartRef.current?.destroy();
         radialChartRef.current?.destroy();
@@ -190,72 +194,74 @@ export function DSClinicalEmrGraphsDemo() {
           },
         });
 
-        radialChartRef.current = new Chart(radialCtx, {
-          type: "bar",
-          data: {
-            labels: RADIAL_PATIENTS,
-            datasets: [
-              {
-                label: "Minutes tracked",
-                data: RADIAL_SERIES.minutesTracked,
-                backgroundColor: metricColors.minutesTracked,
-                borderColor: metricColors.minutesTracked,
-                borderWidth: 1,
-                borderRadius: 6,
-              },
-              {
-                label: "Symptoms",
-                data: RADIAL_SERIES.symptoms,
-                backgroundColor: metricColors.symptoms,
-                borderColor: metricColors.symptoms,
-                borderWidth: 1,
-                borderRadius: 6,
-              },
-              {
-                label: "Patient health",
-                data: RADIAL_SERIES.patientHealth,
-                backgroundColor: metricColors.patientHealth,
-                borderColor: metricColors.patientHealth,
-                borderWidth: 1,
-                borderRadius: 6,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: {
-              animateRotate: true,
-              animateScale: true,
+        if (showPatientMonitoringBars && radialCtx) {
+          radialChartRef.current = new Chart(radialCtx, {
+            type: "bar",
+            data: {
+              labels: RADIAL_PATIENTS,
+              datasets: [
+                {
+                  label: "Minutes tracked",
+                  data: RADIAL_SERIES.minutesTracked,
+                  backgroundColor: metricColors.minutesTracked,
+                  borderColor: metricColors.minutesTracked,
+                  borderWidth: 1,
+                  borderRadius: 6,
+                },
+                {
+                  label: "Symptoms",
+                  data: RADIAL_SERIES.symptoms,
+                  backgroundColor: metricColors.symptoms,
+                  borderColor: metricColors.symptoms,
+                  borderWidth: 1,
+                  borderRadius: 6,
+                },
+                {
+                  label: "Patient health",
+                  data: RADIAL_SERIES.patientHealth,
+                  backgroundColor: metricColors.patientHealth,
+                  borderColor: metricColors.patientHealth,
+                  borderWidth: 1,
+                  borderRadius: 6,
+                },
+              ],
             },
-            scales: {
-              y: {
-                beginAtZero: true,
-                suggestedMax: 180,
-                grid: { color: "rgba(30, 41, 59, 0.15)" },
-                ticks: { color: "rgba(30, 41, 59, 0.8)" },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: {
+                animateRotate: true,
+                animateScale: true,
               },
-              x: {
-                grid: { display: false },
-                ticks: { color: "rgba(30, 41, 59, 0.8)" },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  suggestedMax: 180,
+                  grid: { color: "rgba(30, 41, 59, 0.15)" },
+                  ticks: { color: "rgba(30, 41, 59, 0.8)" },
+                },
+                x: {
+                  grid: { display: false },
+                  ticks: { color: "rgba(30, 41, 59, 0.8)" },
+                },
               },
-            },
-            plugins: {
-              legend: {
-                position: "bottom",
-                labels: { boxWidth: 10, boxHeight: 10, padding: 14 },
-              },
-              tooltip: {
-                callbacks: {
-                  label: (context: { dataset: { label: string }; label: string; formattedValue: string }) => {
-                    const unit = context.dataset.label === "Minutes tracked" ? " min" : "%";
-                    return `${context.label}: ${context.dataset.label} ${context.formattedValue}${unit}`;
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: { boxWidth: 10, boxHeight: 10, padding: 14 },
+                },
+                tooltip: {
+                  callbacks: {
+                    label: (context: { dataset: { label: string }; label: string; formattedValue: string }) => {
+                      const unit = context.dataset.label === "Minutes tracked" ? " min" : "%";
+                      return `${context.label}: ${context.dataset.label} ${context.formattedValue}${unit}`;
+                    },
                   },
                 },
               },
             },
-          },
-        });
+          });
+        }
       } catch {
         // Keep silent fallback: empty canvas if Chart.js CDN is unavailable.
       }
@@ -270,7 +276,7 @@ export function DSClinicalEmrGraphsDemo() {
       radialChartRef.current?.destroy();
       radialChartRef.current = null;
     };
-  }, [colors, metricColors]);
+  }, [colors, metricColors, showPatientMonitoringBars]);
 
   return (
     <div className="space-y-3">
@@ -304,25 +310,27 @@ export function DSClinicalEmrGraphsDemo() {
         />
       </div>
 
-      <div className="rounded-xl border border-border bg-background p-3">
-        <p className="mb-2 text-sm font-semibold text-foreground">PATIENT MONITORING BARS</p>
-        <p className="mb-3 text-xs text-muted-foreground">
-          Grouped bars by patient: Minutes tracked, Symptoms, and Patient health
-        </p>
-        <div className="h-84">
-          <canvas ref={radialCanvasRef} />
+      {showPatientMonitoringBars ? (
+        <div className="rounded-xl border border-border bg-background p-3">
+          <p className="mb-2 text-sm font-semibold text-foreground">PATIENT MONITORING BARS</p>
+          <p className="mb-3 text-xs text-muted-foreground">
+            Grouped bars by patient: Minutes tracked, Symptoms, and Patient health
+          </p>
+          <div className="h-84">
+            <canvas ref={radialCanvasRef} />
+          </div>
+          <ChartCodeNotes
+            title="Code notes: Patient monitoring bar chart"
+            steps={[
+              "Use `type: \"bar\"` and one label per patient.",
+              "Add 3 datasets for minutes tracked, symptoms, and patient health.",
+              "Set `borderRadius` on bars for softer cards/prototype style.",
+              "In tooltip callback, append `min` for tracked minutes and `%` for health/symptoms.",
+            ]}
+            snippet={`new Chart(barCtx, { type: "bar", data: monitoringData, options: monitoringOptions });`}
+          />
         </div>
-        <ChartCodeNotes
-          title="Code notes: Patient monitoring bar chart"
-          steps={[
-            "Use `type: \"bar\"` and one label per patient.",
-            "Add 3 datasets for minutes tracked, symptoms, and patient health.",
-            "Set `borderRadius` on bars for softer cards/prototype style.",
-            "In tooltip callback, append `min` for tracked minutes and `%` for health/symptoms.",
-          ]}
-          snippet={`new Chart(barCtx, { type: "bar", data: monitoringData, options: monitoringOptions });`}
-        />
-      </div>
+      ) : null}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Activity, RefreshCw } from "lucide-react";
 import { DSInput } from "@/components/ds/input";
 import { DSConversationModule } from "@/components/ds/conversation-module";
+import { cn } from "@/lib/utils";
 
 type RiskLevel = "High" | "Moderate" | "Low";
 
@@ -59,7 +60,13 @@ function riskClass(risk: RiskLevel) {
   return "text-numo-teal-600";
 }
 
-export function HomeInteractiveShowcase() {
+export function HomeInteractiveShowcase({
+  compact = false,
+  className,
+}: {
+  compact?: boolean;
+  className?: string;
+} = {}) {
   const [selectedToken, setSelectedToken] = useState("--numo-teal-500");
   const [fieldValue, setFieldValue] = useState("");
   const [rows, setRows] = useState<InsightRow[]>(BASE_ROWS);
@@ -97,8 +104,14 @@ export function HomeInteractiveShowcase() {
   }
 
   return (
-    <div className="mt-8 grid gap-3 md:grid-cols-3">
-      <div className="rounded-xl border border-border bg-background/70 p-4">
+    <div
+      className={cn(
+        "mt-8 grid gap-3 md:grid-cols-3",
+        compact && "mt-0 grid-cols-1 md:grid-cols-1",
+        className,
+      )}
+    >
+      <div className="rounded-xl border border-numo-blue-400/40 bg-[linear-gradient(140deg,hsl(var(--numo-blue-400)/0.2),hsl(var(--numo-teal-400)/0.08))] p-4 dark:bg-[linear-gradient(140deg,hsl(var(--numo-blue-900)/0.52),hsl(var(--numo-teal-900)/0.34))]">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Foundations</p>
         <p className="mt-1 text-sm text-foreground">Tokenized color selection preview.</p>
 
@@ -132,7 +145,7 @@ export function HomeInteractiveShowcase() {
           ))}
         </div>
 
-        <div className="mt-3 rounded-lg border border-border p-2.5">
+        <div className="mt-3 rounded-lg border border-numo-blue-400/45 bg-background/70 p-2.5 dark:bg-black/20">
           <p className="text-xs text-muted-foreground">Selected token</p>
           <p className="mt-1 text-sm font-medium text-foreground">{selectedColor.token}</p>
           <div
@@ -142,7 +155,7 @@ export function HomeInteractiveShowcase() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-background/70 p-4">
+      <div className="rounded-xl border border-numo-teal-400/40 bg-[linear-gradient(140deg,hsl(var(--numo-teal-400)/0.2),hsl(var(--numo-blue-400)/0.08))] p-4 dark:bg-[linear-gradient(140deg,hsl(var(--numo-teal-900)/0.52),hsl(var(--numo-blue-900)/0.34))]">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Components</p>
         <p className="mt-1 text-sm text-foreground">Conversation between patient and clinician</p>
 
@@ -171,7 +184,7 @@ export function HomeInteractiveShowcase() {
 
       </div>
 
-      <div className="rounded-xl border border-border bg-background/70 p-4">
+      <div className="rounded-xl border border-numo-orange-400/45 bg-[linear-gradient(140deg,hsl(var(--numo-orange-400)/0.18),hsl(var(--numo-yellow-400)/0.08))] p-4 dark:bg-[linear-gradient(140deg,hsl(var(--numo-orange-900)/0.52),hsl(var(--numo-yellow-900)/0.34))]">
         <div className="flex items-start justify-between gap-2">
           <div>
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Patterns</p>
@@ -180,7 +193,7 @@ export function HomeInteractiveShowcase() {
           <button
             type="button"
             onClick={handleReload}
-            className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground transition hover:bg-muted/60 hover:text-foreground"
+            className="inline-flex items-center gap-1 rounded-md border border-numo-orange-400/40 bg-background/70 px-2 py-1 text-xs text-muted-foreground transition hover:bg-background hover:text-foreground dark:bg-black/20"
           >
             <RefreshCw className={["h-3.5 w-3.5", loading ? "animate-spin" : ""].join(" ")} />
             Reload
@@ -190,15 +203,15 @@ export function HomeInteractiveShowcase() {
         <p className="mt-3 text-[11px] text-muted-foreground">Last updated: {formatTime(lastUpdated)}</p>
 
         <div className="mt-2 grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-md border border-border bg-background px-2 py-1.5">
+          <div className="rounded-md border border-numo-red-400/35 bg-[linear-gradient(140deg,hsl(var(--numo-red-400)/0.18),hsl(var(--numo-orange-400)/0.08))] px-2 py-1.5 dark:bg-[linear-gradient(140deg,hsl(var(--numo-red-900)/0.4),hsl(var(--numo-orange-900)/0.28))]">
             <p className="text-[11px] text-muted-foreground">High</p>
             <p className="text-sm font-semibold text-numo-red-600">{riskCounts.high}</p>
           </div>
-          <div className="rounded-md border border-border bg-background px-2 py-1.5">
+          <div className="rounded-md border border-numo-orange-400/35 bg-[linear-gradient(140deg,hsl(var(--numo-orange-400)/0.18),hsl(var(--numo-yellow-400)/0.08))] px-2 py-1.5 dark:bg-[linear-gradient(140deg,hsl(var(--numo-orange-900)/0.4),hsl(var(--numo-yellow-900)/0.28))]">
             <p className="text-[11px] text-muted-foreground">Moderate</p>
             <p className="text-sm font-semibold text-numo-orange-600">{riskCounts.moderate}</p>
           </div>
-          <div className="rounded-md border border-border bg-background px-2 py-1.5">
+          <div className="rounded-md border border-numo-teal-400/35 bg-[linear-gradient(140deg,hsl(var(--numo-teal-400)/0.18),hsl(var(--numo-blue-400)/0.08))] px-2 py-1.5 dark:bg-[linear-gradient(140deg,hsl(var(--numo-teal-900)/0.4),hsl(var(--numo-blue-900)/0.28))]">
             <p className="text-[11px] text-muted-foreground">Low</p>
             <p className="text-sm font-semibold text-numo-teal-600">{riskCounts.low}</p>
           </div>
@@ -206,7 +219,7 @@ export function HomeInteractiveShowcase() {
 
         <div className="mt-2 space-y-1.5">
           {rows.map((row) => (
-            <div key={row.id} className="flex items-center justify-between rounded-md border border-border bg-background px-2 py-1.5">
+            <div key={row.id} className="flex items-center justify-between rounded-md border border-numo-slate-400/60 bg-background/80 px-2 py-1.5 dark:bg-black/20">
               <div className="min-w-0">
                 <p className="truncate text-xs font-medium text-foreground">{row.patient}</p>
                 <p className="text-[11px] text-muted-foreground">{row.clinic}</p>
