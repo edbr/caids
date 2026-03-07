@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { SendHorizontal } from "lucide-react";
 
 export type ConversationLine = {
   id: string;
@@ -29,6 +30,7 @@ export function DSConversationModule({
   className?: string;
 }) {
   const [conversationIndex, setConversationIndex] = React.useState(2);
+  const [draftMessage, setDraftMessage] = React.useState("");
   const conversationScrollRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
@@ -106,6 +108,31 @@ export function DSConversationModule({
           );
         })}
       </div>
+
+      <form
+        className="mt-2 flex items-center gap-2 rounded-lg border border-border/70 bg-background p-1.5"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!draftMessage.trim()) return;
+          setDraftMessage("");
+        }}
+      >
+        <input
+          type="text"
+          value={draftMessage}
+          onChange={(event) => setDraftMessage(event.target.value)}
+          placeholder="Type a message..."
+          className="h-9 flex-1 rounded-md border border-transparent bg-transparent px-2.5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        />
+        <button
+          type="submit"
+          aria-label="Send message"
+          disabled={!draftMessage.trim()}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#007AFF] text-white shadow-sm transition hover:bg-[#0069d9] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <SendHorizontal className="h-4 w-4" />
+        </button>
+      </form>
 
       <style jsx>{`
         .conversation-line--enter {

@@ -94,15 +94,21 @@ function formatRelativeTime(from: Date, nowMs: number) {
 
 export function AISignalInsights() {
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = React.useState(() => new Date());
+  const [lastUpdated, setLastUpdated] = React.useState<Date | null>(null);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
-  const [nowMs, setNowMs] = React.useState(() => Date.now());
+  const [nowMs, setNowMs] = React.useState<number | null>(null);
+  const [hasMounted, setHasMounted] = React.useState(false);
   const [displayValues, setDisplayValues] = React.useState<Record<string, number>>(() =>
     Object.fromEntries(BUBBLES.map((bubble) => [bubble.id, bubble.value]))
   );
   const animationFrameRef = React.useRef<number | null>(null);
 
   React.useEffect(() => {
+    const now = Date.now();
+    setLastUpdated(new Date(now));
+    setNowMs(now);
+    setHasMounted(true);
+
     const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
@@ -171,10 +177,16 @@ export function AISignalInsights() {
               Latest Update
             </p>
             <p className="truncate text-xs text-[#445564]">
-              {LAST_UPDATED_FORMATTER.format(lastUpdated)}
-              <span className="ml-2 rounded-full bg-[#e9f4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#1f6aa3]">
-                {formatRelativeTime(lastUpdated, nowMs)}
-              </span>
+              {hasMounted && lastUpdated && nowMs !== null ? (
+                <>
+                  {LAST_UPDATED_FORMATTER.format(lastUpdated)}
+                  <span className="ml-2 rounded-full bg-[#e9f4ff] px-1.5 py-0.5 text-[10px] font-medium text-[#1f6aa3]">
+                    {formatRelativeTime(lastUpdated, nowMs)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-[#6a7b89]">Syncing...</span>
+              )}
             </p>
           </div>
         </div>

@@ -129,7 +129,7 @@ export function DSPage({
                     Menu
                   </summary>
 
-                  <div className="absolute right-0 top-[calc(100%+0.4rem)] z-[60] w-[min(18rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] rounded-lg border border-border bg-background p-2 shadow-md">
+                  <div className="absolute right-0 top-[calc(100%+0.4rem)] z-60 w-72 rounded-lg border border-border bg-background p-2 shadow-md">
                     <MobileNavLink href="/">Home</MobileNavLink>
                     <MobileNavLink href="/foundations">Foundations</MobileNavLink>
                     <MobileNavLink href="/components">Components</MobileNavLink>

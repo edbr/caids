@@ -3,14 +3,6 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import {
-  Calendar,
-  MessageSquare,
-  Video,
-  Loader2,
-  CheckCircle2,
-  AlertTriangle,
-} from "lucide-react";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -18,15 +10,8 @@ import {
 } from "@/components/ui/tooltip";
 import { InsightTableFilters, type RiskFilter } from "@/components/patterns/InsightTableFilters";
 import { DSAudioPlayButton } from "@/components/ds/audio-play-button";
-
-type ActionState = "default" | "disabled" | "loading" | "success" | "danger";
-
-type RowAction = {
-  key: string;
-  label: string;
-  Icon: React.ComponentType<{ className?: string }>;
-  state?: ActionState;
-};
+import { InsightTableRowActions } from "@/components/patterns/InsightTableRowActions";
+import { type ActionState } from "@/components/patterns/RowActions";
 
 type PatientRow = {
   id: string;
@@ -42,7 +27,11 @@ type PatientRow = {
   metricTitle: string;
   metricDetail: string;
   metricTime: string;
-  actions: RowAction[];
+  actionStates: {
+    schedule?: ActionState;
+    message?: ActionState;
+    videoCall?: ActionState;
+  };
   statusDots: Array<{
     color: "green" | "yellow" | "red";
     size: "sm" | "md" | "lg";
@@ -52,11 +41,20 @@ type PatientRow = {
 const AUDIO_DURATION_S = 30;
 const STATUS_COLORS: Array<"green" | "yellow" | "red"> = ["green", "yellow", "red"];
 
-function randomStatusDots(): PatientRow["statusDots"] {
+function stableHash(input: string): number {
+  let hash = 0;
+  for (let i = 0; i < input.length; i += 1) {
+    hash = (hash * 31 + input.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function statusDotsFromId(id: string): PatientRow["statusDots"] {
+  const hash = stableHash(id);
   return [
-    { color: STATUS_COLORS[Math.floor(Math.random() * STATUS_COLORS.length)], size: "sm" },
-    { color: STATUS_COLORS[Math.floor(Math.random() * STATUS_COLORS.length)], size: "md" },
-    { color: STATUS_COLORS[Math.floor(Math.random() * STATUS_COLORS.length)], size: "lg" },
+    { color: STATUS_COLORS[hash % STATUS_COLORS.length]!, size: "sm" },
+    { color: STATUS_COLORS[Math.floor(hash / 3) % STATUS_COLORS.length]!, size: "md" },
+    { color: STATUS_COLORS[Math.floor(hash / 9) % STATUS_COLORS.length]!, size: "lg" },
   ];
 }
 
@@ -73,19 +71,6 @@ const RISK_ORDER: Record<Exclude<RiskFilter, "all">, number> = {
   moderate: 1,
   low: 2,
 };
-
-function ActionIcon({
-  state,
-  className,
-}: {
-  state?: ActionState;
-  className?: string;
-}) {
-  if (state === "loading") return <Loader2 className={(className ?? "") + " animate-spin"} />;
-  if (state === "success") return <CheckCircle2 className={className} />;
-  if (state === "danger") return <AlertTriangle className={className} />;
-  return null;
-}
 
 function TooltipZ({
   children,
@@ -112,61 +97,6 @@ function formatTime(totalSeconds: number) {
   const mm = String(Math.floor(s / 60)).padStart(2, "0");
   const ss = String(s % 60).padStart(2, "0");
   return `${mm}:${ss}`;
-}
-
-function RowActions({ actions }: { actions: RowAction[] }) {
-  return (
-    <div className="flex items-center justify-end gap-3">
-      {actions.map(({ key, Icon, label, state }) => {
-        const isDisabled = state === "disabled" || state === "loading";
-
-        const base =
-          "group relative inline-flex items-center justify-center h-8 w-8 rounded-md border border-border/60 bg-background/70 transition";
-        const hover = "hover:bg-background hover:text-foreground hover:shadow-sm";
-        const focus =
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
-        const disabled = "disabled:opacity-40 disabled:cursor-not-allowed";
-        const text = "text-muted-foreground";
-
-        const stateRing =
-          state === "success"
-            ? "ring-1 ring-[hsl(var(--ds-success))]/25"
-            : state === "danger"
-              ? "ring-1 ring-[hsl(var(--ds-danger))]/25"
-              : "";
-
-        return (
-          <TooltipZ
-            key={key}
-            label={
-              <>
-                {label}
-                {state === "disabled" && " (disabled)"}
-                {state === "loading" && " (sending...)"}
-                {state === "success" && " (sent)"}
-                {state === "danger" && " (needs attention)"}
-              </>
-            }
-          >
-            <button
-              type="button"
-              aria-label={label}
-              disabled={isDisabled}
-              className={[base, text, hover, focus, disabled, stateRing].join(" ")}
-            >
-              <Icon className="h-4 w-4" />
-
-              {(state === "loading" || state === "success" || state === "danger") && (
-                <span className="absolute -bottom-1 -right-1 grid place-items-center h-4 w-4 rounded-full bg-background border border-border shadow-sm">
-                  <ActionIcon state={state} className="h-3 w-3 text-foreground" />
-                </span>
-              )}
-            </button>
-          </TooltipZ>
-        );
-      })}
-    </div>
-  );
 }
 
 function HeaderRow() {
@@ -365,7 +295,11 @@ function InsightRow({
 
         {/* actions */}
         <div className="flex justify-end">
-          <RowActions actions={row.actions} />
+          <InsightTableRowActions
+            scheduleState={row.actionStates.schedule}
+            messageState={row.actionStates.message}
+            videoCallState={row.actionStates.videoCall}
+          />
         </div>
       </div>
 
@@ -399,12 +333,8 @@ export default function InsightTableDemo() {
         metricTitle: "70–130 mg/dl",
         metricDetail: "Pulse rate: 96 BPM",
         metricTime: "03:46 PM, 02/24",
-        actions: [
-          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "default" },
-          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "loading" },
-          { key: "vid", Icon: Video, label: "Start video call", state: "disabled" },
-        ],
-        statusDots: randomStatusDots(),
+        actionStates: { schedule: "default", message: "loading", videoCall: "disabled" },
+        statusDots: statusDotsFromId("p1"),
       },
       {
         id: "p2",
@@ -420,12 +350,8 @@ export default function InsightTableDemo() {
         metricTitle: "SpO₂ trend",
         metricDetail: "O2 saturation: 89% (low)",
         metricTime: "09:12 AM, 02/25",
-        actions: [
-          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "danger" },
-          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "success" },
-          { key: "vid", Icon: Video, label: "Start video call", state: "default" },
-        ],
-        statusDots: randomStatusDots(),
+        actionStates: { schedule: "danger", message: "success", videoCall: "default" },
+        statusDots: statusDotsFromId("p2"),
       },
       {
         id: "p3",
@@ -441,12 +367,8 @@ export default function InsightTableDemo() {
         metricTitle: "SpO₂ trend",
         metricDetail: "O2 saturation: 86% (low)",
         metricTime: "12:17 AM, 02/24",
-        actions: [
-          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "default" },
-          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "default" },
-          { key: "vid", Icon: Video, label: "Start video call", state: "default" },
-        ],
-        statusDots: randomStatusDots(),
+        actionStates: { schedule: "default", message: "default", videoCall: "default" },
+        statusDots: statusDotsFromId("p3"),
       },
       {
         id: "p4",
@@ -462,12 +384,8 @@ export default function InsightTableDemo() {
         metricTitle: "Respiratory rate",
         metricDetail: "RR: 23/min",
         metricTime: "11:20 AM, 02/25",
-        actions: [
-          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "default" },
-          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "default" },
-          { key: "vid", Icon: Video, label: "Start video call", state: "success" },
-        ],
-        statusDots: randomStatusDots(),
+        actionStates: { schedule: "default", message: "default", videoCall: "success" },
+        statusDots: statusDotsFromId("p4"),
       },
       {
         id: "p5",
@@ -483,12 +401,8 @@ export default function InsightTableDemo() {
         metricTitle: "SpO₂ trend",
         metricDetail: "O2 saturation: 84% (critical)",
         metricTime: "01:04 PM, 02/25",
-        actions: [
-          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "danger" },
-          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "loading" },
-          { key: "vid", Icon: Video, label: "Start video call", state: "default" },
-        ],
-        statusDots: randomStatusDots(),
+        actionStates: { schedule: "danger", message: "loading", videoCall: "default" },
+        statusDots: statusDotsFromId("p5"),
       },
       {
         id: "p6",
@@ -504,12 +418,8 @@ export default function InsightTableDemo() {
         metricTitle: "Pulse trend",
         metricDetail: "Pulse rate: 78 BPM",
         metricTime: "08:31 AM, 02/25",
-        actions: [
-          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "default" },
-          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "success" },
-          { key: "vid", Icon: Video, label: "Start video call", state: "default" },
-        ],
-        statusDots: randomStatusDots(),
+        actionStates: { schedule: "default", message: "success", videoCall: "default" },
+        statusDots: statusDotsFromId("p6"),
       },
       {
         id: "p7",
@@ -525,12 +435,8 @@ export default function InsightTableDemo() {
         metricTitle: "Activity vs HR",
         metricDetail: "Pulse rate: 104 BPM",
         metricTime: "04:43 PM, 02/24",
-        actions: [
-          { key: "cal", Icon: Calendar, label: "Schedule follow-up", state: "default" },
-          { key: "sms", Icon: MessageSquare, label: "Send SMS", state: "default" },
-          { key: "vid", Icon: Video, label: "Start video call", state: "disabled" },
-        ],
-        statusDots: randomStatusDots(),
+        actionStates: { schedule: "default", message: "default", videoCall: "disabled" },
+        statusDots: statusDotsFromId("p7"),
       },
     ],
     []
