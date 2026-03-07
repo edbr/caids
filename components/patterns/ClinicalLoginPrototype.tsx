@@ -91,7 +91,7 @@ export function ClinicalLoginPrototype() {
   };
 
   return (
-    <section className="flex min-h-[calc(100vh-2rem)] items-center justify-center bg-numo-slate-400 px-4 py-8 md:px-8 md:py-12">
+    <section className="flex -mx-6 w-[calc(100%+3rem)] items-center justify-center bg-numo-slate-400 px-4 py-8 md:px-8 md:py-54">
       <div className="w-full max-w-300 overflow-hidden rounded-3xl border border-border bg-background text-foreground shadow-xl lg:w-2/3">
         <div className="grid md:grid-cols-2">
           <div className="flex items-center justify-center p-6 md:p-10 lg:p-12">

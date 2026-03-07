@@ -9,10 +9,11 @@ export default function PrototypeLoginPage() {
       title="Prototypes"
       description="Login experience prototype aligned with the clinical dashboard visual language."
       hideDescriptionOnMobile
+      hidePageIntro
     >
       <ClinicalLoginPrototype />
 
-      <section className="rounded-xl border border-border bg-background p-5 md:p-6">
+      <section className="rounded-xl border border-border bg-background p-5 md:p-6 mt-12">
         <h2 className="text-lg font-semibold tracking-tight text-numo-blue-900">
           How This Prototype Connects To Supabase
         </h2>

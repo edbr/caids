@@ -10,12 +10,14 @@ export function DSPage({
   title,
   description,
   hideDescriptionOnMobile = false,
+  hidePageIntro = false,
   children,
   className,
 }: {
   title: string;
   description?: string;
   hideDescriptionOnMobile?: boolean;
+  hidePageIntro?: boolean;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -44,9 +46,9 @@ export function DSPage({
 
   return (
     <main className={cn("isolate min-h-dvh bg-background text-foreground", className)}>
-      <div className="mx-auto max-w-screen-2xl px-6 py-10 space-y-10">
+      <div className="mx-autospace-y-10 px-6">
         <header className="relative space-y-5">
-          <div className="rounded-xl border border-border bg-[linear-gradient(135deg,hsl(var(--numo-slate-400)/0.35)_0%,var(--background)_45%,hsl(var(--numo-slate-400)/0.28)_100%)] px-3 py-2 backdrop-blur dark:bg-[linear-gradient(135deg,hsl(var(--numo-slate-900)/0.3)_0%,var(--background)_45%,hsl(var(--numo-slate-900)/0.22)_100%)]">
+          <div className="rounded-xl py-2 backdrop-blur dark:bg-[linear-gradient(135deg,hsl(var(--numo-slate-900)/0.3)_0%,var(--background)_45%,hsl(var(--numo-slate-900)/0.22)_100%)]">
             <div className="hidden items-center justify-between gap-3 md:flex">
               <div className="flex items-center gap-2">
                 <Link
@@ -56,8 +58,6 @@ export function DSPage({
                   <Shapes className="h-4 w-4 text-numo-blue-700" />
                   Curie DS
                 </Link>
-                <div className="h-5 w-px bg-border" />
-                <span className="text-xs text-muted-foreground">Eduardo</span>
               </div>
 
               <nav className="flex items-center gap-1 rounded-full border border-border/80 bg-background/70 p-1 text-sm">
@@ -159,19 +159,21 @@ export function DSPage({
             </div>
           </div>
 
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-            {description ? (
-              <p
-                className={[
-                  "mt-2 text-sm text-muted-foreground",
-                  hideDescriptionOnMobile ? "hidden sm:block" : "",
-                ].join(" ")}
-              >
-                {description}
-              </p>
-            ) : null}
-          </div>
+          {!hidePageIntro ? (
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+              {description ? (
+                <p
+                  className={[
+                    "mt-2 text-sm text-muted-foreground",
+                    hideDescriptionOnMobile ? "hidden sm:block" : "",
+                  ].join(" ")}
+                >
+                  {description}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
         </header>
 
         {children}

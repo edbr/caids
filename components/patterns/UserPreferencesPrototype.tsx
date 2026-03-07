@@ -227,7 +227,8 @@ export function UserPreferencesPrototype() {
   }
 
   return (
-    <section className="rounded-xl border border-border bg-muted/25 p-5 md:p-8">
+    <section className="-mx-6 w-[calc(100%+3rem)] bg-muted/40 px-5 pt-12 pb-8 md:px-8 md:pt-24 md:pb-24">
+
       <div className="rounded-xl border border-border bg-background p-6 shadow-sm md:p-8">
         <div className="mb-6 flex flex-col-reverse items-start justify-between gap-3 md:flex-row md:items-center md:gap-4">
           <div>

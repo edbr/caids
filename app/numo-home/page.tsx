@@ -16,8 +16,9 @@ export default function NumoHomePage() {
       title="Protypes"
       description="Composed pages that reuses the patterns components: home header, bell notifications, and actionable insights."
       hideDescriptionOnMobile
+      hidePageIntro
     >
-      <section className="rounded-xl border border-border bg-muted/25 p-5 md:p-8">
+      <section className="-mx-6 w-[calc(100%+3rem)]">
         <div className="relative overflow-visible rounded-xl bg-background">
           <div className="sticky top-0 z-40 -mx-4 bg-muted/40 px-4 py-1.5 backdrop-blur-sm md:-mx-6 md:px-6 md:py-2">
             <CurieHeader

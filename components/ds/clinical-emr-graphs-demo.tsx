@@ -35,6 +35,8 @@ const TOKEN_COLOR_VARS = {
   red600: "--numo-red-600",
   yellow600: "--numo-yellow-600",
 } as const;
+const CODE_TOKEN_REGEX =
+  /(\b(?:new|const|let|var|function|return|type|import|from|export|default)\b)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g;
 
 type TokenKey = keyof typeof TOKEN_COLOR_VARS;
 
@@ -345,10 +347,46 @@ function ChartCodeNotes({ title, steps, snippet }: { title: string; steps: strin
         ))}
       </ol>
       <pre className="mt-2 overflow-x-auto rounded-md border border-border/70 bg-background p-2 text-[11px] text-foreground">
-        <code>{snippet}</code>
+        <code>{renderCodeWithColor(snippet)}</code>
       </pre>
     </details>
   );
+}
+
+function renderCodeWithColor(code: string) {
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+
+  for (const match of code.matchAll(CODE_TOKEN_REGEX)) {
+    const token = match[0];
+    const index = match.index ?? 0;
+
+    if (index > lastIndex) {
+      nodes.push(code.slice(lastIndex, index));
+    }
+
+    if (match[1]) {
+      nodes.push(
+        <span key={`${index}-kw`} className="text-numo-red-600 dark:text-numo-red-400">
+          {token}
+        </span>,
+      );
+    } else if (match[2]) {
+      nodes.push(
+        <span key={`${index}-str`} className="text-numo-blue-700 dark:text-numo-blue-400">
+          {token}
+        </span>,
+      );
+    }
+
+    lastIndex = index + token.length;
+  }
+
+  if (lastIndex < code.length) {
+    nodes.push(code.slice(lastIndex));
+  }
+
+  return nodes;
 }
 
 function ColorControl({

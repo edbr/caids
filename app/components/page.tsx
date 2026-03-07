@@ -85,6 +85,8 @@ const BRAND_BUSINESS_CARD_FILES = [
   "Numo_BusinessCardsOL_020723_Back.pdf",
   "Numo_BusinessCardsOL_020723_FrontSaba.pdf",
 ] as const;
+const CODE_TOKEN_REGEX =
+  /(\b(?:import|from|export|default|function|return|const|let|var|class|new|if|else|type|interface|as|await|async)\b)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g;
 
 function brandAssetUrl(folder: "logos" | "images" | "tablet" | "businessCard", file: string) {
   return `${BRAND_ASSETS_BASE_URL.replace(/\/$/, "")}/${folder}/${encodeURIComponent(file)}`;
@@ -95,6 +97,42 @@ function formatAudioTime(totalSeconds: number) {
   const mm = String(Math.floor(s / 60)).padStart(2, "0");
   const ss = String(s % 60).padStart(2, "0");
   return `${mm}:${ss}`;
+}
+
+function renderCodeWithColor(code: string) {
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+
+  for (const match of code.matchAll(CODE_TOKEN_REGEX)) {
+    const token = match[0];
+    const index = match.index ?? 0;
+
+    if (index > lastIndex) {
+      nodes.push(code.slice(lastIndex, index));
+    }
+
+    if (match[1]) {
+      nodes.push(
+        <span key={`${index}-kw`} className="text-numo-red-600 dark:text-numo-red-400">
+          {token}
+        </span>,
+      );
+    } else if (match[2]) {
+      nodes.push(
+        <span key={`${index}-str`} className="text-numo-blue-700 dark:text-numo-blue-400">
+          {token}
+        </span>,
+      );
+    }
+
+    lastIndex = index + token.length;
+  }
+
+  if (lastIndex < code.length) {
+    nodes.push(code.slice(lastIndex));
+  }
+
+  return nodes;
 }
 
 function AudioPlayButtonDemo() {
@@ -690,11 +728,12 @@ const MENU_ICONS = {
       title="Components"
       description="Primitives you'll reuse everywhere. Keep these boring, consistent, and token-driven."
       hideDescriptionOnMobile
+      hidePageIntro
     >
       
 
-      <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
-        <aside className="h-fit rounded-xl border border-border bg-muted/25 p-2 lg:sticky lg:top-24">
+      <div className="grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-14">
+        <aside className="mt-8 h-fit rounded-xl border border-border bg-muted/25 p-2 lg:sticky lg:top-24 lg:mt-10">
           <p className="px-2 pb-2 pt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Clinical EMR
           </p>
@@ -763,16 +802,16 @@ const MENU_ICONS = {
           </div>
         </aside>
 
-        <section className="rounded-xl bg-muted/30 p-6 space-y-4">
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">{activeItem.title}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{activeItem.description}</p>
+        <section className="mt-12 w-full max-w-180 space-y-12 rounded-xl px-6 py-12 pb-6 pt-2 lg:mt-16">
+          <div className="text-left">
+            <h2 className="text-3xl font-semibold text-foreground">{activeItem.title}</h2>
+            <p className="mt-1 text-lg text-muted-foreground">{activeItem.description}</p>
           </div>
-          <div className="rounded-xl p-4">{activeItem.render}</div>
-          <div className="rounded-xl border border-border bg-background p-4">
+          <div className="mx-auto w-full max-w-180">{activeItem.render}</div>
+          <div className="mx-auto w-full max-w-180 rounded-xl border border-border bg-background p-4">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Code</p>
-            <pre className="overflow-x-auto text-xs leading-6 text-foreground">
-              <code>{activeItem.code}</code>
+            <pre className="overflow-x-auto text-xs leading-6 text-numo-slate-800 dark:text-numo-slate-200">
+              <code>{renderCodeWithColor(activeItem.code)}</code>
             </pre>
           </div>
         </section>

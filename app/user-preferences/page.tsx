@@ -9,10 +9,11 @@ export default function UserPreferencesPage() {
       title="Prototypes"
       description="User preferences workflow after clinical login."
       hideDescriptionOnMobile
+      hidePageIntro
     >
       <UserPreferencesPrototype />
 
-      <section className="rounded-xl border border-border bg-background p-5 md:p-6">
+      <section className="rounded-xl border border-border mt-12 bg-background p-5 md:p-6">
         <h2 className="text-lg font-semibold tracking-tight text-numo-blue-900">
           How User Preferences Works With Supabase
         </h2>
