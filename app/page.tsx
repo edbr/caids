@@ -54,10 +54,10 @@ export default function Home() {
       hideDescriptionOnMobile
       className="[&_header>div:last-child]:hidden"
     >
-      <section className="relative overflow-hidden rounded-2xl px-6 py-8 md:px-10 md:py-12">
+      <section className="relative overflow-hidden rounded-2xl px-1 py-6 sm:px-2 md:px-10 md:py-12">
         <div className="absolute inset-x-0 top-0" />
-        <div className="flex flex-col gap-24 xl:flex-row xl:items-stretch">
-          <div className="xl:w-[40%]">
+        <div className="flex flex-col gap-10 lg:gap-14 xl:flex-row xl:items-stretch">
+          <div className="min-w-0 xl:w-[40%]">
             <p className="inline-flex items-center gap-2 rounded-full border border-numo-slate-500/70 bg-background/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-numo-blue-700 backdrop-blur dark:bg-black/25">
               <Sparkles className="h-3.5 w-3.5 text-numo-teal-600" />
               Curie + Numo Design Language
@@ -89,7 +89,7 @@ export default function Home() {
                 <span>components/clinician-actions.tsx</span>
                 <span>tsx</span>
               </div>
-              <pre className="overflow-x-auto p-4 text-xs leading-relaxed text-numo-slate-400">
+              <pre className="overflow-x-auto p-3 text-[11px] leading-relaxed text-numo-slate-400 sm:p-4 sm:text-xs">
                 <code>
                   <span className="text-numo-teal-400">import</span>
                   <span> {"{ CurieButton }"} </span>
@@ -156,14 +156,14 @@ export default function Home() {
             </div>
           </div>
 
-          <aside className="flex flex-1 flex-col gap-6 xl:w-[60%] xl:self-stretch">
+          <aside className="flex w-full flex-1 flex-col gap-4 sm:gap-6 xl:w-[60%] xl:self-stretch">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground"></p>
               <p className="mt-1.5 text-xs text-muted-foreground"></p>
             </div>
 
-            <div className="grid gap-7 xl:grid-cols-12">
-              <article className="rounded-xl border border-numo-gray-600 bg-white px-8 pt-8 pb-2 shadow-lg xl:col-span-5 xl:col-start-8 xl:row-start-1 xl:row-span-2">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-12 xl:gap-7">
+              <article className="min-w-0 rounded-xl border border-numo-gray-600 bg-white px-4 pb-3 pt-4 shadow-lg sm:px-6 sm:pb-4 sm:pt-6 xl:col-span-5 xl:col-start-8 xl:row-span-2 xl:px-8 xl:pb-2 xl:pt-8">
                 <h3 className="text-lg font-semibold tracking-tight text-foreground">Color picker</h3>
                 <p className="mt-1 text-xs text-muted-foreground">Select a design token to preview palette coverage.</p>
                 <div className="mt-3 space-y-2">
@@ -205,7 +205,7 @@ export default function Home() {
                 </div>
               </article>
 
-              <article className="rounded-xl border border-numo-gray-600 bg-white p-8 shadow-lg xl:col-span-5 xl:col-start-8 xl:row-start-3">
+              <article className="min-w-0 rounded-xl border border-numo-gray-600 bg-white p-4 shadow-lg sm:p-6 xl:col-span-5 xl:col-start-8 xl:row-start-3 xl:p-8">
                 <div className="space-y-4">
                   <label className="block">
                     <p className="mb-1.5 text-xs font-medium text-foreground">Email</p>
@@ -232,12 +232,12 @@ export default function Home() {
                 </div>
               </article>
 
-              <article className="rounded-xl border border-numo-gray-600 bg-white p-4 shadow-lg xl:col-span-7 xl:col-start-1 xl:row-start-3 xl:row-span-2">
+              <article className="min-w-0 overflow-hidden rounded-xl border border-numo-gray-600 bg-white p-3 shadow-lg sm:p-4 xl:col-span-7 xl:col-start-1 xl:row-start-3 xl:row-span-2">
                 <DSConversationModule className="" />
               </article>
 
-              <article className="rounded-xl border border-numo-gray-600 bg-white p-8 shadow-lg xl:col-span-7 xl:col-start-1 xl:row-start-1 xl:row-span-2">
-                <div className="mt-3">
+              <article className="min-w-0 overflow-hidden rounded-xl border border-numo-gray-600 bg-white p-4 shadow-lg sm:p-6 xl:col-span-7 xl:col-start-1 xl:row-start-1 xl:row-span-2 xl:p-8">
+                <div className="mt-2 sm:mt-3">
                   <DSClinicalEmrGraphsDemo showPatientMonitoringBars={false} />
                 </div>
               </article>

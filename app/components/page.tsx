@@ -305,21 +305,21 @@ export default function ComponentsPage() {
       title: "Brand Images",
       description: "Additional brand imagery from /public/images.",
       render: (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {BRAND_IMAGE_FILES.map((file) => (
-            <div key={file} className="group relative rounded-lg border border-border bg-background p-3">
+            <div key={file} className="group relative min-w-0 overflow-hidden rounded-lg border border-border bg-background p-2.5 sm:p-3">
               <Image
                 src={brandAssetUrl("images", file)}
                 alt={file.replace(".png", "").replaceAll("_", " ")}
                 width={640}
                 height={420}
-                className="h-40 w-full rounded-md object-contain bg-muted/20"
+                className="h-32 w-full rounded-md bg-muted/20 object-contain object-center sm:h-40"
               />
               <button
                 type="button"
                 title={file}
                 onClick={() => copyFileName(file)}
-                className="absolute bottom-2 left-2 right-2 truncate rounded-md bg-numo-blue-900/90 px-2 py-1 text-left text-[10px] font-medium text-white opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100"
+                className="mt-2 block w-full truncate rounded-md bg-numo-blue-900/90 px-2 py-1 text-left text-[10px] font-medium text-white sm:absolute sm:bottom-2 sm:left-2 sm:right-2 sm:mt-0 sm:w-auto sm:opacity-0 sm:transition sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
               >
                 {copiedFile === file ? "Copied" : file}
               </button>
@@ -522,20 +522,20 @@ export default function ComponentsPage() {
       render: (
         <div className="rounded-xl border border-border bg-card p-4 space-y-4">
           <div className="flex flex-wrap items-end gap-3">
-            <div className="min-w-64 space-y-1">
+            <div className="w-full space-y-1 sm:min-w-64 sm:flex-1">
               <p className="text-xs font-medium text-muted-foreground">Search</p>
               <DSInput placeholder="Search notes" />
             </div>
-            <label className="space-y-1">
+            <label className="w-full space-y-1 sm:w-auto">
               <p className="text-xs font-medium text-muted-foreground">Filter</p>
-              <select className="h-10 min-w-40 rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500">
+              <select className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none sm:min-w-40 sm:w-auto focus:border-numo-blue-500">
                 <option>All Notes</option>
                 <option>Video Notes</option>
               </select>
             </label>
-            <label className="space-y-1">
+            <label className="w-full space-y-1 sm:w-auto">
               <p className="text-xs font-medium text-muted-foreground">Author</p>
-              <select className="h-10 min-w-44 rounded-md border border-border bg-background px-3 text-sm outline-none focus:border-numo-blue-500">
+              <select className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm outline-none sm:min-w-44 sm:w-auto focus:border-numo-blue-500">
                 <option>All Authors</option>
                 <option>Brian Lauson</option>
                 <option>Mariana Krajcik</option>
@@ -543,7 +543,7 @@ export default function ComponentsPage() {
             </label>
             <button
               type="button"
-              className="ml-auto inline-flex h-10 items-center gap-2 rounded-md bg-numo-blue-500 px-4 text-sm font-medium text-white transition hover:bg-numo-blue-600"
+              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-numo-blue-500 px-4 text-sm font-medium text-white transition hover:bg-numo-blue-600 sm:ml-auto sm:w-auto"
             >
               <NotebookPen className="h-4 w-4" />
               Add note
@@ -732,7 +732,7 @@ const MENU_ICONS = {
     >
       
 
-      <div className="grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-14">
+      <div className="grid gap-6 md:gap-8 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-14">
         <aside className="mt-8 h-fit rounded-xl border border-border bg-muted/25 p-2 lg:sticky lg:top-24 lg:mt-10">
           <p className="px-2 pb-2 pt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             Clinical EMR
@@ -802,13 +802,13 @@ const MENU_ICONS = {
           </div>
         </aside>
 
-        <section className="mt-12 w-full max-w-180 space-y-12 rounded-xl px-6 py-12 pb-6 pt-2 lg:mt-16">
+        <section className="mt-8 w-full max-w-180 space-y-6 rounded-xl px-3 pb-4 pt-2 sm:px-4 md:mt-10 md:space-y-8 lg:mt-16 lg:px-6 lg:pb-6">
           <div className="text-left">
-            <h2 className="text-3xl font-semibold text-foreground">{activeItem.title}</h2>
-            <p className="mt-1 text-lg text-muted-foreground">{activeItem.description}</p>
+            <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">{activeItem.title}</h2>
+            <p className="mt-1 text-base text-muted-foreground sm:text-lg">{activeItem.description}</p>
           </div>
-          <div className="mx-auto w-full max-w-180">{activeItem.render}</div>
-          <div className="mx-auto w-full max-w-180 rounded-xl border border-border bg-background p-4">
+          <div className="mx-auto w-full max-w-180 min-w-0 overflow-x-auto">{activeItem.render}</div>
+          <div className="mx-auto w-full max-w-180 rounded-xl border border-border bg-background p-3 sm:p-4">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Code</p>
             <pre className="overflow-x-auto text-xs leading-6 text-numo-slate-800 dark:text-numo-slate-200">
               <code>{renderCodeWithColor(activeItem.code)}</code>

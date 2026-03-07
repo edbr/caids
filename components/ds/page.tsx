@@ -47,8 +47,8 @@ export function DSPage({
   return (
     <main className={cn("isolate min-h-dvh bg-background text-foreground", className)}>
       <div className="mx-autospace-y-10 px-6">
-        <header className="relative space-y-5">
-          <div className="rounded-xl py-2 backdrop-blur dark:bg-[linear-gradient(135deg,hsl(var(--numo-slate-900)/0.3)_0%,var(--background)_45%,hsl(var(--numo-slate-900)/0.22)_100%)]">
+        <header className="relative z-50 space-y-5">
+          <div className="sticky top-0 z-50 rounded-xl py-2 backdrop-blur dark:bg-[linear-gradient(135deg,hsl(var(--numo-slate-900)/0.3)_0%,var(--background)_45%,hsl(var(--numo-slate-900)/0.22)_100%)]">
             <div className="hidden items-center justify-between gap-3 md:flex">
               <div className="flex items-center gap-2">
                 <Link
@@ -123,13 +123,13 @@ export function DSPage({
                 <Shapes className="h-4 w-4 text-numo-blue-700" />
                 Curie DS
               </Link>
-              <div className="relative z-310">
+              <div className="relative z-50">
                 <details className="group">
                   <summary className="inline-flex min-h-10 list-none items-center rounded-md border border-border bg-background px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted/50 hover:text-foreground [&::-webkit-details-marker]:hidden">
                     Menu
                   </summary>
 
-                  <div className="absolute right-0 top-[calc(100%+0.4rem)] z-330 w-72 rounded-lg border border-border bg-background p-2 shadow-md">
+                  <div className="absolute right-0 top-[calc(100%+0.4rem)] z-[60] w-[min(18rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] rounded-lg border border-border bg-background p-2 shadow-md">
                     <MobileNavLink href="/">Home</MobileNavLink>
                     <MobileNavLink href="/foundations">Foundations</MobileNavLink>
                     <MobileNavLink href="/components">Components</MobileNavLink>
