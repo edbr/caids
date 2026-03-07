@@ -28,12 +28,12 @@ export function PatternVideoCall({
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-border bg-[#0f1720] text-white shadow-md">
-      <div className="relative h-[440px]">
+      <div className="relative h-110">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#2d4158_0%,#0f1720_60%)]" />
         <div className="absolute left-4 top-4 rounded-md bg-black/40 px-2 py-1 text-xs font-medium">
           Patient: {patientName}
         </div>
-        <div className="absolute left-1/2 top-1/2 w-[94%] max-w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-black/25 p-3 backdrop-blur-sm">
+        <div className="absolute left-1/2 top-1/2 w-[94%] max-w-180 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-black/25 p-3 backdrop-blur-sm">
           <div className="aspect-video rounded-lg border border-white/10 bg-[linear-gradient(135deg,#182635,#0f1720)]" />
           <div className="mt-2 text-center text-xs text-white/70">Two-way video stream</div>
         </div>
@@ -43,7 +43,7 @@ export function PatternVideoCall({
           <p className="mt-1 text-center text-[10px] text-white/75">You</p>
         </div>
 
-        <div className="absolute bottom-4 left-1/2 w-[calc(100%-2rem)] max-w-[860px] -translate-x-1/2 rounded-xl border border-white/15 bg-black/45 p-3 backdrop-blur-md">
+        <div className="absolute bottom-4 left-1/2 w-[calc(100%-2rem)] max-w-215 -translate-x-1/2 rounded-xl border border-white/15 bg-black/45 p-3 backdrop-blur-md">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
               <DockButton label="Report" Icon={FileText} />

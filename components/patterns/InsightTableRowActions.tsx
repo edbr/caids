@@ -8,14 +8,20 @@ import { PatternVideoCall } from "@/components/patterns/PatternVideoCall";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+const ALL_ACTION_STATES: ActionState[] = ["default", "disabled", "loading", "success", "danger"];
+
 export function InsightTableRowActions({
   scheduleState = "default",
   messageState = "default",
   videoCallState = "default",
+  disabled = false,
+  showStateGallery = false,
 }: {
   scheduleState?: ActionState;
   messageState?: ActionState;
   videoCallState?: ActionState;
+  disabled?: boolean;
+  showStateGallery?: boolean;
 }) {
   const [resolvedScheduleState, setResolvedScheduleState] = React.useState<ActionState>(scheduleState);
   const [isDatePickerOpen, setIsDatePickerOpen] = React.useState(false);
@@ -42,25 +48,67 @@ export function InsightTableRowActions({
             key: "schedule",
             Icon: Calendar,
             label: "Schedule follow-up",
-            state: resolvedScheduleState,
-            onClick: () => setIsDatePickerOpen(true),
+            state: disabled ? "disabled" : resolvedScheduleState,
+            onClick: disabled ? undefined : () => setIsDatePickerOpen(true),
           },
           {
             key: "message",
             Icon: MessageSquare,
             label: "Send SMS",
-            state: messageState,
-            onClick: () => setIsConversationOpen(true),
+            state: disabled ? "disabled" : messageState,
+            onClick: disabled ? undefined : () => setIsConversationOpen(true),
           },
           {
             key: "video-call",
             Icon: Video,
             label: "Start video call",
-            state: videoCallState,
-            onClick: () => setIsVideoCallOpen(true),
+            state: disabled ? "disabled" : videoCallState,
+            onClick: disabled ? undefined : () => setIsVideoCallOpen(true),
           },
         ]}
       />
+      {showStateGallery ? (
+        <div className="mt-4 space-y-3 border-t border-border/70 pt-3">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            All Icon States
+          </p>
+          <div className="space-y-2">
+            <div className="grid gap-1">
+              <p className="text-xs text-muted-foreground">Calendar</p>
+              <RowActions
+                actions={ALL_ACTION_STATES.map((state) => ({
+                  key: `calendar-${state}`,
+                  Icon: Calendar,
+                  label: `Schedule follow-up (${state})`,
+                  state,
+                }))}
+              />
+            </div>
+            <div className="grid gap-1">
+              <p className="text-xs text-muted-foreground">Message</p>
+              <RowActions
+                actions={ALL_ACTION_STATES.map((state) => ({
+                  key: `message-${state}`,
+                  Icon: MessageSquare,
+                  label: `Send SMS (${state})`,
+                  state,
+                }))}
+              />
+            </div>
+            <div className="grid gap-1">
+              <p className="text-xs text-muted-foreground">Video</p>
+              <RowActions
+                actions={ALL_ACTION_STATES.map((state) => ({
+                  key: `video-${state}`,
+                  Icon: Video,
+                  label: `Start video call (${state})`,
+                  state,
+                }))}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {isDatePickerOpen ? (
         <div className="fixed inset-0 z-[140]">

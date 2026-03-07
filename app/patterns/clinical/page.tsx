@@ -31,6 +31,7 @@ export default function ClinicalPatternsPage() {
               scheduleState="default"
               messageState="default"
               videoCallState="default"
+              showStateGallery
             />
           </aside>
         </section>

@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   Calendar,
   CheckCircle2,
+  Loader2,
   MessageSquare,
   Video,
 } from "lucide-react";
@@ -45,6 +46,7 @@ function ActionIcon({
   state?: ActionState;
   className?: string;
 }) {
+  if (state === "loading") return <Loader2 className={(className ?? "") + " animate-spin"} />;
   if (state === "success") return <CheckCircle2 className={className} />;
   if (state === "danger") return <AlertTriangle className={className} />;
   return null;
@@ -75,7 +77,7 @@ export function RowActions({ actions }: { actions: RowAction[] }) {
     <TooltipProvider delayDuration={200}>
       <div className="flex items-center justify-end gap-3">
         {actions.map(({ key, Icon, label, state, onClick }) => {
-          const isDisabled = state === "disabled";
+          const isDisabled = state === "disabled" || state === "loading";
 
           const base =
             "group relative inline-flex items-center justify-center h-8 w-8 rounded-md border border-border/60 bg-background/70 transition";
@@ -99,6 +101,7 @@ export function RowActions({ actions }: { actions: RowAction[] }) {
                 <>
                   {label}
                   {state === "disabled" && " (disabled)"}
+                  {state === "loading" && " (sending...)"}
                   {state === "success" && " (sent)"}
                   {state === "danger" && " (needs attention)"}
                 </>
@@ -113,7 +116,7 @@ export function RowActions({ actions }: { actions: RowAction[] }) {
               >
                 <Icon className="h-4 w-4" />
 
-                {(state === "success" || state === "danger") && (
+                {(state === "loading" || state === "success" || state === "danger") && (
                   <span className="absolute -bottom-1 -right-1 grid place-items-center h-4 w-4 rounded-full bg-background border border-border shadow-sm">
                     <ActionIcon state={state} className="h-3 w-3 text-foreground" />
                   </span>

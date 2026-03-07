@@ -299,6 +299,7 @@ function InsightRow({
             scheduleState={row.actionStates.schedule}
             messageState={row.actionStates.message}
             videoCallState={row.actionStates.videoCall}
+            disabled
           />
         </div>
       </div>
