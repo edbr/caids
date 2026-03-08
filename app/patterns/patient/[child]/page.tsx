@@ -38,7 +38,7 @@ export default async function PatientChildPatternPage({
       hidePageIntro
     >
       <div className="space-y-8">
-        <section className="rounded-xl border border-border bg-muted/30 p-6 overflow-visible">
+        <section className="rounded-xl  p-6 overflow-visible">
           <h2 className="mb-4 text-lg font-semibold">{selected.title}</h2>
           {selected.render()}
         </section>
