@@ -1,0 +1,69 @@
+export type PatternRoute = {
+  href: `/patterns/${string}`;
+  title: string;
+  description: string;
+  type: string;
+  children: Array<{
+    title: string;
+    href: `/patterns/${string}/${string}`;
+  }>;
+};
+
+export const PATTERN_ROUTES: PatternRoute[] = [
+  {
+    href: "/patterns/clinical",
+    title: "Clinical Patterns",
+    description: "",
+    type: "Clinical",
+    children: [
+      { title: "Curie App Header", href: "/patterns/clinical/curie-app-header" },
+      { title: "AI Signal Insights", href: "/patterns/clinical/ai-signal-insights" },
+      { title: "Notifications Panel", href: "/patterns/clinical/notifications-panel" },
+      { title: "Row Actions", href: "/patterns/clinical/row-actions" },
+      { title: "Actionable Insight Table", href: "/patterns/clinical/actionable-insight-table" },
+    ],
+  },
+  {
+    href: "/patterns/patient",
+    title: "Patient Patterns",
+    description: "",
+    type: "Patient",
+    children: [
+      { title: "Monitoring Bar + Contextual Menu", href: "/patterns/patient/monitoring-bar-contextual-menu" },
+      { title: "Patient Time Selection (Multi-select)", href: "/patterns/patient/patient-time-selection-multi-select" },
+      { title: "Home Menu Overlay", href: "/patterns/patient/home-menu-overlay" },
+    ],
+  },
+];
+
+export function getPatternNeighbors(currentHref: PatternRoute["href"]) {
+  const index = PATTERN_ROUTES.findIndex((pattern) => pattern.href === currentHref);
+  if (index < 0) {
+    return { previous: null, next: null };
+  }
+
+  return {
+    previous: index > 0 ? PATTERN_ROUTES[index - 1]! : null,
+    next: index < PATTERN_ROUTES.length - 1 ? PATTERN_ROUTES[index + 1]! : null,
+  };
+}
+
+export function getChildNeighbors(
+  patternHref: PatternRoute["href"],
+  currentChildHref: PatternRoute["children"][number]["href"]
+) {
+  const pattern = PATTERN_ROUTES.find((item) => item.href === patternHref);
+  if (!pattern) {
+    return { previous: null, next: null };
+  }
+
+  const index = pattern.children.findIndex((child) => child.href === currentChildHref);
+  if (index < 0) {
+    return { previous: null, next: null };
+  }
+
+  return {
+    previous: index > 0 ? pattern.children[index - 1]! : null,
+    next: index < pattern.children.length - 1 ? pattern.children[index + 1]! : null,
+  };
+}

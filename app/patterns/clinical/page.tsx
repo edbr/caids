@@ -3,6 +3,7 @@ import InsightTableDemo from "@/components/patterns/InsightTableDemo";
 import { AISignalInsights } from "@/components/patterns/AISignalInsights";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import { InsightTableRowActions } from "@/components/patterns/InsightTableRowActions";
+import { PatternBottomNav } from "@/components/patterns/PatternBottomNav";
 import { DSPage } from "@/components/ds/page";
 
 export default function ClinicalPatternsPage() {
@@ -39,6 +40,8 @@ export default function ClinicalPatternsPage() {
         <section className="">
           <InsightTableDemo />
         </section>
+
+        <PatternBottomNav currentHref="/patterns/clinical" />
       </div>
     </DSPage>
   );
