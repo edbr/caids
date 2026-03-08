@@ -84,13 +84,14 @@ export default function PrototypesIndexPage() {
           {PROTOTYPES.map((prototype) => {
             const Icon = prototype.icon;
             return (
-              <div
+              <Link
                 key={prototype.href}
-                className="grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-border px-4 py-4 last:border-b-0 md:px-5"
+                href={prototype.href}
+                className="group grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-border px-4 py-4 transition-colors hover:bg-numo-blue-400/8 last:border-b-0 md:px-5"
               >
                 <span
                   className={[
-                    "inline-flex h-10 w-10 items-center justify-center rounded-md border",
+                    "inline-flex h-10 w-10 items-center justify-center rounded-md border group-hover:scale-120",
                     prototype.iconBg,
                     prototype.iconColor,
                   ].join(" ")}
@@ -100,22 +101,23 @@ export default function PrototypesIndexPage() {
 
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-lg font-semibold text-foreground">{prototype.title}</p>
+                    <p className="text-lg font-semibold text-foreground group-hover:scale-103">{prototype.title}</p>
                     <span className="rounded-full border border-border bg-muted/50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                       {prototype.type}
                     </span>
                   </div>
-                  <p className="mt-1 line-clamp-2 text-base text-muted-foreground">{prototype.description}</p>
+                  <p className="mt-1 line-clamp-2 text-base text-muted-foreground  group-hover:text-foreground">{prototype.description}</p>
                 </div>
 
-                <Link
-                  href={prototype.href}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-background px-4 text-md font-medium text-foreground transition hover:border-numo-blue-400/60 hover:text-numo-blue-700"
-                >
-                  Open
-                  <span className="text-xl leading-none">+</span>
-                </Link>
-              </div>
+                <span className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-background px-4 text-md font-medium text-foreground transition group-hover:border-numo-blue-400/60 group-hover:text-numo-blue-700">
+                  <span className="transition-transform duration-200 group-hover:-translate-x-0.5">
+                    Open
+                  </span>
+                  <span className="text-xl leading-none transition-transform duration-200 group-hover:scale-125 group-hover:rotate-90 group-hover:text-numo-teal-500">
+                    +
+                  </span>
+                </span>
+              </Link>
             );
           })}
         </div>

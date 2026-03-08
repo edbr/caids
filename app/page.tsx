@@ -8,6 +8,7 @@ import { DSClinicalEmrGraphsDemo } from "@/components/ds/clinical-emr-graphs-dem
 import { DSInput } from "@/components/ds/input";
 import { PrimaryBtn, SecondaryBtn } from "@/components/ds/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 const COLOR_GROUPS = [
@@ -18,6 +19,7 @@ const COLOR_GROUPS = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [selectedToken, setSelectedToken] = useState("--numo-teal-500");
 
   const selectedColor = useMemo(
@@ -54,7 +56,21 @@ export default function Home() {
       hideDescriptionOnMobile
       className="[&_header>div:last-child]:hidden"
     >
-      <section className="relative overflow-hidden rounded-2xl px-1 py-6 sm:px-2 md:px-10 md:py-12">
+      <section
+        role="link"
+        tabIndex={0}
+        onClick={(event) => {
+          const target = event.target as HTMLElement;
+          if (target.closest("a,button,input,select,textarea,label")) return;
+          router.push("/components");
+        }}
+        onKeyDown={(event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          router.push("/components");
+        }}
+        className="relative cursor-pointer overflow-hidden rounded-2xl px-1 py-6 transition-colors hover:bg-numo-blue-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-2 md:px-10 md:py-12"
+      >
         <div className="absolute inset-x-0 top-0" />
         <div className="flex flex-col gap-10 lg:gap-14 xl:flex-row xl:items-stretch">
           <div className="min-w-0 xl:w-[40%]">

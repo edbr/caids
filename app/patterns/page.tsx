@@ -81,12 +81,14 @@ export default function PatternsIndexPage() {
                           href={child.href}
                           className="group flex items-center justify-between gap-3 rounded-md border border-border/70 bg-muted/25 px-3 py-3 text-sm text-foreground transition hover:border-numo-teal-300/70 hover:bg-numo-teal-100/10"
                         >
-                          <span className="font-medium text-numo-blue-800 group-hover:text-numo-blue-900 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+                          <span className="font-medium text-numo-blue-800 group-hover:text-numo-blue-900  group-hover:translate-x-0.5">
                             {child.title}
                           </span>
                           <span className="inline-flex items-center gap-1 text-xs text-muted-foreground group-hover:text-numo-blue-800">
-                            View
-                            <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:-rotate-12" />
+                            <span className="transition-transform duration-200 group-hover:text-numo-teal-800 group-hover:-translate-x-0.5">
+                              View
+                            </span>
+                            <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:-rotate-12 group-hover:scale-110 group-hover:animate-bounce" />
                           </span>
                         </Link>
                       ))}
