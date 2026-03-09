@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { DSPage } from "@/components/ds/page";
 import { DSFooter } from "@/components/ds/footer";
 import { DSConversationModule } from "@/components/ds/conversation-module";
@@ -18,9 +19,115 @@ const COLOR_GROUPS = [
   { family: "Red", shades: ["900", "800", "700", "600", "500", "400"] },
 ];
 
+const NUMO_HOME_SNIPPET = `"use client";
+
+import * as React from "react";
+import { DSPage } from "@/components/ds/page";
+import { AISignalInsights } from "@/components/patterns/AISignalInsights";
+import { CurieHeader } from "@/components/patterns/CurieHeader";
+import InsightTableDemo from "@/components/patterns/InsightTableDemo";
+import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
+
+export default function NumoHomePage() {
+  const [notificationsOpen, setNotificationsOpen] = React.useState(false);
+  const unreadCount = 2;
+
+  return (
+    <DSPage title="Protypes" hidePageIntro>
+      <section className="-mx-6 w-[calc(100%+3rem)]">
+        <div className="relative overflow-visible rounded-xl bg-background">
+          <div className="sticky top-0 z-40 bg-muted/40 backdrop-blur-sm">
+            <CurieHeader
+              unreadCount={unreadCount}
+              notificationsOpen={notificationsOpen}
+              onToggleNotifications={() => setNotificationsOpen((v) => !v)}
+              notificationPanel={notificationsOpen ? <NotificationsPanelDemo showReset={false} /> : null}
+            />
+          </div>
+          <div className="space-y-8 px-4 pb-5 pt-3">
+            <AISignalInsights />
+            <InsightTableDemo />
+          </div>
+        </div>
+      </section>
+    </DSPage>
+  );
+}`;
+
+const KEYWORD_PATTERN = /\b(import|from|export|default|function|const|return|if|null|true|false)\b/g;
+const STRING_PATTERN = /(["'`])(?:(?=(\\?))\2.)*?\1/g;
+
+function highlightCodeLine(line: string): ReactNode[] {
+  const chunks: Array<{ start: number; end: number; type: "string" | "keyword" }> = [];
+
+  for (const match of line.matchAll(STRING_PATTERN)) {
+    if (match.index === undefined) continue;
+    chunks.push({ start: match.index, end: match.index + match[0].length, type: "string" });
+  }
+
+  for (const match of line.matchAll(KEYWORD_PATTERN)) {
+    if (match.index === undefined) continue;
+    const start = match.index;
+    const end = start + match[0].length;
+    const overlapsString = chunks.some(
+      (chunk) => chunk.type === "string" && !(end <= chunk.start || start >= chunk.end),
+    );
+    if (!overlapsString) {
+      chunks.push({ start, end, type: "keyword" });
+    }
+  }
+
+  chunks.sort((a, b) => a.start - b.start);
+
+  const nodes: ReactNode[] = [];
+  let cursor = 0;
+
+  chunks.forEach((chunk, idx) => {
+    if (chunk.start > cursor) {
+      nodes.push(<span key={`plain-${idx}-${cursor}`}>{line.slice(cursor, chunk.start)}</span>);
+    }
+    nodes.push(
+      <span
+        key={`${chunk.type}-${idx}-${chunk.start}`}
+        className={chunk.type === "string" ? "text-numo-yellow-400" : "text-numo-teal-300"}
+      >
+        {line.slice(chunk.start, chunk.end)}
+      </span>,
+    );
+    cursor = chunk.end;
+  });
+
+  if (cursor < line.length) {
+    nodes.push(<span key={`tail-${cursor}`}>{line.slice(cursor)}</span>);
+  }
+
+  return nodes;
+}
+
 export default function Home() {
   const router = useRouter();
   const [selectedToken, setSelectedToken] = useState("--numo-teal-500");
+  const [typedSnippet, setTypedSnippet] = useState("");
+  const codePreRef = useRef<HTMLPreElement | null>(null);
+
+  useEffect(() => {
+    const stepMs = 14;
+    let index = 0;
+    const intervalId = window.setInterval(() => {
+      index += 1;
+      setTypedSnippet(NUMO_HOME_SNIPPET.slice(0, index));
+      if (index >= NUMO_HOME_SNIPPET.length) {
+        window.clearInterval(intervalId);
+      }
+    }, stepMs);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (!codePreRef.current) return;
+    codePreRef.current.scrollTop = codePreRef.current.scrollHeight;
+  }, [typedSnippet]);
 
   const selectedColor = useMemo(
     () =>
@@ -102,71 +209,22 @@ export default function Home() {
 
             <div className="mt-8 max-w-3xl overflow-hidden rounded-xl border border-border bg-numo-blue-900/95">
               <div className="flex items-center justify-between border-b border-white/10 px-4 py-2 text-xs text-numo-slate-400">
-                <span>components/clinician-actions.tsx</span>
+                <span>app/numo-home/page.tsx</span>
                 <span>tsx</span>
               </div>
-              <pre className="overflow-x-auto p-3 text-[11px] leading-relaxed text-numo-slate-400 sm:p-4 sm:text-xs">
+              <pre
+                ref={codePreRef}
+                className="h-100 min-h-100 max-h-100 overflow-y-auto overflow-x-hidden p-3 text-[11px] leading-relaxed text-numo-slate-300 [scrollbar-width:thin] [scrollbar-color:hsl(var(--numo-blue-500))_hsl(var(--numo-blue-900))] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[hsl(var(--numo-blue-900))] [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[hsl(var(--numo-blue-500))] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[hsl(var(--numo-blue-700))] sm:p-4 sm:text-xs"
+              >
                 <code>
-                  <span className="text-numo-teal-400">import</span>
-                  <span> {"{ CurieButton }"} </span>
-                  <span className="text-numo-teal-400">from</span>
-                  <span className="text-numo-yellow-500"> &quot;@/components/ds/button&quot;</span>
-                  {"\n"}
-                  <span className="text-numo-teal-400">import</span>
-                  <span> {"{ Tooltip }"} </span>
-                  <span className="text-numo-teal-400">from</span>
-                  <span className="text-numo-yellow-500"> &quot;@/components/ui/tooltip&quot;</span>
-                  {"\n\n"}
-                  <span className="text-numo-teal-400">export</span>
-                  <span> </span>
-                  <span className="text-numo-teal-400">function</span>
-                  <span className="text-numo-orange-500"> ClinicianActions</span>
-                  <span>() {"{"}</span>
-                  {"\n  "}
-                  <span className="text-numo-teal-400">return</span>
-                  <span> (</span>
-                  {"\n    "}
-                  <span className="text-numo-slate-500">&lt;</span>
-                  <span className="text-numo-blue-400">div</span>
-                  <span className="text-numo-red-500"> className</span>
-                  <span className="text-numo-slate-500">=</span>
-                  <span className="text-numo-yellow-500">&quot;flex items-center gap-2&quot;</span>
-                  <span className="text-numo-slate-500">&gt;</span>
-                  {"\n      "}
-                  <span className="text-numo-slate-500">&lt;</span>
-                  <span className="text-numo-blue-400">CurieButton</span>
-                  <span className="text-numo-slate-500">&gt;</span>
-                  <span>Review Results</span>
-                  <span className="text-numo-slate-500">&lt;/</span>
-                  <span className="text-numo-blue-400">CurieButton</span>
-                  <span className="text-numo-slate-500">&gt;</span>
-                  {"\n      "}
-                  <span className="text-numo-slate-500">&lt;</span>
-                  <span className="text-numo-blue-400">Tooltip</span>
-                  <span className="text-numo-red-500"> content</span>
-                  <span className="text-numo-slate-500">=</span>
-                  <span className="text-numo-yellow-500">&quot;Latest patient insight&quot;</span>
-                  <span className="text-numo-slate-500">&gt;</span>
-                  {"\n        "}
-                  <span className="text-numo-slate-500">&lt;</span>
-                  <span className="text-numo-blue-400">button</span>
-                  <span className="text-numo-slate-500">&gt;</span>
-                  <span>AI Signal</span>
-                  <span className="text-numo-slate-500">&lt;/</span>
-                  <span className="text-numo-blue-400">button</span>
-                  <span className="text-numo-slate-500">&gt;</span>
-                  {"\n      "}
-                  <span className="text-numo-slate-500">&lt;/</span>
-                  <span className="text-numo-blue-400">Tooltip</span>
-                  <span className="text-numo-slate-500">&gt;</span>
-                  {"\n    "}
-                  <span className="text-numo-slate-500">&lt;/</span>
-                  <span className="text-numo-blue-400">div</span>
-                  <span className="text-numo-slate-500">&gt;</span>
-                  {"\n  "}
-                  <span>)</span>
-                  {"\n"}
-                  <span>{"}"}</span>
+                  {typedSnippet.split("\n").map((line, idx, arr) => (
+                    <div key={`code-line-${idx}`} className="whitespace-pre">
+                      {highlightCodeLine(line)}
+                      {idx === arr.length - 1 ? (
+                        <span className="animate-pulse text-numo-blue-300">|</span>
+                      ) : null}
+                    </div>
+                  ))}
                 </code>
               </pre>
             </div>
