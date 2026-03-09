@@ -22,6 +22,7 @@ export default function NumoHomePage() {
         <div className="relative overflow-visible rounded-xl bg-background">
           <div className="sticky top-0 z-40 -mx-4 bg-muted/40 px-4 py-1.5 backdrop-blur-sm md:-mx-6 md:px-6 md:py-2">
             <CurieHeader
+              showMobilePreview={false}
               unreadCount={unreadCount}
               notificationsOpen={notificationsOpen}
               onToggleNotifications={() => setNotificationsOpen((v) => !v)}

@@ -68,12 +68,12 @@ export function InsightTableRowActions({
         ]}
       />
       {showStateGallery ? (
-        <div className="mt-4 space-y-3 border-t border-border/70 pt-3">
+        <div className="mx-auto mt-4 w-full max-w-[720px] space-y-3 border-t border-border/70 pt-3">
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             All Icon States
           </p>
           <div className="space-y-2">
-            <div className="grid gap-1">
+            <div className="grid grid-cols-[96px_1fr] items-center gap-2">
               <p className="text-xs text-muted-foreground">Calendar</p>
               <RowActions
                 actions={ALL_ACTION_STATES.map((state) => ({
@@ -84,7 +84,7 @@ export function InsightTableRowActions({
                 }))}
               />
             </div>
-            <div className="grid gap-1">
+            <div className="grid grid-cols-[96px_1fr] items-center gap-2">
               <p className="text-xs text-muted-foreground">Message</p>
               <RowActions
                 actions={ALL_ACTION_STATES.map((state) => ({
@@ -95,7 +95,7 @@ export function InsightTableRowActions({
                 }))}
               />
             </div>
-            <div className="grid gap-1">
+            <div className="grid grid-cols-[96px_1fr] items-center gap-2">
               <p className="text-xs text-muted-foreground">Video</p>
               <RowActions
                 actions={ALL_ACTION_STATES.map((state) => ({

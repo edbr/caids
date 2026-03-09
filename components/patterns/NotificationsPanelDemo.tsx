@@ -40,7 +40,7 @@ export default function NotificationsPanelDemo({
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
 
   return (
-    <div className="relative inline-block">
+    <div className="relative  inline-block">
       {showReset ? (
         <button
           type="button"

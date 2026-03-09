@@ -3,6 +3,7 @@ import InsightTableDemo from "@/components/patterns/InsightTableDemo";
 import { AISignalInsights } from "@/components/patterns/AISignalInsights";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import { InsightTableRowActions } from "@/components/patterns/InsightTableRowActions";
+import { NightMonitoringDemo } from "@/components/patterns/NightMonitoringDemo";
 import { PatternBottomNav } from "@/components/patterns/PatternBottomNav";
 import { DSPage } from "@/components/ds/page";
 
@@ -16,11 +17,15 @@ export default function ClinicalPatternsPage() {
     >
       <div className="space-y-8">
         <section className="rounded-xl border border-border bg-muted/30 p-6">
-          <CurieHeader />
+          <CurieHeader showMobilePreview />
         </section>
 
         <section className="">
-          <AISignalInsights />
+          <AISignalInsights showMobilePreview />
+        </section>
+
+        <section className="rounded-xl border border-border bg-muted/30 p-6">
+          <NightMonitoringDemo />
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">

@@ -60,11 +60,11 @@ function TooltipZ({
   label: React.ReactNode;
 }) {
   return (
-    <Tooltip>
+    <Tooltip >
       <TooltipTrigger asChild>{children}</TooltipTrigger>
       <TooltipContent
         side="top"
-        className="z-9999 bg-foreground text-background text-xs shadow-md pointer-events-auto"
+        className="z-9999 bg-foreground max-w-180 text-background text-xs shadow-md pointer-events-auto"
       >
         {label}
       </TooltipContent>
@@ -75,7 +75,7 @@ function TooltipZ({
 export function RowActions({ actions }: { actions: RowAction[] }) {
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="flex items-center justify-end gap-3">
+      <div className="mx-auto flex w-full  items-center justify-center gap-6" style={{ minHeight: 54 }}>
         {actions.map(({ key, Icon, label, state, onClick }) => {
           const isDisabled = state === "disabled" || state === "loading";
 

@@ -4,21 +4,30 @@ import InsightTableDemo from "@/components/patterns/InsightTableDemo";
 import { AISignalInsights } from "@/components/patterns/AISignalInsights";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import { InsightTableRowActions } from "@/components/patterns/InsightTableRowActions";
+import { NightMonitoringDemo } from "@/components/patterns/NightMonitoringDemo";
 import { PatternChildBottomNav } from "@/components/patterns/PatternChildBottomNav";
 import { DSPage } from "@/components/ds/page";
 
 const CLINICAL_CHILDREN = {
   "curie-app-header": {
     title: "Curie App Header",
-    render: () => <CurieHeader />,
+    render: () => <CurieHeader showMobilePreview />,
   },
   "ai-signal-insights": {
     title: "AI Signal Insights",
-    render: () => <AISignalInsights />,
+    render: () => <AISignalInsights showMobilePreview />,
+  },
+  "night-monitoring": {
+    title: "Night Monitoring",
+    render: () => <NightMonitoringDemo />,
   },
   "notifications-panel": {
     title: "Notifications Panel",
-    render: () => <NotificationsPanelDemo />,
+    render: () => (
+      <div className="mx-auto w-full max-w-[560px]">
+        <NotificationsPanelDemo />
+      </div>
+    ),
   },
   "row-actions": {
     title: "Row Actions",

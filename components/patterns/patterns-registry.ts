@@ -18,6 +18,7 @@ export const PATTERN_ROUTES: PatternRoute[] = [
     children: [
       { title: "Curie App Header", href: "/patterns/clinical/curie-app-header" },
       { title: "AI Signal Insights", href: "/patterns/clinical/ai-signal-insights" },
+      { title: "Night Monitoring", href: "/patterns/clinical/night-monitoring" },
       { title: "Notifications Panel", href: "/patterns/clinical/notifications-panel" },
       { title: "Row Actions", href: "/patterns/clinical/row-actions" },
       { title: "Actionable Insight Table", href: "/patterns/clinical/actionable-insight-table" },

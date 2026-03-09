@@ -92,7 +92,7 @@ function formatRelativeTime(from: Date, nowMs: number) {
   return `${days}d ago`;
 }
 
-export function AISignalInsights() {
+export function AISignalInsights({ showMobilePreview = false }: { showMobilePreview?: boolean }) {
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = React.useState<Date | null>(null);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
@@ -244,6 +244,58 @@ export function AISignalInsights() {
           );
         })}
       </div>
+
+      {showMobilePreview ? (
+        <div className="pt-2">
+          <p className="mb-2 text-[11px] text-center font-semibold uppercase tracking-[0.12em] text-muted-foreground pt-12 py-4">
+            Mobile Preview
+          </p>
+          <div className="mx-auto w-full max-w-95 rounded-2xl border border-border bg-background p-3 shadow-sm">
+            <div className="rounded-lg border border-[#d8e4ee] bg-[#f6fbff] px-3 py-2">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2b5a77]">
+                    Latest Update
+                  </p>
+                  <p className="mt-0.5 truncate text-xs text-[#445564]">
+                    {hasMounted && lastUpdated && nowMs !== null
+                      ? LAST_UPDATED_FORMATTER.format(lastUpdated)
+                      : "Syncing..."}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleReload}
+                  disabled={isRefreshing}
+                  aria-label="Reload data"
+                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-[#bfd8ea] bg-white text-[#1f4f6d] transition hover:bg-[#edf7ff] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <RefreshCw className={["h-3.5 w-3.5", isRefreshing ? "animate-spin" : ""].join(" ")} />
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-3 space-y-2">
+              {BUBBLES.slice(0, 4).map((bubble) => (
+                <div
+                  key={`mobile-${bubble.id}`}
+                  className="flex items-center justify-between rounded-lg border border-border bg-muted/25 px-3 py-2"
+                >
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-muted text-foreground">
+                      <bubble.Icon className="h-3.5 w-3.5" />
+                    </span>
+                    <p className="truncate text-xs text-foreground">{bubble.label}</p>
+                  </div>
+                  <p className={["shrink-0 text-base font-semibold", bubble.valueClassName].join(" ")}>
+                    {displayValues[bubble.id] ?? bubble.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
