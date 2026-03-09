@@ -734,7 +734,7 @@ const MENU_ICONS = {
 
       <div className="grid gap-6 md:gap-8 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-14">
         <aside className="mt-8 h-fit rounded-xl border border-border bg-muted/25 p-2 lg:sticky lg:top-24 lg:mt-10">
-          <p className="px-2 pb-2 pt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="px-2 pb-2 pt-1 text-xs font-semibold uppercase tracking-wide text-foreground">
             Clinical EMR
           </p>
           <nav className="space-y-1">
@@ -744,7 +744,7 @@ const MENU_ICONS = {
                 type="button"
                 onClick={() => setActiveId(item.id)}
                 className={[
-                  "w-full rounded-md px-3 py-2 text-left text-sm transition",
+                  "w-full rounded-md px-3 py-2 text-left text-sm text-numo-blue-900 transition",
                   activeId === item.id
                     ? "bg-numo-warm-blue-600 text-white font-medium shadow-sm"
                     : "text-muted-foreground hover:bg-background/70 hover:text-foreground",
@@ -756,7 +756,7 @@ const MENU_ICONS = {
           </nav>
 
           <div className="mt-3 border-t border-border pt-3">
-            <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-foreground">
               Tablet
             </p>
             <nav className="space-y-1">
@@ -766,7 +766,7 @@ const MENU_ICONS = {
                   type="button"
                   onClick={() => setActiveId(item.id)}
                   className={[
-                    "w-full rounded-md px-3 py-2 text-left text-sm transition",
+                    "w-full rounded-md px-3 py-2 text-left text-numo-blue-900 text-sm transition",
                     activeId === item.id
                       ? "bg-numo-blue-600 text-white font-medium shadow-sm"
                       : "text-muted-foreground hover:bg-background/70 hover:text-foreground",
@@ -779,7 +779,7 @@ const MENU_ICONS = {
           </div>
 
           <div className="mt-3 border-t border-border pt-3">
-            <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-foreground">
               Brand
             </p>
             <nav className="space-y-1">
@@ -789,7 +789,7 @@ const MENU_ICONS = {
                   type="button"
                   onClick={() => setActiveId(item.id)}
                   className={[
-                    "w-full rounded-md px-3 py-2 pl-6 text-left text-sm transition",
+                    "w-full rounded-md px-3 py-2 pl-6 text-left text-numo-blue-900 text-sm transition",
                     activeId === item.id
                       ? "bg-numo-blue-600 text-white font-medium shadow-sm"
                       : "text-muted-foreground hover:bg-background/70 hover:text-foreground",
@@ -810,7 +810,7 @@ const MENU_ICONS = {
           <div className="mx-auto w-full max-w-180 min-w-0 overflow-x-auto">{activeItem.render}</div>
           <div className="mx-auto w-full max-w-180 rounded-xl border border-border bg-background p-3 sm:p-4">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Code</p>
-            <pre className="overflow-x-auto text-xs leading-6 text-numo-slate-800 dark:text-numo-slate-200">
+            <pre className="overflow-x-auto text-xs leading-6 text-numo-blue-700 dark:text-numo-slate-200">
               <code>{renderCodeWithColor(activeItem.code)}</code>
             </pre>
           </div>

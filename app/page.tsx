@@ -214,7 +214,7 @@ export default function Home() {
               </div>
               <pre
                 ref={codePreRef}
-                className="h-100 min-h-100 max-h-100 overflow-y-auto overflow-x-hidden p-3 text-[11px] leading-relaxed text-numo-slate-300 [scrollbar-width:thin] [scrollbar-color:hsl(var(--numo-blue-500))_hsl(var(--numo-blue-900))] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[hsl(var(--numo-blue-900))] [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[hsl(var(--numo-blue-500))] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-[hsl(var(--numo-blue-700))] sm:p-4 sm:text-xs"
+                className="h-100 min-h-100 max-h-100 overflow-y-auto overflow-x-hidden p-3 text-[11px] leading-relaxed text-numo-slate-300 [scrollbar-width:thin] [scrollbar-color:hsl(var(--numo-blue-500))_hsl(var(--numo-blue-900))] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-numo-blue-900 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-numo-blue-500 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border [&::-webkit-scrollbar-thumb]:border-numo-blue-700 sm:p-4 sm:text-xs"
               >
                 <code>
                   {typedSnippet.split("\n").map((line, idx, arr) => (
