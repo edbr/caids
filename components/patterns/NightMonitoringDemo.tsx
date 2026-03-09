@@ -22,6 +22,11 @@ type SymptomRow = {
 };
 
 const TICKS = [
+  { hour: 0, label: "7:00 PM" },
+  { hour: 3, label: "10:00 PM" },
+  { hour: 6, label: "1:00 AM" },
+  { hour: 9, label: "4:00 AM" },
+  { hour: 12, label: "7:00 AM" },
 ] as const;
 
 const TIME_WINDOWS = [
@@ -120,15 +125,41 @@ function formatClockTime(hourOffset: number) {
   return `${hour12}:${String(mm).padStart(2, "0")} ${suffix}`;
 }
 
+function formatDurationMinutes(minutes: number) {
+  if (minutes < 60) return `${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  const rem = minutes % 60;
+  if (rem === 0) return `${hours}h`;
+  return `${hours}h ${rem}m`;
+}
+
+function renderSymptomLabel(name: SymptomRow["name"]) {
+  if (name === "Heavy breathing") {
+    return (
+      <>
+        Heavy
+        <br />
+        breathing
+      </>
+    );
+  }
+  if (name === "Shortness of breath") {
+    return (
+      <>
+        Shortness
+        <br />
+        of breath
+      </>
+    );
+  }
+  return name;
+}
+
 export function NightMonitoringDemo() {
   const [selectedWindow, setSelectedWindow] = React.useState<number | null>(null);
   const [hoveredWindow, setHoveredWindow] = React.useState<number | null>(null);
   const viewStart = selectedWindow === null ? 0 : TIME_WINDOWS[selectedWindow]!.start;
   const viewEnd = selectedWindow === null ? 12 : TIME_WINDOWS[selectedWindow]!.end;
-  const dividerHours =
-    selectedWindow === null
-      ? [3, 6, 9]
-      : [viewStart + 1, viewStart + 2];
   const headerTicks =
     selectedWindow === null
       ? TICKS
@@ -138,158 +169,244 @@ export function NightMonitoringDemo() {
           { hour: viewStart + 2, label: formatClockTime(viewStart + 2) },
           { hour: viewEnd, label: formatClockTime(viewEnd) },
         ];
+  const symptomSummary = SYMPTOM_ROWS.map((row) => {
+    const detected = row.events.filter((event) => event.mode === "detected").length;
+    const reported = row.events.filter((event) => event.mode === "reported").length;
+    return { name: row.name, detected, reported, color: row.detectedColor };
+  });
+  const detectedTimes = SYMPTOM_ROWS.flatMap((row) =>
+    row.events.filter((event) => event.mode === "detected").map((event) => event.time)
+  ).sort((a, b) => a - b);
+  const quietPeriods: Array<{ start: number; end: number; durationMins: number }> = [];
+  for (let i = 0; i < detectedTimes.length - 1; i += 1) {
+    const start = detectedTimes[i]!;
+    const end = detectedTimes[i + 1]!;
+    const gap = end - start;
+    if (gap >= 1) {
+      quietPeriods.push({
+        start,
+        end,
+        durationMins: Math.round(gap * 60),
+      });
+    }
+  }
 
   return (
     <TooltipProvider delayDuration={120}>
-      <div className="mx-auto w-full max-w-315 rounded-xl border border-border bg-background px-4 py-3 shadow-sm">
-        <div className="rounded-lg  px-3 py-2">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <div className="inline-flex items-center gap-2">
-              <CloudMoon className="h-5 w-5 text-numo-warm-blue-500" />
-              <p className="text-sm font-semibold tracking-wide text-numo-warm-blue-600">NIGHT MONITORING</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSelectedWindow(null)}
-              disabled={selectedWindow === null}
-              className="inline-flex h-7 items-center rounded-md border border-border/70 bg-background px-2 text-[11px] font-medium text-muted-foreground transition hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Back to overview
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-5">
-          <div className="w-full">
-            <div className="grid grid-cols-[180px_1fr] mt-6 gap-3 pb-2">
-              <span className="pt-1 text-[12px] font-medium uppercase tracking-wide text-muted-foreground">
-                Symptoms
-              </span>
-              <div>
-                <div className="grid grid-cols-4 divide-x divide-border/70 overflow-hidden rounded-md border border-border/70 bg-background">
-                  {TIME_WINDOWS.map((window, index) => (
-                    <button
-                      key={window.label}
-                      type="button"
-                      onClick={() =>
-                        setSelectedWindow((prev) => (prev === index ? null : index))
-                      }
-                      className={[
-                        "h-6 text-[10px] font-medium transition-colors duration-200",
-                        selectedWindow === index
-                          ? "bg-numo-blue-500/30 text-numo-blue-900"
-                          : hoveredWindow === index
-                            ? "bg-numo-blue-500/12 text-numo-blue-800"
-                            : "text-muted-foreground hover:bg-muted/60",
-                      ].join(" ")}
-                      aria-pressed={selectedWindow === index}
-                    >
-                      {window.label}
-                    </button>
-                  ))}
-                </div>
+      <div className="mx-auto w-full max-w-315 space-y-4">
+        <div className="rounded-xl border border-border bg-background px-4 py-3 shadow-sm">
+          <div className="rounded-lg  px-3 py-2">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <div className="inline-flex items-center gap-2">
+                <CloudMoon className="h-5 w-5 text-numo-warm-blue-800" />
+                <p className="text-sm font-semibold tracking-wide text-numo-warm-blue-800">NIGHT MONITORING</p>
               </div>
+              <button
+                type="button"
+                onClick={() => setSelectedWindow(null)}
+                disabled={selectedWindow === null}
+                className="inline-flex h-7 items-center rounded-md border border-border/70 bg-background px-2 text-[11px] font-medium text-muted-foreground transition hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Back to overview
+              </button>
             </div>
+          </div>
 
-            <div
-              className={[
-                "relative mt-1 rounded-md p-1",
-                selectedWindow === null ? "cursor-pointer" : "",
-              ].join(" ")}
-              onMouseLeave={() => setHoveredWindow(null)}
-            >
-              <div className="space-y-0">
-              {SYMPTOM_ROWS.map((row, rowIndex) => (
-                <div
-                  key={row.name}
-                  className={[
-                    "grid grid-cols-[180px_1fr] items-center gap-3 rounded-md bg-muted/50 px-2 py-1",
-                    rowIndex < SYMPTOM_ROWS.length - 1 ? "border-b border-border/60" : "",
-                  ].join(" ")}
-                >
-                  <p className="text-sm font-medium text-numo-blue-900">
-                    {row.name}
-                  </p>
-                  <div
-                    className="relative h-14 rounded-md"
-                    onMouseMove={(event) => {
-                      if (selectedWindow !== null) return;
-                      const rect = event.currentTarget.getBoundingClientRect();
-                      const relativeX = event.clientX - rect.left;
-                      const slotWidth = rect.width / 4;
-                      const index = Math.max(0, Math.min(3, Math.floor(relativeX / slotWidth)));
-                      setHoveredWindow(index);
-                    }}
-                    onClick={(event) => {
-                      if (selectedWindow !== null) return;
-                      const rect = event.currentTarget.getBoundingClientRect();
-                      const relativeX = event.clientX - rect.left;
-                      const slotWidth = rect.width / 4;
-                      const index = Math.max(0, Math.min(3, Math.floor(relativeX / slotWidth)));
-                      setSelectedWindow(index);
-                    }}
-                  >
-                    {selectedWindow === null ? (
-                      <div
-                        className="pointer-events-none absolute inset-y-0 bg-numo-blue-500/12 transition-all duration-300 ease-out"
-                        style={{
-                          left: `${(hoveredWindow ?? -1) * 25}%`,
-                          width: hoveredWindow === null ? "0%" : "25%",
-                          opacity: hoveredWindow === null ? 0 : 1,
-                        }}
-                      />
-                    ) : (
-                      <div className="pointer-events-none absolute inset-0 bg-numo-blue-500/12 opacity-100 transition-opacity duration-300 ease-out" />
-                    )}
-
-                    {headerTicks.map((tick) => (
-                      <span
-                        key={`${row.name}-${tick.label}`}
-                        style={{ left: percentFromHour(tick.hour, viewStart, viewEnd) }}
-                        className="absolute inset-y-0 w-px -translate-x-1/2 bg-border/60"
-                      />
+          <div className="mt-5">
+            <div className="w-full">
+            <div className="grid grid-cols-[70px_1fr] mt-6 gap-3 pb-2">
+                <span className="pt-1 text-[12px] font-medium uppercase tracking-wide text-muted-foreground">
+                 
+                </span>
+                <div>
+                  <div className="grid grid-cols-4 divide-x divide-border/70 overflow-hidden rounded-md border border-border/70 bg-background">
+                    {TIME_WINDOWS.map((window, index) => (
+                      <button
+                        key={window.label}
+                        type="button"
+                        onClick={() =>
+                          setSelectedWindow((prev) => (prev === index ? null : index))
+                        }
+                        className={[
+                          "h-6 text-[11px] font-medium transition-colors duration-200",
+                          selectedWindow === index
+                            ? "bg-numo-blue-500/30 text-numo-blue-900"
+                            : hoveredWindow === index
+                              ? "bg-numo-blue-500/12 text-numo-blue-800"
+                              : "text-muted-foreground hover:bg-muted/60",
+                        ].join(" ")}
+                        aria-pressed={selectedWindow === index}
+                      >
+                        {window.label}
+                      </button>
                     ))}
-
-                    {row.events.map((event, index) => {
-                      if (event.time < viewStart || event.time > viewEnd) return null;
-
-                      const left = ((event.time - viewStart) / (viewEnd - viewStart)) * 100;
-                      const isDetected = event.mode === "detected";
-                      const backgroundColor = isDetected
-                        ? row.detectedColor
-                        : row.reportedColor;
-                      const borderColor = "hsl(var(--numo-blue-700))";
-
-                      return (
-                        <Tooltip key={`${row.name}-${index}`}>
-                          <TooltipTrigger asChild>
-                            <button
-                              type="button"
-                              className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                              aria-label={`${row.name} at ${formatClockTime(event.time)}`}
-                              style={{
-                                left: `${left}%`,
-                                backgroundColor,
-                                border: `1px solid ${borderColor}`,
-                                boxShadow: "0 1px 3px rgba(15, 23, 42, 0.22)",
-                                opacity: isDetected ? 0.95 : 0.52,
-                              }}
-                            />
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="border-black bg-black text-xs text-white">
-                            {row.name}: {formatClockTime(event.time)}
-                          </TooltipContent>
-                        </Tooltip>
-                      );
-                    })}
                   </div>
                 </div>
-              ))}
+              </div>
+
+              <div
+                className={[
+                  "relative mt-1 rounded-md p-1",
+                  selectedWindow === null ? "cursor-pointer" : "",
+                ].join(" ")}
+                onMouseLeave={() => setHoveredWindow(null)}
+              >
+              <div className="space-y-0">
+                {SYMPTOM_ROWS.map((row) => {
+                  const visibleEvents = row.events
+                    .filter((event) => event.time >= viewStart && event.time <= viewEnd)
+                    .sort((a, b) => a.time - b.time);
+                  const firstVisible = visibleEvents[0]?.time;
+                  const lastVisible = visibleEvents[visibleEvents.length - 1]?.time;
+
+                  return (
+                    <div
+                      key={row.name}
+                      className="grid grid-cols-[70px_1fr] items-center gap-3 px-2 py-1"
+                    >
+                    <p className="text-sm text-right font-medium leading-tight text-numo-blue-900">
+                      {renderSymptomLabel(row.name)}
+                    </p>
+                  <div
+                    className="relative h-14 rounded-md"
+                      onMouseMove={(event) => {
+                        if (selectedWindow !== null) return;
+                        const rect = event.currentTarget.getBoundingClientRect();
+                        const relativeX = event.clientX - rect.left;
+                        const slotWidth = rect.width / 4;
+                        const index = Math.max(0, Math.min(3, Math.floor(relativeX / slotWidth)));
+                        setHoveredWindow(index);
+                      }}
+                      onClick={(event) => {
+                        if (selectedWindow !== null) return;
+                        const rect = event.currentTarget.getBoundingClientRect();
+                        const relativeX = event.clientX - rect.left;
+                        const slotWidth = rect.width / 4;
+                        const index = Math.max(0, Math.min(3, Math.floor(relativeX / slotWidth)));
+                        setSelectedWindow(index);
+                      }}
+                  >
+                    {firstVisible !== undefined && lastVisible !== undefined ? (
+                      <div
+                        className="pointer-events-none absolute top-1/2 h-3 -translate-y-1/2 rounded-full bg-numo-gray-600"
+                        style={{
+                          left: `${((firstVisible - viewStart) / (viewEnd - viewStart)) * 100}%`,
+                          width:
+                            firstVisible === lastVisible
+                              ? "10px"
+                              : `${((lastVisible - firstVisible) / (viewEnd - viewStart)) * 100}%`,
+                        }}
+                      />
+                    ) : null}
+                    {selectedWindow === null ? (
+                      <div
+                        className="pointer-events-none absolute inset-y-0 bg-numo-blue-500/12 transition-[left,width,opacity] duration-500 ease-in-out"
+                          style={{
+                            left: `${(hoveredWindow ?? -1) * 25}%`,
+                            width: hoveredWindow === null ? "0%" : "25%",
+                            opacity: hoveredWindow === null ? 0 : 1,
+                          }}
+                        />
+                      ) : (
+                        <div className="pointer-events-none absolute inset-0 bg-numo-blue-500/12 opacity-100 transition-opacity duration-500 ease-in-out" />
+                      )}
+
+                      {headerTicks.map((tick) => (
+                        <span
+                          key={`${row.name}-${tick.label}`}
+                          style={{ left: percentFromHour(tick.hour, viewStart, viewEnd) }}
+                          className="absolute inset-y-0 w-px -translate-x-1/2 bg-border/60 transition-[left] duration-500 ease-in-out"
+                        />
+                      ))}
+
+                      {row.events.map((event, index) => {
+                        if (event.time < viewStart || event.time > viewEnd) return null;
+
+                        const left = ((event.time - viewStart) / (viewEnd - viewStart)) * 100;
+                        const isDetected = event.mode === "detected";
+                        const backgroundColor = isDetected
+                          ? row.detectedColor
+                          : row.reportedColor;
+                        const borderColor = "hsl(var(--numo-blue-700))";
+
+                        return (
+                          <Tooltip key={`${row.name}-${index}`}>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full transition-[left,opacity,transform] duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                aria-label={`${row.name} at ${formatClockTime(event.time)}`}
+                                style={{
+                                  left: `${left}%`,
+                                  backgroundColor,
+                                  border: `1px solid ${borderColor}`,
+                                  boxShadow: "0 1px 3px rgba(15, 23, 42, 0.22)",
+                                  opacity: isDetected ? 0.95 : 0.52,
+                                }}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="border-black bg-black text-xs text-white">
+                              {row.name}: {formatClockTime(event.time)}
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+                })}
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <div className="grid gap-3 lg:grid-cols-2">
+          <section className="rounded-xl border border-border bg-background p-3 shadow-sm">
+            <h3 className="text-sm font-semibold text-foreground">Summary</h3>
+            <div className="mt-3 space-y-2">
+              {symptomSummary.map((item) => (
+                <div
+                  key={`summary-${item.name}`}
+                  className="flex items-center justify-between rounded-md border border-border/70 bg-muted/20 px-3 py-2"
+                >
+                  <div className="inline-flex items-center gap-2">
+                    <span className="inline-flex h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                    <p className="text-sm text-numo-blue-900">{item.name}</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">{item.detected}</span> detected ·{" "}
+                    <span className="font-medium text-foreground">{item.reported}</span> reported
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
 
+          <section className="rounded-xl border border-border bg-background p-3 shadow-sm">
+            <h3 className="text-sm font-semibold text-foreground">Quiet periods</h3>
+            <div className="mt-3 space-y-2">
+              {quietPeriods.length > 0 ? (
+                quietPeriods.map((period, index) => (
+                  <div
+                    key={`quiet-${index}`}
+                    className="rounded-md border border-border/70 bg-muted/20 px-3 py-2 text-sm"
+                  >
+                    <p className="font-medium text-foreground">
+                      {formatClockTime(period.start)} - {formatClockTime(period.end)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      No detected symptoms for {formatDurationMinutes(period.durationMins)}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="rounded-md border border-border/70 bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
+                  No quiet period longer than 1 hour in this range.
+                </p>
+              )}
+            </div>
+          </section>
+        </div>
       </div>
     </TooltipProvider>
   );
