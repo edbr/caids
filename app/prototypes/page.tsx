@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { LogIn, Monitor, NotebookText, Search, Settings2, TabletSmartphone } from "lucide-react";
+import {
+  LogIn,
+  Monitor,
+  NotebookText,
+  Search,
+  Settings2,
+  TabletSmartphone,
+  UserRound,
+} from "lucide-react";
 import { DSPage } from "@/components/ds/page";
 
 const PROTOTYPES = [
@@ -20,6 +28,16 @@ const PROTOTYPES = [
     icon: NotebookText,
     iconBg: "border-numo-teal-500/40 bg-numo-teal-400/12",
     iconColor: "text-numo-teal-700 dark:text-numo-teal-400",
+  },
+  {
+    href: "/prototype-patient",
+    title: "@patient-page",
+    description:
+      "Patient page starter with Curie header, breadcrumb, and patient record tabs ready for new modules.",
+    type: "Patient",
+    icon: UserRound,
+    iconBg: "border-numo-blue-500/40 bg-numo-blue-400/12",
+    iconColor: "text-numo-blue-700 dark:text-numo-blue-400",
   },
   {
     href: "/tablet-appointment",
