@@ -93,40 +93,46 @@ export function AlwaysOnPatientPanel() {
   return (
     <>
       <aside className="w-full space-y-3">
-        <section className="rounded-xl border border-border bg-muted/30">
+        <section className="rounded-xl border border-numo-blue-400/40 bg-numo-blue-400/10">
           <div className="flex items-start justify-between gap-3 p-4">
             <div className="space-y-1">
-              <p className="text-2xl font-semibold text-numo-blue-900">{profile.name}</p>
+              <p className="text-xl font-semibold text-numo-blue-900">{profile.name}</p>
               <p className="text-sm text-numo-blue-900">{profile.agePronouns}</p>
               <p className="text-sm text-numo-blue-900">{profile.ethnicity}</p>
             </div>
             <button
               type="button"
               onClick={openEdit}
-              className="inline-flex items-center gap-1 rounded-md border border-numo-warm-blue-500 bg-muted/40 px-2 py-1 text-xs font-medium text-foreground transition hover:bg-numo-orange-100/40 hover:border-numo-orange-700"
+              className="inline-flex items-center gap-1 rounded-md border border-numo-blue-500/50 bg-background/80 px-2 py-1 text-xs font-medium text-numo-blue-900 transition hover:border-numo-teal-600/50 hover:bg-numo-teal-400/10"
             >
-              <Pencil className="h-3.5 w-3.5 text-numo-warm-blue-700"  />
-              
+              <Pencil className="h-3.5 w-3.5 text-numo-blue-700" />
+              Edit
             </button>
           </div>
 
           <div className="space-y-3 px-4 pb-4 text-sm">
             <div className="flex items-start gap-2">
-              <NotebookPen className="mt-0.5 h-4 w-4 text-numo-blue-900" />
+              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-blue-500/15">
+                <NotebookPen className="h-3.5 w-3.5 text-numo-blue-800" />
+              </span>
               <p>
                 <span className="font-semibold text-numo-blue-900">MRN: </span>
                 <span className="text-foreground">{profile.mrn}</span>
               </p>
             </div>
             <div className="flex items-start gap-2">
-              <Calendar className="mt-0.5 h-4 w-4 text-numo-blue-900" />
+              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-blue-500/15">
+                <Calendar className="h-3.5 w-3.5 text-numo-blue-800" />
+              </span>
               <p>
                 <span className="font-semibold text-numo-blue-900">DOB: </span>
                 <span className="text-foreground">{profile.dob}</span>
               </p>
             </div>
             <div className="flex items-start gap-2">
-              <MessageSquare className="mt-0.5 h-4 w-4 text-numo-blue-900" />
+              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-teal-500/15">
+                <MessageSquare className="h-3.5 w-3.5 text-numo-teal-800" />
+              </span>
               <p>
                 <span className="font-semibold text-numo-blue-900">Communication: </span>
                 <span className="text-foreground">
@@ -135,7 +141,9 @@ export function AlwaysOnPatientPanel() {
               </p>
             </div>
             <div className="flex items-start gap-2">
-              <Globe className="mt-0.5 h-4 w-4 text-numo-blue-900" />
+              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-teal-500/15">
+                <Globe className="h-3.5 w-3.5 text-numo-teal-800" />
+              </span>
               <div>
                 <p className="font-semibold text-numo-blue-900">Language:</p>
                 <p className="text-foreground">Languages: {profile.language}</p>
@@ -148,14 +156,18 @@ export function AlwaysOnPatientPanel() {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <Activity className="mt-0.5 h-4 w-4 text-numo-blue-900" />
+              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-orange-500/15">
+                <Activity className="h-3.5 w-3.5 text-numo-orange-800" />
+              </span>
               <p>
                 <span className="font-semibold text-numo-blue-900">Smoker: </span>
                 <span className="text-foreground">{profile.smoker}</span>
               </p>
             </div>
             <div className="flex items-start gap-2">
-              <UserRound className="mt-0.5 h-4 w-4 text-numo-blue-900" />
+              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-yellow-500/20">
+                <UserRound className="h-3.5 w-3.5 text-numo-yellow-900" />
+              </span>
               <p>
                 <span className="font-semibold text-numo-blue-900">Considerations: </span>
                 <span className="text-foreground">{profile.considerations}</span>
@@ -164,14 +176,16 @@ export function AlwaysOnPatientPanel() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-border bg-muted/30">
+        <section className="rounded-xl border border-numo-teal-500/35 bg-numo-teal-500/10">
           <button
             type="button"
             onClick={() => setIsDiagnosisOpen((v) => !v)}
             className="flex w-full items-center justify-between px-4 py-3 text-left"
           >
             <span className="inline-flex items-center gap-2 text-sm font-semibold text-numo-blue-900">
-              <Stethoscope className="h-4 w-4" />
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-teal-500/20">
+                <Stethoscope className="h-3.5 w-3.5 text-numo-teal-800" />
+              </span>
               Diagnosis
             </span>
             {isDiagnosisOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -184,7 +198,7 @@ export function AlwaysOnPatientPanel() {
                     const [code, ...rest] = item.split(" ");
                     return (
                       <div key={item} className="rounded-xl bg-muted/50 px-3 py-2 text-sm text-foreground">
-                        <span className="font-semibold text-[#5a3da1]">{code}</span> {rest.join(" ")}
+                        <span className="font-semibold text-numo-teal-900">{code}</span> {rest.join(" ")}
                       </div>
                     );
                   })}
@@ -194,14 +208,16 @@ export function AlwaysOnPatientPanel() {
           </AnimatePresence>
         </section>
 
-        <section className="rounded-xl border border-border bg-muted/30">
+        <section className="rounded-xl border border-numo-orange-500/35 bg-numo-orange-500/10">
           <button
             type="button"
             onClick={() => setIsMedicationsOpen((v) => !v)}
             className="flex w-full items-center justify-between px-4 py-3 text-left"
           >
             <span className="inline-flex items-center gap-2 text-sm font-semibold text-numo-blue-900">
-              <Pill className="h-4 w-4" />
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-orange-500/20">
+                <Pill className="h-3.5 w-3.5 text-numo-orange-800" />
+              </span>
               Medications
             </span>
             {isMedicationsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -212,7 +228,7 @@ export function AlwaysOnPatientPanel() {
                 <div className="space-y-4 rounded-xl bg-muted/50 px-4 py-2 pb-4 text-sm text-foreground">
                   {profile.medications.map((med) => (
                     <div key={med.name}>
-                      <p className="text-sm font-semibold text-[#00788c]">{med.name}</p>
+                      <p className="text-sm font-semibold text-numo-orange-900">{med.name}</p>
                       <p className="text-sm text-foreground">{med.dose}</p>
                       <p className="text-sm text-muted-foreground">{med.source}</p>
                     </div>
@@ -223,7 +239,7 @@ export function AlwaysOnPatientPanel() {
           </AnimatePresence>
         </section>
 
-        <section className="space-y-3 rounded-xl border border-border bg-muted/30 p-4">
+        <section className="space-y-3 rounded-xl border border-numo-yellow-600/35 bg-numo-yellow-400/15 p-4">
           <p className="text-sm">
             <span className="font-semibold text-numo-blue-900">Monitoring start: </span>
             <span className="text-foreground">{profile.monitoringStart}</span>
