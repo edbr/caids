@@ -273,7 +273,7 @@ export function NightMonitoringDemo() {
                   setSelectedWindow(index);
                 }}
               >
-                <div className="h-[340px] rounded-md border border-border/70 bg-background/60 p-2">
+                <div className="h-85 rounded-md bg-background/60 p-2">
                   <ResponsiveContainer width="100%" height="100%">
                     <ScatterChart margin={{ top: 16, right: 18, bottom: 18, left: 18 }}>
                       <CartesianGrid strokeDasharray="4 6" vertical={false} stroke="rgba(148, 163, 184, 0.32)" />
@@ -314,6 +314,7 @@ export function NightMonitoringDemo() {
                       />
                       <RechartsTooltip
                         cursor={false}
+                        isAnimationActive={false}
                         content={({ active, payload }) => {
                           if (!active || !payload?.length) return null;
                           const datum = payload[0]?.payload as

@@ -196,7 +196,7 @@ function HealthHistoryChartCard() {
               Escalating risk across the last week <TrendingDown className="h-4 w-4" />
             </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              Mar 6 - Mar 12 2026
+              Mar 6 - Mar 12 2022
             </div>
           </div>
         </div>
@@ -277,7 +277,7 @@ function VitalsAreaChartCard() {
               Trending up by 5.2% this week <TrendingUp className="h-4 w-4" />
             </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              Mar 6 - Mar 12 2026
+              Mar 6 - Mar 12 2022
             </div>
           </div>
         </div>
@@ -388,7 +388,6 @@ export function PatientReportsDashboard() {
         <SectionCard
           title="Symptom Evidence"
           description="Tap play to reveal the event timeline."
-          action={<AudioLines className="h-5 w-5 text-numo-orange-700" />}
         >
           <div className="space-y-4">
             <div className="grid items-center gap-4 md:grid-cols-[auto_minmax(0,1fr)]">
