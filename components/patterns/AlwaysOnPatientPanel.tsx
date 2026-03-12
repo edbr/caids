@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
@@ -71,8 +72,13 @@ export function AlwaysOnPatientPanel() {
   const [isMedicationsOpen, setIsMedicationsOpen] = React.useState(false);
   const [isEditOpen, setIsEditOpen] = React.useState(false);
   const [draft, setDraft] = React.useState(profile);
+  const [isMounted, setIsMounted] = React.useState(false);
 
   const languageOptions = ["English", "Spanish", "French", "Portuguese"];
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   function openEdit() {
     setDraft(profile);
@@ -266,135 +272,138 @@ export function AlwaysOnPatientPanel() {
         </section>
       </aside>
 
-      {isEditOpen ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-xl border border-border bg-background shadow-xl">
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <h3 className="text-base font-semibold text-foreground">Edit Patient Profile</h3>
-              <button
-                type="button"
-                onClick={() => setIsEditOpen(false)}
-                className="rounded-md p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground"
-                aria-label="Close edit dialog"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+      {isEditOpen && isMounted
+        ? createPortal(
+            <div className="fixed inset-0 z-[100] grid place-items-center bg-black/40 p-4">
+              <div className="relative z-[101] isolate flex max-h-[calc(100vh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-border bg-background shadow-xl">
+                <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                  <h3 className="text-base font-semibold text-foreground">Edit Patient Profile</h3>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditOpen(false)}
+                    className="rounded-md p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                    aria-label="Close edit dialog"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
 
-            <div className="space-y-4 p-4">
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-foreground">Patient name</span>
-                <input
-                  value={draft.name}
-                  onChange={(event) => setDraft((prev) => ({ ...prev, name: event.target.value }))}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2"
-                />
-              </label>
+                <div className="space-y-4 overflow-y-auto p-4">
+                  <label className="block text-sm">
+                    <span className="mb-1 block font-medium text-foreground">Patient name</span>
+                    <input
+                      value={draft.name}
+                      onChange={(event) => setDraft((prev) => ({ ...prev, name: event.target.value }))}
+                      className="w-full rounded-md border border-border bg-background px-3 py-2"
+                    />
+                  </label>
 
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-foreground">Age / pronouns</span>
-                <input
-                  value={draft.agePronouns}
-                  onChange={(event) =>
-                    setDraft((prev) => ({ ...prev, agePronouns: event.target.value }))
-                  }
-                  className="w-full rounded-md border border-border bg-background px-3 py-2"
-                />
-              </label>
+                  <label className="block text-sm">
+                    <span className="mb-1 block font-medium text-foreground">Age / pronouns</span>
+                    <input
+                      value={draft.agePronouns}
+                      onChange={(event) =>
+                        setDraft((prev) => ({ ...prev, agePronouns: event.target.value }))
+                      }
+                      className="w-full rounded-md border border-border bg-background px-3 py-2"
+                    />
+                  </label>
 
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-foreground">Smoker status</span>
-                <input
-                  value={draft.smoker}
-                  onChange={(event) => setDraft((prev) => ({ ...prev, smoker: event.target.value }))}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2"
-                />
-              </label>
+                  <label className="block text-sm">
+                    <span className="mb-1 block font-medium text-foreground">Smoker status</span>
+                    <input
+                      value={draft.smoker}
+                      onChange={(event) => setDraft((prev) => ({ ...prev, smoker: event.target.value }))}
+                      className="w-full rounded-md border border-border bg-background px-3 py-2"
+                    />
+                  </label>
 
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-foreground">Language preference</span>
-                <select
-                  value={draft.language}
-                  onChange={(event) => setDraft((prev) => ({ ...prev, language: event.target.value }))}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2"
-                >
-                  {languageOptions.map((language) => (
-                    <option key={language} value={language}>
-                      {language}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                  <label className="block text-sm">
+                    <span className="mb-1 block font-medium text-foreground">Language preference</span>
+                    <select
+                      value={draft.language}
+                      onChange={(event) => setDraft((prev) => ({ ...prev, language: event.target.value }))}
+                      className="w-full rounded-md border border-border bg-background px-3 py-2"
+                    >
+                      {languageOptions.map((language) => (
+                        <option key={language} value={language}>
+                          {language}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
 
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-foreground">Considerations</span>
-                <textarea
-                  value={draft.considerations}
-                  onChange={(event) =>
-                    setDraft((prev) => ({ ...prev, considerations: event.target.value }))
-                  }
-                  rows={3}
-                  className="w-full resize-none rounded-md border border-border bg-background px-3 py-2"
-                />
-              </label>
+                  <label className="block text-sm">
+                    <span className="mb-1 block font-medium text-foreground">Considerations</span>
+                    <textarea
+                      value={draft.considerations}
+                      onChange={(event) =>
+                        setDraft((prev) => ({ ...prev, considerations: event.target.value }))
+                      }
+                      rows={3}
+                      className="w-full resize-none rounded-md border border-border bg-background px-3 py-2"
+                    />
+                  </label>
 
-              <div>
-                <p className="mb-1 text-sm font-medium text-foreground">Preferred communication</p>
-                <div className="flex flex-wrap gap-4 text-sm">
-                  {(["phone", "sms", "email"] as const).map((option) => (
-                    <label key={option} className="inline-flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="dialog-communication"
-                        value={option}
-                        checked={draft.communication === option}
-                        onChange={() =>
-                          setDraft((prev) => ({ ...prev, communication: option }))
-                        }
-                      />
-                      <span className="capitalize">{option === "sms" ? "SMS" : option}</span>
-                    </label>
-                  ))}
+                  <div>
+                    <p className="mb-1 text-sm font-medium text-foreground">Preferred communication</p>
+                    <div className="flex flex-wrap gap-4 text-sm">
+                      {(["phone", "sms", "email"] as const).map((option) => (
+                        <label key={option} className="inline-flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="dialog-communication"
+                            value={option}
+                            checked={draft.communication === option}
+                            onChange={() =>
+                              setDraft((prev) => ({ ...prev, communication: option }))
+                            }
+                          />
+                          <span className="capitalize">{option === "sms" ? "SMS" : option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="mb-1 text-sm font-medium text-foreground">Translator needed?</p>
+                    <div className="flex gap-4 text-sm">
+                      {(["yes", "no"] as const).map((choice) => (
+                        <label key={choice} className="inline-flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="translator"
+                            checked={draft.translator === choice}
+                            onChange={() => setDraft((prev) => ({ ...prev, translator: choice }))}
+                          />
+                          <span className="capitalize">{choice}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 border-t border-border px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditOpen(false)}
+                    className="rounded-md border border-border px-3 py-1.5 text-sm text-foreground transition hover:bg-muted"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={saveEdit}
+                    className="rounded-md bg-numo-blue-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-numo-blue-700"
+                  >
+                    Save changes
+                  </button>
                 </div>
               </div>
-
-              <div>
-                <p className="mb-1 text-sm font-medium text-foreground">Translator needed?</p>
-                <div className="flex gap-4 text-sm">
-                  {(["yes", "no"] as const).map((choice) => (
-                    <label key={choice} className="inline-flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="translator"
-                        checked={draft.translator === choice}
-                        onChange={() => setDraft((prev) => ({ ...prev, translator: choice }))}
-                      />
-                      <span className="capitalize">{choice}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 border-t border-border px-4 py-3">
-              <button
-                type="button"
-                onClick={() => setIsEditOpen(false)}
-                className="rounded-md border border-border px-3 py-1.5 text-sm text-foreground transition hover:bg-muted"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={saveEdit}
-                className="rounded-md bg-numo-blue-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-numo-blue-700"
-              >
-                Save changes
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+            </div>,
+            document.body
+          )
+        : null}
     </>
   );
 }
