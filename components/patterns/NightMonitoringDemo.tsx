@@ -3,10 +3,17 @@
 import * as React from "react";
 import { CloudMoon } from "lucide-react";
 import {
-  Tooltip,
-  TooltipContent,
+  CartesianGrid,
+  ReferenceArea,
+  ResponsiveContainer,
+  Scatter,
+  ScatterChart,
+  Tooltip as RechartsTooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
   TooltipProvider,
-  TooltipTrigger,
 } from "@/components/ui/tooltip";
 
 type SymptomEvent = {
@@ -110,10 +117,6 @@ const SYMPTOM_ROWS: SymptomRow[] = [
   },
 ];
 
-function percentFromHour(hour: number, viewStart: number, viewEnd: number) {
-  return `${((hour - viewStart) / (viewEnd - viewStart)) * 100}%`;
-}
-
 function formatClockTime(hourOffset: number) {
   const startMinutes = 19 * 60; // 7:00 PM baseline
   const total = (startMinutes + Math.round(hourOffset * 60)) % (24 * 60);
@@ -131,28 +134,6 @@ function formatDurationMinutes(minutes: number) {
   const rem = minutes % 60;
   if (rem === 0) return `${hours}h`;
   return `${hours}h ${rem}m`;
-}
-
-function renderSymptomLabel(name: SymptomRow["name"]) {
-  if (name === "Heavy breathing") {
-    return (
-      <>
-        Heavy
-        <br />
-        breathing
-      </>
-    );
-  }
-  if (name === "Shortness of breath") {
-    return (
-      <>
-        Shortness
-        <br />
-        of breath
-      </>
-    );
-  }
-  return name;
 }
 
 export function NightMonitoringDemo() {
@@ -190,16 +171,41 @@ export function NightMonitoringDemo() {
       });
     }
   }
+  const visibleSymptomRows = SYMPTOM_ROWS.map((row, index) => ({
+    ...row,
+    rowIndex: SYMPTOM_ROWS.length - 1 - index,
+  }));
+  const visibleEvents = visibleSymptomRows.flatMap((row) =>
+    row.events
+      .filter((event) => event.time >= viewStart && event.time <= viewEnd)
+      .map((event, index) => ({
+        id: `${row.name}-${index}-${event.time}`,
+        x: event.time,
+        y: row.rowIndex,
+        mode: event.mode,
+        name: row.name,
+        fill: event.mode === "detected" ? row.detectedColor : row.reportedColor,
+        opacity: event.mode === "detected" ? 0.95 : 0.6,
+      }))
+  );
+  const activeWindowIndex = selectedWindow ?? hoveredWindow;
+  const highlightedWindow =
+    activeWindowIndex === null ? null : TIME_WINDOWS[activeWindowIndex];
 
   return (
     <TooltipProvider delayDuration={120}>
-      <div className="mx-auto w-full max-w-315 space-y-4">
+      <div className="w-full space-y-4">
         <div className="rounded-xl border border-border bg-background px-4 py-3 shadow-sm">
-          <div className="rounded-lg  px-3 py-2">
-            <div className="flex items-center justify-between text-muted-foreground">
-              <div className="inline-flex items-center gap-2">
-                <CloudMoon className="h-5 w-5 text-numo-warm-blue-800" />
-                <p className="text-sm font-semibold tracking-wide text-numo-warm-blue-800">NIGHT MONITORING</p>
+          <div className="rounded-lg px-3 py-2">
+            <div className="flex items-start justify-between gap-3 text-muted-foreground">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2">
+                  <CloudMoon className="h-5 w-5 text-numo-warm-blue-800" />
+                  <p className="text-xl font-bold tracking-tight text-foreground">Night Monitoring</p>
+                </div>
+                <p className="text-lg font-medium text-slate-500">
+                  Overnight symptom timeline with detected and reported events.
+                </p>
               </div>
               <button
                 type="button"
@@ -250,111 +256,96 @@ export function NightMonitoringDemo() {
                   selectedWindow === null ? "cursor-pointer" : "",
                 ].join(" ")}
                 onMouseLeave={() => setHoveredWindow(null)}
+                onMouseMove={(event) => {
+                  if (selectedWindow !== null) return;
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  const relativeX = event.clientX - rect.left;
+                  const slotWidth = rect.width / 4;
+                  const index = Math.max(0, Math.min(3, Math.floor(relativeX / slotWidth)));
+                  setHoveredWindow(index);
+                }}
+                onClick={(event) => {
+                  if (selectedWindow !== null) return;
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  const relativeX = event.clientX - rect.left;
+                  const slotWidth = rect.width / 4;
+                  const index = Math.max(0, Math.min(3, Math.floor(relativeX / slotWidth)));
+                  setSelectedWindow(index);
+                }}
               >
-              <div className="space-y-0">
-                {SYMPTOM_ROWS.map((row) => {
-                  const visibleEvents = row.events
-                    .filter((event) => event.time >= viewStart && event.time <= viewEnd)
-                    .sort((a, b) => a.time - b.time);
-                  const firstVisible = visibleEvents[0]?.time;
-                  const lastVisible = visibleEvents[visibleEvents.length - 1]?.time;
-
-                  return (
-                    <div
-                      key={row.name}
-                      className="grid grid-cols-[70px_1fr] items-center gap-3 px-2 py-1"
-                    >
-                    <p className="text-sm text-right font-medium leading-tight text-numo-blue-900">
-                      {renderSymptomLabel(row.name)}
-                    </p>
-                  <div
-                    className="relative h-14 rounded-md"
-                      onMouseMove={(event) => {
-                        if (selectedWindow !== null) return;
-                        const rect = event.currentTarget.getBoundingClientRect();
-                        const relativeX = event.clientX - rect.left;
-                        const slotWidth = rect.width / 4;
-                        const index = Math.max(0, Math.min(3, Math.floor(relativeX / slotWidth)));
-                        setHoveredWindow(index);
-                      }}
-                      onClick={(event) => {
-                        if (selectedWindow !== null) return;
-                        const rect = event.currentTarget.getBoundingClientRect();
-                        const relativeX = event.clientX - rect.left;
-                        const slotWidth = rect.width / 4;
-                        const index = Math.max(0, Math.min(3, Math.floor(relativeX / slotWidth)));
-                        setSelectedWindow(index);
-                      }}
-                  >
-                    {firstVisible !== undefined && lastVisible !== undefined ? (
-                      <div
-                        className="pointer-events-none absolute top-1/2 h-3 -translate-y-1/2 rounded-full bg-numo-gray-600"
-                        style={{
-                          left: `${((firstVisible - viewStart) / (viewEnd - viewStart)) * 100}%`,
-                          width:
-                            firstVisible === lastVisible
-                              ? "10px"
-                              : `${((lastVisible - firstVisible) / (viewEnd - viewStart)) * 100}%`,
+                <div className="h-[340px] rounded-md border border-border/70 bg-background/60 p-2">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ScatterChart margin={{ top: 16, right: 18, bottom: 18, left: 18 }}>
+                      <CartesianGrid strokeDasharray="4 6" vertical={false} stroke="rgba(148, 163, 184, 0.32)" />
+                      {highlightedWindow ? (
+                        <ReferenceArea
+                          x1={highlightedWindow.start}
+                          x2={highlightedWindow.end}
+                          fill="rgba(59, 130, 246, 0.12)"
+                          ifOverflow="extendDomain"
+                        />
+                      ) : null}
+                      <XAxis
+                        type="number"
+                        dataKey="x"
+                        domain={[viewStart, viewEnd]}
+                        ticks={headerTicks.map((tick) => tick.hour)}
+                        tickFormatter={(value) => formatClockTime(value)}
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={10}
+                        stroke="rgba(100, 116, 139, 0.9)"
+                      />
+                      <YAxis
+                        type="number"
+                        dataKey="y"
+                        domain={[-0.5, SYMPTOM_ROWS.length - 0.5]}
+                        ticks={visibleSymptomRows.map((row) => row.rowIndex)}
+                        tickLine={false}
+                        axisLine={false}
+                        width={92}
+                        tickMargin={12}
+                        interval={0}
+                        tickFormatter={(value) => {
+                          const row = visibleSymptomRows.find((item) => item.rowIndex === value);
+                          return row?.name ?? "";
+                        }}
+                        stroke="rgba(15, 23, 42, 0.9)"
+                      />
+                      <RechartsTooltip
+                        cursor={false}
+                        content={({ active, payload }) => {
+                          if (!active || !payload?.length) return null;
+                          const datum = payload[0]?.payload as
+                            | { name: string; x: number; mode: "detected" | "reported" }
+                            | undefined;
+                          if (!datum) return null;
+                          return (
+                            <div className="rounded-md border border-black bg-black px-2 py-1 text-xs text-white shadow-md">
+                              {datum.name}: {formatClockTime(datum.x)} · {datum.mode}
+                            </div>
+                          );
                         }}
                       />
-                    ) : null}
-                    {selectedWindow === null ? (
-                      <div
-                        className="pointer-events-none absolute inset-y-0 bg-numo-blue-500/12 transition-[left,width,opacity] duration-500 ease-in-out"
-                          style={{
-                            left: `${(hoveredWindow ?? -1) * 25}%`,
-                            width: hoveredWindow === null ? "0%" : "25%",
-                            opacity: hoveredWindow === null ? 0 : 1,
-                          }}
-                        />
-                      ) : (
-                        <div className="pointer-events-none absolute inset-0 bg-numo-blue-500/12 opacity-100 transition-opacity duration-500 ease-in-out" />
-                      )}
-
-                      {headerTicks.map((tick) => (
-                        <span
-                          key={`${row.name}-${tick.label}`}
-                          style={{ left: percentFromHour(tick.hour, viewStart, viewEnd) }}
-                          className="absolute inset-y-0 w-px -translate-x-1/2 bg-border/60 transition-[left] duration-500 ease-in-out"
-                        />
-                      ))}
-
-                      {row.events.map((event, index) => {
-                        if (event.time < viewStart || event.time > viewEnd) return null;
-
-                        const left = ((event.time - viewStart) / (viewEnd - viewStart)) * 100;
-                        const isDetected = event.mode === "detected";
-                        const backgroundColor = isDetected
-                          ? row.detectedColor
-                          : row.reportedColor;
-                        const borderColor = "hsl(var(--numo-blue-700))";
-
-                        return (
-                          <Tooltip key={`${row.name}-${index}`}>
-                            <TooltipTrigger asChild>
-                              <button
-                                type="button"
-                                className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full transition-[left,opacity,transform] duration-500 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                aria-label={`${row.name} at ${formatClockTime(event.time)}`}
-                                style={{
-                                  left: `${left}%`,
-                                  backgroundColor,
-                                  border: `1px solid ${borderColor}`,
-                                  boxShadow: "0 1px 3px rgba(15, 23, 42, 0.22)",
-                                  opacity: isDetected ? 0.95 : 0.52,
-                                }}
-                              />
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="border-black bg-black text-xs text-white">
-                              {row.name}: {formatClockTime(event.time)}
-                            </TooltipContent>
-                          </Tooltip>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-                })}
+                      <Scatter
+                        data={visibleEvents}
+                        shape={(props) => {
+                          const payload = props.payload as { fill: string; opacity: number };
+                          return (
+                            <circle
+                              cx={props.cx}
+                              cy={props.cy}
+                              r={7}
+                              fill={payload.fill}
+                              fillOpacity={payload.opacity}
+                              stroke="hsl(var(--numo-blue-700))"
+                              strokeWidth={1.25}
+                            />
+                          );
+                        }}
+                      />
+                    </ScatterChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             </div>

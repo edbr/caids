@@ -100,10 +100,10 @@ export function PatientRecordTabs({
                 }
               }}
               className={[
-                "relative rounded-md px-3 py-1.5 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "relative rounded-sm px-4 py-1.5 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 isActive
-                  ? "font-medium text-foreground"
-                  : "text-muted-foreground hover:bg-background/70 hover:text-foreground",
+                  ? "font-medium text-numo-gray-100"
+                  : "text-foreground",
               ].join(" ")}
               role="tab"
               aria-selected={isActive}
@@ -113,7 +113,7 @@ export function PatientRecordTabs({
               {isActive ? (
                 <motion.span
                   layoutId="patient-record-active-pill"
-                  className="absolute inset-0 rounded-md bg-numo-yellow-400 shadow-[0_0_0_1px_hsl(var(--numo-yellow-600)/0.1),0_8px_14px_hsl(var(--numo-yellow-900)/0.1)]"
+                  className="absolute inset-0 rounded-md bg-numo-warm-blue-700 text-white "
                   transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.8 }}
                   aria-hidden
                 />

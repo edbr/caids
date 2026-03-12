@@ -66,6 +66,7 @@ const INITIAL_PROFILE: PatientProfile = {
 
 export function AlwaysOnPatientPanel() {
   const [profile, setProfile] = React.useState(INITIAL_PROFILE);
+  const [isInfoOpen, setIsInfoOpen] = React.useState(true);
   const [isDiagnosisOpen, setIsDiagnosisOpen] = React.useState(false);
   const [isMedicationsOpen, setIsMedicationsOpen] = React.useState(false);
   const [isEditOpen, setIsEditOpen] = React.useState(false);
@@ -93,12 +94,11 @@ export function AlwaysOnPatientPanel() {
   return (
     <>
       <aside className="w-full space-y-3">
-        <section className="rounded-xl border border-numo-blue-400/40 bg-numo-blue-400/10">
+        <section className="rounded-xl border border-numo-blue-400/10 bg-numo-gray-500">
           <div className="flex items-start justify-between gap-3 p-4">
             <div className="space-y-1">
               <p className="text-xl font-semibold text-numo-blue-900">{profile.name}</p>
               <p className="text-sm text-numo-blue-900">{profile.agePronouns}</p>
-              <p className="text-sm text-numo-blue-900">{profile.ethnicity}</p>
             </div>
             <button
               type="button"
@@ -106,74 +106,89 @@ export function AlwaysOnPatientPanel() {
               className="inline-flex items-center gap-1 rounded-md border border-numo-blue-500/50 bg-background/80 px-2 py-1 text-xs font-medium text-numo-blue-900 transition hover:border-numo-teal-600/50 hover:bg-numo-teal-400/10"
             >
               <Pencil className="h-3.5 w-3.5 text-numo-blue-700" />
-              Edit
             </button>
           </div>
+        </section>
 
-          <div className="space-y-3 px-4 pb-4 text-sm">
-            <div className="flex items-start gap-2">
-              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-blue-500/15">
-                <NotebookPen className="h-3.5 w-3.5 text-numo-blue-800" />
-              </span>
-              <p>
-                <span className="font-semibold text-numo-blue-900">MRN: </span>
-                <span className="text-foreground">{profile.mrn}</span>
-              </p>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-blue-500/15">
-                <Calendar className="h-3.5 w-3.5 text-numo-blue-800" />
-              </span>
-              <p>
-                <span className="font-semibold text-numo-blue-900">DOB: </span>
-                <span className="text-foreground">{profile.dob}</span>
-              </p>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-teal-500/15">
-                <MessageSquare className="h-3.5 w-3.5 text-numo-teal-800" />
-              </span>
-              <p>
-                <span className="font-semibold text-numo-blue-900">Communication: </span>
-                <span className="text-foreground">
-                  {profile.communication === "sms" ? "SMS" : profile.communication}
-                </span>
-              </p>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-teal-500/15">
-                <Globe className="h-3.5 w-3.5 text-numo-teal-800" />
-              </span>
-              <div>
-                <p className="font-semibold text-numo-blue-900">Language:</p>
-                <p className="text-foreground">Languages: {profile.language}</p>
-                <p className="text-foreground">
-                  Translator: {profile.translator === "yes" ? "Yes" : "No"}
-                </p>
-                <p className="text-foreground">
-                  Caretaker: {profile.caretaker === "yes" ? "Yes" : "No"}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-orange-500/15">
-                <Activity className="h-3.5 w-3.5 text-numo-orange-800" />
-              </span>
-              <p>
-                <span className="font-semibold text-numo-blue-900">Smoker: </span>
-                <span className="text-foreground">{profile.smoker}</span>
-              </p>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-yellow-500/20">
-                <UserRound className="h-3.5 w-3.5 text-numo-yellow-900" />
-              </span>
-              <p>
-                <span className="font-semibold text-numo-blue-900">Considerations: </span>
-                <span className="text-foreground">{profile.considerations}</span>
-              </p>
-            </div>
-          </div>
+        <section className="rounded-xl border border-numo-blue-400/10 bg-numo-gray-500">
+          <button
+            type="button"
+            onClick={() => setIsInfoOpen((value) => !value)}
+            className="flex w-full items-center justify-between px-4 py-3 text-left"
+          >
+            <span className="text-sm font-semibold text-numo-blue-900 ">Patient info</span>
+            {isInfoOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </button>
+          <AnimatePresence initial={false}>
+            {isInfoOpen ? (
+              <motion.div {...sectionMotion} className="overflow-hidden">
+                <div className="space-y-3 px-4 pb-4 text-sm">
+                  <div className="flex items-start gap-2">
+                    <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-blue-500/15">
+                      <NotebookPen className="h-3.5 w-3.5 text-numo-blue-800" />
+                    </span>
+                    <p>
+                      <span className="font-semibold text-numo-blue-900">MRN: </span>
+                      <span className="text-foreground">{profile.mrn}</span>
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-blue-500/15">
+                      <Calendar className="h-3.5 w-3.5 text-numo-blue-800" />
+                    </span>
+                    <p>
+                      <span className="font-semibold text-numo-blue-900">DOB: </span>
+                      <span className="text-foreground">{profile.dob}</span>
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-teal-500/15">
+                      <MessageSquare className="h-3.5 w-3.5 text-numo-teal-800" />
+                    </span>
+                    <p>
+                      <span className="font-semibold text-numo-blue-900">Communication: </span>
+                      <span className="text-foreground">
+                        {profile.communication === "sms" ? "SMS" : profile.communication}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-teal-500/15">
+                      <Globe className="h-3.5 w-3.5 text-numo-teal-800" />
+                    </span>
+                    <div>
+                      <p className="font-semibold text-numo-blue-900">Language:</p>
+                      <p className="text-foreground">Languages: {profile.language}</p>
+                      <p className="text-foreground">
+                        Translator: {profile.translator === "yes" ? "Yes" : "No"}
+                      </p>
+                      <p className="text-foreground">
+                        Caretaker: {profile.caretaker === "yes" ? "Yes" : "No"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-orange-500/15">
+                      <Activity className="h-3.5 w-3.5 text-numo-orange-800" />
+                    </span>
+                    <p>
+                      <span className="font-semibold text-numo-blue-900">Smoker: </span>
+                      <span className="text-foreground">{profile.smoker}</span>
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-yellow-500/20">
+                      <UserRound className="h-3.5 w-3.5 text-numo-yellow-900" />
+                    </span>
+                    <p>
+                      <span className="font-semibold text-numo-blue-900">Considerations: </span>
+                      <span className="text-foreground">{profile.considerations}</span>
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
         </section>
 
         <section className="rounded-xl border border-numo-teal-500/35 bg-numo-teal-500/10">

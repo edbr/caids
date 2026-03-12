@@ -2,14 +2,15 @@
 
 import * as React from "react";
 import { DSPage } from "@/components/ds/page";
-import { DSBreadcrumb } from "@/components/ds/breadcrumb";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
-import { PatientRecordTabs } from "@/components/patterns/PatientRecordTabs";
+import { PatientRecordTabs, type TabKey } from "@/components/patterns/PatientRecordTabs";
 import { AlwaysOnPatientPanel } from "@/components/patterns/AlwaysOnPatientPanel";
+import { PatientReportsDashboard } from "@/components/patterns/PatientReportsDashboard";
 
 export default function PrototypePatientPage() {
   const [notificationsOpen, setNotificationsOpen] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState<TabKey>("reports");
 
   return (
     <DSPage
@@ -33,24 +34,27 @@ export default function PrototypePatientPage() {
           </div>
 
           <div className="space-y-4 px-4 pb-5 pt-3 md:px-6 md:pb-8 md:pt-4">
-            <DSBreadcrumb
-              sectionLabel="Patients"
-              patientName="Carlitos Alcaraz"
-              current="Overview"
-              age="57 yrs"
-              gender="Male"
-              disease="COPD"
-            />
+
 
             <div className="grid items-start gap-4 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-6">
-              <AlwaysOnPatientPanel />
+              <div className="lg:sticky lg:top-28">
+                <AlwaysOnPatientPanel />
+              </div>
 
               <div className="space-y-4 lg:pl-2">
-                <PatientRecordTabs defaultTab="reports" />
+                <PatientRecordTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-                <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-sm text-muted-foreground">
-                  Add patient-page modules here.
-                </div>
+                {activeTab === "reports" ? (
+                  <PatientReportsDashboard />
+                ) : (
+                  <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-sm text-muted-foreground">
+                    {activeTab === "summary"
+                      ? "Health Summary content placeholder."
+                      : activeTab === "notes"
+                        ? "Notes content placeholder."
+                        : "Spirometry content placeholder."}
+                  </div>
+                )}
               </div>
             </div>
           </div>
