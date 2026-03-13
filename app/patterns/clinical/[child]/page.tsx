@@ -6,6 +6,7 @@ import { AISignalInsights } from "@/components/patterns/AISignalInsights";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import { InsightTableRowActions } from "@/components/patterns/InsightTableRowActions";
 import { NightMonitoringDemo } from "@/components/patterns/NightMonitoringDemo";
+import { NotesDemo } from "@/components/patterns/NotesDemo";
 import { PatternChildBottomNav } from "@/components/patterns/PatternChildBottomNav";
 import { PatientReportsDashboard } from "@/components/patterns/PatientReportsDashboard";
 import { DSPage } from "@/components/ds/page";
@@ -45,6 +46,10 @@ const CLINICAL_CHILDREN = {
   "actionable-insight-table": {
     title: "Actionable Insight Table",
     render: () => <InsightTableDemo />,
+  },
+  notes: {
+    title: "Notes",
+    render: () => <NotesDemo />,
   },
   "always-on-patient-panel": {
     title: "Always-On Patient Panel",

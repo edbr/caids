@@ -5,6 +5,7 @@ import { AISignalInsights } from "@/components/patterns/AISignalInsights";
 import { CurieHeader } from "@/components/patterns/CurieHeader";
 import { InsightTableRowActions } from "@/components/patterns/InsightTableRowActions";
 import { NightMonitoringDemo } from "@/components/patterns/NightMonitoringDemo";
+import { NotesDemo } from "@/components/patterns/NotesDemo";
 import { PatternBottomNav } from "@/components/patterns/PatternBottomNav";
 import { PatientReportsDashboard } from "@/components/patterns/PatientReportsDashboard";
 import { DSPage } from "@/components/ds/page";
@@ -46,6 +47,11 @@ export default function ClinicalPatternsPage() {
 
         <section className="">
           <InsightTableDemo />
+        </section>
+
+        <section className="rounded-xl border border-border bg-muted/30 p-6 overflow-visible">
+          <h2 className="mb-4 text-lg font-semibold">Notes</h2>
+          <NotesDemo />
         </section>
 
         <section className="rounded-xl border border-border bg-muted/30 p-6 overflow-visible">

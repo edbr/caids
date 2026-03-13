@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Activity, ChevronDown, FilePlus2, NotebookPen, Pencil, Plus, Share2 } from "lucide-react";
+import { Activity, ChevronDown, FilePlus2, NotebookPen, Pencil, Share2 } from "lucide-react";
 import { PrimaryBtn, SecondaryBtn } from "@/components/ds/button";
 
 type NoteType = "all" | "video";
@@ -85,6 +85,7 @@ export function NotesDemo() {
   const [mode, setMode] = React.useState<"browse" | "compose">("browse");
   const [draft, setDraft] = React.useState("");
   const [editingId, setEditingId] = React.useState<string | null>(null);
+  const draftInputRef = React.useRef<HTMLInputElement>(null);
 
   const authors = React.useMemo(
     () => [...new Set(notes.map((note) => note.author))].sort((a, b) => a.localeCompare(b)),
@@ -108,6 +109,17 @@ export function NotesDemo() {
   const grouped = React.useMemo(() => groupByDate(filteredNotes), [filteredNotes]);
   const groupedEntries = React.useMemo(() => Object.entries(grouped), [grouped]);
   const editingNote = notes.find((n) => n.id === editingId) ?? null;
+
+  React.useEffect(() => {
+    if (mode !== "compose") return;
+
+    const timeoutId = window.setTimeout(() => {
+      draftInputRef.current?.focus();
+      draftInputRef.current?.select();
+    }, 180);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [mode, editingId]);
 
   function openAddMode() {
     setEditingId(null);
@@ -163,84 +175,137 @@ export function NotesDemo() {
 
   return (
     <div className="rounded-xl border border-border bg-muted/20 p-6">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
+        <div className="flex flex-wrap items-end gap-4">
+          <label className="grid gap-2 text-sm">
+            <span className="font-medium">Search</span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search notes"
+              className="w-72 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-numo-blue-500"
+            />
+          </label>
 
+          <label className="grid gap-2 text-sm">
+            <span className="font-medium">Filter</span>
+            <span className="relative">
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value as NoteType)}
+                className="h-10 min-w-44 appearance-none rounded-md border border-border bg-background px-3 pr-10 text-sm outline-none focus:border-numo-blue-500"
+              >
+                <option value="all">All Notes</option>
+                <option value="video">Video Notes</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            </span>
+          </label>
 
-      {mode === "browse" ? (
-        <>
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
-            <div className="flex flex-wrap items-end gap-4">
-              <label className="grid gap-2 text-sm">
-                <span className="font-medium">Search</span>
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search notes"
-                  className="w-72 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-numo-blue-500"
-                />
-              </label>
+          <label className="grid gap-2 text-sm">
+            <span className="font-medium">Author</span>
+            <span className="relative">
+              <select
+                value={authorFilter}
+                onChange={(e) => setAuthorFilter(e.target.value)}
+                className="h-10 min-w-48 appearance-none rounded-md border border-border bg-background px-3 pr-10 text-sm outline-none focus:border-numo-blue-500"
+              >
+                <option value="all">All authors</option>
+                {authors.map((author) => (
+                  <option key={author} value={author}>
+                    {author}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            </span>
+          </label>
+        </div>
 
-              <label className="grid gap-2 text-sm">
-                <span className="font-medium">Filter</span>
-                <span className="relative">
-                  <select
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value as NoteType)}
-                    className="h-10 min-w-44 appearance-none rounded-md border border-border bg-background px-3 pr-10 text-sm outline-none focus:border-numo-blue-500"
-                  >
-                    <option value="all">All Notes</option>
-                    <option value="video">Video Notes</option>
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                </span>
-              </label>
+        <PrimaryBtn type="button" onClick={openAddMode}>
+          <NotebookPen className="h-4 w-4 transition-all duration-200 ease-out group-hover:scale-105 group-hover:opacity-95" />
+          Add note
+        </PrimaryBtn>
+      </div>
 
-              <label className="grid gap-2 text-sm">
-                <span className="font-medium">Author</span>
-                <span className="relative">
-                  <select
-                    value={authorFilter}
-                    onChange={(e) => setAuthorFilter(e.target.value)}
-                    className="h-10 min-w-48 appearance-none rounded-md border border-border bg-background px-3 pr-10 text-sm outline-none focus:border-numo-blue-500"
-                  >
-                    <option value="all">All authors</option>
-                    {authors.map((author) => (
-                      <option key={author} value={author}>
-                        {author}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                </span>
-              </label>
+      <div
+        className={[
+          "grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-out",
+          mode === "compose" ? "mb-5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+        ].join(" ")}
+        aria-hidden={mode !== "compose"}
+      >
+        <div className="min-h-0">
+          <div
+            className={[
+              "rounded-lg border border-numo-blue-200 bg-background p-4 shadow-[0_12px_32px_-20px_rgba(36,76,127,0.55)] transition duration-300 ease-out",
+              mode === "compose" ? "translate-y-0 scale-100" : "-translate-y-3 scale-[0.985]",
+            ].join(" ")}
+          >
+            <p className="mb-3 text-sm text-muted-foreground">
+              {editingNote
+                ? `Editing: ${editingNote.author} ${editingNote.time}`
+                : "Capture a quick note without losing context from the current timeline."}
+            </p>
+
+            <div className="bg-numo-blue-50/30">
+              <input
+                ref={draftInputRef}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") saveNote();
+                }}
+                placeholder="Write a note"
+                className="min-h-12 w-full rounded-md border border-numo-blue-400 bg-background px-4 py-3 text-sm outline-none focus:border-numo-blue-500"
+              />
             </div>
+            <p className="mt-2 text-sm text-muted-foreground">Press Enter to save note</p>
 
-            <PrimaryBtn type="button" onClick={openAddMode}>
-              <NotebookPen className="h-4 w-4 transition-all duration-200 ease-out group-hover:scale-105 group-hover:opacity-95" />
-              Add note
-            </PrimaryBtn>
+            <div className="mt-5 flex flex-nowrap items-center justify-end gap-3 border-t border-border/70 pt-4">
+              <SecondaryBtn type="button" onClick={cancelCompose} className="shrink-0">
+                Cancel
+              </SecondaryBtn>
+              <PrimaryBtn
+                type="button"
+                onClick={saveNote}
+                disabled={draft.trim().length === 0}
+                className="shrink-0 px-8 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Save
+              </PrimaryBtn>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div className="space-y-4">
-            {groupedEntries.map(([dateLabel, dateNotes]) => (
-              <section key={dateLabel} className="rounded-lg border border-border bg-background px-3 py-3.5 md:px-4 md:py-4">
-                <div className="sticky top-0 z-10 -mx-2 mb-2.5 flex items-center justify-between gap-3 border-b border-border/70 bg-background/95 px-2 py-1.5 backdrop-blur-sm">
-                  <h3 className="text-md tracking-tight text-numo-teal-600">{dateLabel}</h3>
-                  <p className="inline-flex items-center gap-1.5 rounded-full bg-numo-blue-400/25 px-2 py-0.5 text-[11px] font-medium text-numo-blue-800">
-                    <Activity className="h-3 w-3" />
-                    <span className="hidden sm:inline">Latest vitals: </span>
-                    {getVitalsForDate(dateLabel)}
-                  </p>
-                </div>
-                <div className="space-y-0 divide-y divide-border/60">
-                  {dateNotes.map((note, idx) => {
-                    const previous = dateNotes[idx - 1];
-                    const authorChanged = previous ? previous.author !== note.author : false;
+      <div
+        className={[
+          "transition-all duration-300 ease-out",
+          mode === "compose" ? "translate-y-1 opacity-85 ]" : "translate-y-0 opacity-100 blur-0",
+        ].join(" ")}
+      >
+        <div className="space-y-4">
+          {groupedEntries.map(([dateLabel, dateNotes]) => (
+            <section key={dateLabel} className="rounded-lg border border-border bg-background px-3 py-3.5 md:px-4 md:py-4">
+              <div className="sticky top-0 z-10 -mx-2 mb-2.5 flex items-center justify-between gap-3 border-b border-border/70 bg-background/95 px-2 py-1.5">
+                <h3 className="text-md tracking-tight text-numo-teal-600">{dateLabel}</h3>
+                <p className="inline-flex items-center gap-1.5 rounded-full bg-numo-blue-400/25 px-2 py-0.5 text-[11px] font-medium text-numo-blue-800">
+                  <Activity className="h-3 w-3" />
+                  <span className="hidden sm:inline">Latest vitals: </span>
+                  {getVitalsForDate(dateLabel)}
+                </p>
+              </div>
+              <div className="space-y-0 divide-y divide-border/60">
+                {dateNotes.map((note, idx) => {
+                  const previous = dateNotes[idx - 1];
+                  const authorChanged = previous ? previous.author !== note.author : false;
 
-                    return (
+                  return (
                     <article
                       key={note.id}
                       className={[
-                        "text-numo-slate-800 py-3 first:pt-0 last:pb-0",
+                        "py-3 text-numo-slate-800 first:pt-0 last:pb-0",
                         authorChanged ? "mt-1 border-t border-dashed border-border/70 pt-4" : "",
                       ].join(" ")}
                     >
@@ -279,72 +344,29 @@ export function NotesDemo() {
                       </div>
                       <p className="mt-1 max-w-[80ch] text-sm leading-6 text-numo-slate-800">{note.text}</p>
                     </article>
-                  )})}
-                </div>
-              </section>
-            ))}
-
-            {groupedEntries.length === 0 ? (
-              <div className="rounded-lg border border-border bg-background px-4 py-6 text-sm text-muted-foreground">
-                No notes match your search/filter.
+                  );
+                })}
               </div>
-            ) : null}
-          </div>
+            </section>
+          ))}
 
-          <div className="mt-5 flex justify-end">
-            <div className="inline-flex overflow-hidden rounded-md border border-border text-sm">
-              <button type="button" className="px-3 py-1 text-muted-foreground hover:bg-muted/50">Prev</button>
-              <button type="button" className="bg-numo-blue-800 px-3 py-1 text-white">1</button>
-              <button type="button" className="px-3 py-1 hover:bg-muted/50">2</button>
-              <button type="button" className="px-3 py-1 hover:bg-muted/50">3</button>
-              <button type="button" className="px-3 py-1 text-muted-foreground hover:bg-muted/50">Next</button>
+          {groupedEntries.length === 0 ? (
+            <div className="rounded-lg border border-border bg-background px-4 py-6 text-sm text-muted-foreground">
+              No notes match your search/filter.
             </div>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="mb-4 flex justify-end gap-3">
-            <SecondaryBtn type="button" onClick={cancelCompose}>
-              Cancel
-            </SecondaryBtn>
-            <PrimaryBtn
-              type="button"
-              onClick={saveNote}
-              disabled={draft.trim().length === 0}
-              className="px-8 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Save
-            </PrimaryBtn>
-          </div>
+          ) : null}
+        </div>
 
-          <div className="rounded-lg border border-border bg-background p-4">
-            <h3 className="mb-3 text-3xl font-semibold text-numo-slate-900">
-              {editingNote ? "Edit note" : "Add note"}
-            </h3>
-
-            {editingNote ? (
-              <p className="mb-3 text-sm text-muted-foreground">
-                Editing: {editingNote.author} {editingNote.time}
-              </p>
-            ) : null}
-
-            <div className="flex items-center gap-3">
-              <Plus className="h-5 w-5 text-numo-blue-500" />
-              <input
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") saveNote();
-                }}
-                placeholder="Write a note"
-                className="w-full rounded-md border border-numo-blue-400 bg-background px-3 py-2 text-sm outline-none focus:border-numo-blue-500"
-                autoFocus
-              />
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">Press Enter to save note</p>
+        <div className="mt-5 flex justify-end">
+          <div className="inline-flex overflow-hidden rounded-md border border-border text-sm">
+            <button type="button" className="px-3 py-1 text-muted-foreground hover:bg-muted/50">Prev</button>
+            <button type="button" className="bg-numo-blue-800 px-3 py-1 text-white">1</button>
+            <button type="button" className="px-3 py-1 hover:bg-muted/50">2</button>
+            <button type="button" className="px-3 py-1 hover:bg-muted/50">3</button>
+            <button type="button" className="px-3 py-1 text-muted-foreground hover:bg-muted/50">Next</button>
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 }
