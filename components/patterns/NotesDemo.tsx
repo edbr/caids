@@ -480,7 +480,7 @@ export function NotesDemo() {
                             className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-1.5 py-0.5 text-[11px] text-muted-foreground hover:text-foreground sm:px-2"
                           >
                             <FilePlus2 className="h-3 w-3" />
-                            <span className="hidden sm:inline">Add to monthly report</span>
+                            <span className="hidden sm:inline">Add to monthly</span>
                           </button>
                         </div>
                       </div>
