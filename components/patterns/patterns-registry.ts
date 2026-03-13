@@ -16,15 +16,15 @@ export const PATTERN_ROUTES: PatternRoute[] = [
     description: "",
     type: "Clinical",
     children: [
-      { title: "Curie App Header", href: "/patterns/clinical/curie-app-header" },
-      { title: "AI Signal Insights", href: "/patterns/clinical/ai-signal-insights" },
-      { title: "Night Monitoring", href: "/patterns/clinical/night-monitoring" },
-      { title: "Notifications Panel", href: "/patterns/clinical/notifications-panel" },
-      { title: "Row Actions", href: "/patterns/clinical/row-actions" },
       { title: "Actionable Insight Table", href: "/patterns/clinical/actionable-insight-table" },
-      { title: "Notes", href: "/patterns/clinical/notes" },
+      { title: "AI Signal Insights", href: "/patterns/clinical/ai-signal-insights" },
       { title: "Always-On Patient Panel", href: "/patterns/clinical/always-on-patient-panel" },
+      { title: "Curie App Header", href: "/patterns/clinical/curie-app-header" },
+      { title: "Night Monitoring", href: "/patterns/clinical/night-monitoring" },
+      { title: "Notes", href: "/patterns/clinical/notes" },
+      { title: "Notifications Panel", href: "/patterns/clinical/notifications-panel" },
       { title: "Patient Reports Dashboard", href: "/patterns/clinical/patient-reports-dashboard" },
+      { title: "Row Actions", href: "/patterns/clinical/row-actions" },
     ],
   },
   {
@@ -33,9 +33,9 @@ export const PATTERN_ROUTES: PatternRoute[] = [
     description: "",
     type: "Patient",
     children: [
+      { title: "Home Menu Overlay", href: "/patterns/patient/home-menu-overlay" },
       { title: "Monitoring Bar + Contextual Menu", href: "/patterns/patient/monitoring-bar-contextual-menu" },
       { title: "Patient Time Selection (Multi-select)", href: "/patterns/patient/patient-time-selection-multi-select" },
-      { title: "Home Menu Overlay", href: "/patterns/patient/home-menu-overlay" },
     ],
   },
 ];

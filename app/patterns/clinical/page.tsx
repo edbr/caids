@@ -62,7 +62,7 @@ export default function ClinicalPatternsPage() {
         </section>
 
         <section className="rounded-xl border border-border bg-muted/30 p-6 overflow-visible">
-          <h2 className="mb-4 text-lg font-semibold">Patient Reports Dashboard</h2>
+          <h2 className="mb-4 text-lg font-semibold">Patient Data</h2>
           <PatientReportsDashboard />
         </section>
 

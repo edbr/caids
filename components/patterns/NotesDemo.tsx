@@ -19,7 +19,7 @@ const INITIAL_NOTES: NoteItem[] = [
   {
     id: "n1",
     author: "Brian Lauson",
-    time: "9:06 AM",
+    time: "9:12 AM",
     text: "Patient complains of intermittent headaches and dizziness. Symptoms have been occurring for the past 3 days, with no clear triggers identified.",
     dateLabel: "01/24/2022",
     type: "all",
@@ -35,7 +35,7 @@ const INITIAL_NOTES: NoteItem[] = [
   {
     id: "n3",
     author: "Brian Lauson",
-    time: "9:10 AM",
+    time: "9:07 AM",
     text: "Reviewed patient's medication list during video consultation. Noted that patient is currently taking medication X, which may contribute to dizziness. Advised patient to monitor symptoms and report any worsening or new side effects.",
     dateLabel: "01/24/2022",
     type: "all",
@@ -69,6 +69,16 @@ function getVitalsForDate(dateLabel: string) {
   return DATE_VITALS[dateLabel] ?? DEFAULT_VITALS;
 }
 
+function stripHtml(value: string) {
+  if (typeof document === "undefined") {
+    return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  const tmp = document.createElement("div");
+  tmp.innerHTML = value;
+  return tmp.textContent?.replace(/\s+/g, " ").trim() ?? "";
+}
+
 function groupByDate(notes: NoteItem[]) {
   return notes.reduce<Record<string, NoteItem[]>>((acc, note) => {
     if (!acc[note.dateLabel]) acc[note.dateLabel] = [];
@@ -83,9 +93,9 @@ export function NotesDemo() {
   const [filter, setFilter] = React.useState<NoteType>("all");
   const [authorFilter, setAuthorFilter] = React.useState("all");
   const [mode, setMode] = React.useState<"browse" | "compose">("browse");
-  const [draft, setDraft] = React.useState("");
+  const [draftHtml, setDraftHtml] = React.useState("");
   const [editingId, setEditingId] = React.useState<string | null>(null);
-  const draftInputRef = React.useRef<HTMLInputElement>(null);
+  const draftEditorRef = React.useRef<HTMLDivElement>(null);
 
   const authors = React.useMemo(
     () => [...new Set(notes.map((note) => note.author))].sort((a, b) => a.localeCompare(b)),
@@ -97,9 +107,10 @@ export function NotesDemo() {
       notes.filter((note) => {
         const matchesFilter = filter === "all" ? true : note.type === "video";
         const matchesAuthor = authorFilter === "all" ? true : note.author === authorFilter;
+        const noteText = stripHtml(note.text).toLowerCase();
         const matchesQuery =
           query.trim().length === 0 ||
-          note.text.toLowerCase().includes(query.toLowerCase()) ||
+          noteText.includes(query.toLowerCase()) ||
           note.author.toLowerCase().includes(query.toLowerCase());
         return matchesFilter && matchesAuthor && matchesQuery;
       }),
@@ -114,34 +125,74 @@ export function NotesDemo() {
     if (mode !== "compose") return;
 
     const timeoutId = window.setTimeout(() => {
-      draftInputRef.current?.focus();
-      draftInputRef.current?.select();
+      draftEditorRef.current?.focus();
+
+      const selection = window.getSelection();
+      const range = document.createRange();
+      if (selection && draftEditorRef.current) {
+        range.selectNodeContents(draftEditorRef.current);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
     }, 180);
 
     return () => window.clearTimeout(timeoutId);
   }, [mode, editingId]);
 
+  React.useEffect(() => {
+    if (mode !== "compose" || !draftEditorRef.current) return;
+    if (draftEditorRef.current.innerHTML === draftHtml) return;
+    draftEditorRef.current.innerHTML = draftHtml;
+  }, [draftHtml, mode]);
+
+  React.useEffect(() => {
+    if (mode !== "compose") return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      cancelCompose();
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mode]);
+
   function openAddMode() {
     setEditingId(null);
-    setDraft("");
+    setDraftHtml("");
     setMode("compose");
   }
 
   function openEditMode(note: NoteItem) {
     setEditingId(note.id);
-    setDraft(note.text);
+    setDraftHtml(note.text);
     setMode("compose");
   }
 
   function cancelCompose() {
     setMode("browse");
     setEditingId(null);
-    setDraft("");
+    setDraftHtml("");
+  }
+
+  function applyFormat(command: "bold" | "italic" | "underline" | "insertUnorderedList") {
+    draftEditorRef.current?.focus();
+    document.execCommand(command);
+    setDraftHtml(draftEditorRef.current?.innerHTML ?? "");
+  }
+
+  function applyBlock(block: "p" | "h3") {
+    draftEditorRef.current?.focus();
+    document.execCommand("formatBlock", false, block);
+    setDraftHtml(draftEditorRef.current?.innerHTML ?? "");
   }
 
   function saveNote() {
-    const text = draft.trim();
-    if (!text) return;
+    const text = draftEditorRef.current?.innerHTML ?? draftHtml;
+    const plainText = stripHtml(text);
+    if (!plainText) return;
 
     if (editingId) {
       setNotes((prev) => prev.map((n) => (n.id === editingId ? { ...n, text } : n)));
@@ -222,10 +273,23 @@ export function NotesDemo() {
           </label>
         </div>
 
-        <PrimaryBtn type="button" onClick={openAddMode}>
+        <PrimaryBtn
+          type="button"
+          onClick={openAddMode}
+          disabled={mode === "compose"}
+          className="disabled:cursor-not-allowed disabled:opacity-45"
+        >
           <NotebookPen className="h-4 w-4 transition-all duration-200 ease-out group-hover:scale-105 group-hover:opacity-95" />
           Add note
         </PrimaryBtn>
+      </div>
+
+      <div className="mb-5">
+        <p className="inline-flex items-center gap-1.5 rounded-full bg-numo-yellow-400/50 border border-numo-yellow-700 px-4 py-2 text-[12px] font-medium text-numo-blue-900">
+          <Activity className="h-3 w-3" />
+          <span>Latest vitals:</span>
+          {groupedEntries.length > 0 ? getVitalsForDate(groupedEntries[0]![0]) : DEFAULT_VITALS}
+        </p>
       </div>
 
       <div
@@ -238,42 +302,104 @@ export function NotesDemo() {
         <div className="min-h-0">
           <div
             className={[
-              "rounded-lg border border-numo-blue-200 bg-background p-4 shadow-[0_12px_32px_-20px_rgba(36,76,127,0.55)] transition duration-300 ease-out",
+              "rounded-lg bg-numo-slate-400/70 px-3 py-3.5 transition duration-300 ease-out md:px-4 md:py-4",
               mode === "compose" ? "translate-y-0 scale-100" : "-translate-y-3 scale-[0.985]",
             ].join(" ")}
           >
             <p className="mb-3 text-sm text-muted-foreground">
               {editingNote
                 ? `Editing: ${editingNote.author} ${editingNote.time}`
-                : "Capture a quick note without losing context from the current timeline."}
+                : ""}
             </p>
 
-            <div className="bg-numo-blue-50/30">
-              <input
-                ref={draftInputRef}
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
+            <div className="relative rounded-md bg-background px-4 py-3 pl-7">
+              <span
+                aria-hidden="true"
+                className="absolute left-2.75 top-20 bottom-0 w-px border-l border-dashed border-numo-orange-500/50"
+              />
+              <span
+                aria-hidden="true"
+                className="absolute left-1.25 top-19 h-3.5 w-3.5 rounded-full border-4 border-numo-orange-700 bg-numo-slate-300/10 shadow-md"
+              />
+              <div className="mb-3 flex flex-wrap items-center gap-2 border-b border-border/30 pb-3">
+                <button
+                  type="button"
+                  onClick={() => applyFormat("bold")}
+                  className="inline-flex h-8 min-w-8 items-center justify-center rounded-md border border-border bg-background px-2 text-sm font-semibold text-numo-warm-blue-700 hover:bg-numo-blue-50/50"
+                >
+                  B
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyFormat("italic")}
+                  className="inline-flex h-8 min-w-8 items-center justify-center rounded-md border border-border bg-background px-2 text-sm italic text-numo-warm-blue-700 hover:bg-numo-blue-50/50"
+                >
+                  I
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyFormat("underline")}
+                  className="inline-flex h-8 min-w-8 items-center justify-center rounded-md border border-border bg-background px-2 text-sm underline text-numo-warm-blue-700 hover:bg-numo-blue-50/50"
+                >
+                  U
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyBlock("h3")}
+                  className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-2.5 text-xs font-semibold uppercase tracking-wide text-numo-warm-blue-700 hover:bg-numo-blue-50/50"
+                >
+                  Large
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyBlock("p")}
+                  className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-2.5 text-xs font-semibold uppercase tracking-wide text-numo-warm-blue-700 hover:bg-numo-blue-50/50"
+                >
+                  Body
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyFormat("insertUnorderedList")}
+                  className="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-2.5 text-sm font-semibold text-numo-warm-blue-700 hover:bg-numo-blue-50/50"
+                >
+                  List
+                </button>
+              </div>
+              {stripHtml(draftHtml).length === 0 ? (
+                <span className="pointer-events-none absolute left-7 top-17 text-lg text-muted-foreground">
+                  Write a note
+                </span>
+              ) : null}
+              <div
+                ref={draftEditorRef}
+                contentEditable
+                suppressContentEditableWarning
+                onInput={(e) => setDraftHtml(e.currentTarget.innerHTML)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") saveNote();
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    saveNote();
+                  }
                 }}
-                placeholder="Write a note"
-                className="min-h-12 w-full rounded-md border border-numo-blue-400 bg-background px-4 py-3 text-sm outline-none focus:border-numo-blue-500"
+                className="min-h-18 w-full bg-transparent text-lg leading-6 text-numo-warm-blue-900 outline-none [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:ml-5 [&_ul]:list-disc"
               />
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">Press Enter to save note</p>
 
-            <div className="mt-5 flex flex-nowrap items-center justify-end gap-3 border-t border-border/70 pt-4">
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-border/30 pt-4">
+              <p className="text-sm text-foreground">Press Enter to save note • Press Shift+Enter for a new line • Press Esc to discard.</p>
+              <div className="flex flex-nowrap items-center gap-3">
               <SecondaryBtn type="button" onClick={cancelCompose} className="shrink-0">
                 Cancel
               </SecondaryBtn>
               <PrimaryBtn
                 type="button"
                 onClick={saveNote}
-                disabled={draft.trim().length === 0}
+                disabled={stripHtml(draftHtml).length === 0}
                 className="shrink-0 px-8 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Save
               </PrimaryBtn>
+              </div>
             </div>
           </div>
         </div>
@@ -282,42 +408,58 @@ export function NotesDemo() {
       <div
         className={[
           "transition-all duration-300 ease-out",
-          mode === "compose" ? "translate-y-1 opacity-85 ]" : "translate-y-0 opacity-100 blur-0",
+          mode === "compose" ? "translate-y-1 opacity-85 " : "translate-y-0 opacity-100 blur-0",
         ].join(" ")}
       >
-        <div className="space-y-4">
-          {groupedEntries.map(([dateLabel, dateNotes]) => (
-            <section key={dateLabel} className="rounded-lg border border-border bg-background px-3 py-3.5 md:px-4 md:py-4">
-              <div className="sticky top-0 z-10 -mx-2 mb-2.5 flex items-center justify-between gap-3 border-b border-border/70 bg-background/95 px-2 py-1.5">
-                <h3 className="text-md tracking-tight text-numo-teal-600">{dateLabel}</h3>
-                <p className="inline-flex items-center gap-1.5 rounded-full bg-numo-blue-400/25 px-2 py-0.5 text-[11px] font-medium text-numo-blue-800">
-                  <Activity className="h-3 w-3" />
-                  <span className="hidden sm:inline">Latest vitals: </span>
-                  {getVitalsForDate(dateLabel)}
-                </p>
+        <div className="space-y-4 ">
+          {groupedEntries.map(([dateLabel, dateNotes], groupIndex) => (
+            <section key={dateLabel} className="rounded-lg bg-numo-slate-400/20 px-3 py-3.5 md:px-4 md:py-4">
+              <div className="sticky top-0 z-10 -mx-2 mb-2.5 flex items-center justify-between gap-3 px-2 py-1.5">
+                <div className="flex items-center gap-2">
+                  <h3 className="inline-flex items-center rounded-sm border border-numo-teal-600/50  px-3 py-1 text-sm font-semibold tracking-wide text-numo-teal-600">
+                    {dateLabel}
+                  </h3>
+                  {groupIndex === 0 ? (
+                    <span className="inline-flex items-right rounded-sm border border-numo-teal-600 bg-numo-teal-400/30 px-2 py-1 text-[11px] font-medium text-numo-teal-900">
+                      Last note
+                    </span>
+                  ) : null}
+                </div>
               </div>
-              <div className="space-y-0 divide-y divide-border/60">
+              <div className="space-y-0">
                 {dateNotes.map((note, idx) => {
                   const previous = dateNotes[idx - 1];
                   const authorChanged = previous ? previous.author !== note.author : false;
+                  const isLast = idx === dateNotes.length - 1;
 
                   return (
                     <article
                       key={note.id}
                       className={[
-                        "py-3 text-numo-slate-800 first:pt-0 last:pb-0",
-                        authorChanged ? "mt-1 border-t border-dashed border-border/70 pt-4" : "",
+                        "relative rounded-md pl-7 py-4 text-numo-slate-800 transition-colors duration-150 hover:bg-numo-blue-500/10 last:pb-6",
+                        authorChanged ? "mt-1 border-t border-dashed border-border/70 pt-4 " : "",
                       ].join(" ")}
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <p className="text-sm font-semibold text-numo-blue-800">{`${note.author} ${note.time}`}</p>
+                      <span
+                        aria-hidden="true"
+                        className={[
+                          "absolute left-2.75 top-0 w-px border-l border-dashed border-numo-teal-300/30",
+                          isLast ? "bottom-6" : "bottom-0",
+                        ].join(" ")}
+                      />
+                      <span
+                        aria-hidden="true"
+                        className="absolute left-1.25 top-[0.9rem] h-3.5 w-3.5 rounded-full border-2 border-white bg-numo-warm-blue-500 shadow-sm"
+                      />
+                      <div className="flex items-start justify-between gap-3 ">
+                        <p className="text-sm font-semibold text-numo-warm-blue-700">{`${note.time}`} <span className="text-sm font-normal text-numo-warm-blue-700">{`${note.author}`}</span></p>
                         <div className="flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => openEditMode(note)}
                             aria-label="Edit note"
                             title="Edit note"
-                            className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-1.5 py-0.5 text-[11px] text-muted-foreground hover:text-foreground sm:px-2"
+                            className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-1.5 py-0.5 text-[12px] text-muted-foreground hover:text-foreground sm:px-2"
                           >
                             <Pencil className="h-3 w-3" />
                             <span className="hidden sm:inline">Edit</span>
@@ -342,7 +484,10 @@ export function NotesDemo() {
                           </button>
                         </div>
                       </div>
-                      <p className="mt-1 max-w-[80ch] text-sm leading-6 text-numo-slate-800">{note.text}</p>
+                      <div
+                        className="mt-1 max-w-[78ch] text-md font-normal tracking-[0.012em] leading-7 text-numo-blue-700 antialiased [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:tracking-[0.01em] [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:ml-5 [&_ul]:list-disc [&_li]:mb-1"
+                        dangerouslySetInnerHTML={{ __html: note.text }}
+                      />
                     </article>
                   );
                 })}

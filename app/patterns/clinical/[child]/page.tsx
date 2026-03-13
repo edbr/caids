@@ -27,7 +27,7 @@ const CLINICAL_CHILDREN = {
   "notifications-panel": {
     title: "Notifications Panel",
     render: () => (
-      <div className="mx-auto w-full max-w-[560px]">
+      <div className="mx-auto w-full max-w-140">
         <NotificationsPanelDemo />
       </div>
     ),
@@ -48,7 +48,7 @@ const CLINICAL_CHILDREN = {
     render: () => <InsightTableDemo />,
   },
   notes: {
-    title: "Notes",
+    title: "Notes Clinical",
     render: () => <NotesDemo />,
   },
   "always-on-patient-panel": {

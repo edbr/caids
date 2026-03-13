@@ -68,7 +68,7 @@ export function InsightTableRowActions({
         ]}
       />
       {showStateGallery ? (
-        <div className="mx-auto mt-4 w-full max-w-[720px] space-y-3 border-t border-border/70 pt-3">
+        <div className="mx-auto mt-4 w-full max-w-180 space-y-3 border-t border-border/70 pt-3">
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             All Icon States
           </p>
@@ -111,7 +111,7 @@ export function InsightTableRowActions({
       ) : null}
 
       {isDatePickerOpen ? (
-        <div className="fixed inset-0 z-[140]">
+        <div className="fixed inset-0 z-140">
           <div
             className="absolute inset-0 bg-black/30"
             aria-hidden
@@ -167,7 +167,7 @@ export function InsightTableRowActions({
       ) : null}
 
       {isConfirmOpen ? (
-        <div className="fixed inset-0 z-[140]">
+        <div className="fixed inset-0 z-140">
           <div
             className="absolute inset-0 bg-black/30"
             aria-hidden
@@ -201,7 +201,7 @@ export function InsightTableRowActions({
       ) : null}
 
       {isConversationOpen ? (
-        <div className="fixed inset-0 z-[140]">
+        <div className="fixed inset-0 z-140">
           <div
             className="absolute inset-0 bg-black/30"
             aria-hidden
@@ -234,7 +234,7 @@ export function InsightTableRowActions({
       ) : null}
 
       {isVideoCallOpen ? (
-        <div className="fixed inset-0 z-[140]">
+        <div className="fixed inset-0 z-140">
           <div
             className="absolute inset-0 bg-black/40"
             aria-hidden
