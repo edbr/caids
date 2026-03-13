@@ -1,3 +1,4 @@
+import { AlwaysOnPatientPanel } from "@/components/patterns/AlwaysOnPatientPanel";
 import { notFound } from "next/navigation";
 import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
 import InsightTableDemo from "@/components/patterns/InsightTableDemo";
@@ -6,6 +7,7 @@ import { CurieHeader } from "@/components/patterns/CurieHeader";
 import { InsightTableRowActions } from "@/components/patterns/InsightTableRowActions";
 import { NightMonitoringDemo } from "@/components/patterns/NightMonitoringDemo";
 import { PatternChildBottomNav } from "@/components/patterns/PatternChildBottomNav";
+import { PatientReportsDashboard } from "@/components/patterns/PatientReportsDashboard";
 import { DSPage } from "@/components/ds/page";
 
 const CLINICAL_CHILDREN = {
@@ -43,6 +45,18 @@ const CLINICAL_CHILDREN = {
   "actionable-insight-table": {
     title: "Actionable Insight Table",
     render: () => <InsightTableDemo />,
+  },
+  "always-on-patient-panel": {
+    title: "Always-On Patient Panel",
+    render: () => (
+      <div className="max-w-[320px]">
+        <AlwaysOnPatientPanel />
+      </div>
+    ),
+  },
+  "patient-reports-dashboard": {
+    title: "Patient Reports Dashboard",
+    render: () => <PatientReportsDashboard />,
   },
 } as const;
 

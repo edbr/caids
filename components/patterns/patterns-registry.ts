@@ -22,6 +22,8 @@ export const PATTERN_ROUTES: PatternRoute[] = [
       { title: "Notifications Panel", href: "/patterns/clinical/notifications-panel" },
       { title: "Row Actions", href: "/patterns/clinical/row-actions" },
       { title: "Actionable Insight Table", href: "/patterns/clinical/actionable-insight-table" },
+      { title: "Always-On Patient Panel", href: "/patterns/clinical/always-on-patient-panel" },
+      { title: "Patient Reports Dashboard", href: "/patterns/clinical/patient-reports-dashboard" },
     ],
   },
   {

@@ -1,3 +1,4 @@
+import { AlwaysOnPatientPanel } from "@/components/patterns/AlwaysOnPatientPanel";
 import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
 import InsightTableDemo from "@/components/patterns/InsightTableDemo";
 import { AISignalInsights } from "@/components/patterns/AISignalInsights";
@@ -5,6 +6,7 @@ import { CurieHeader } from "@/components/patterns/CurieHeader";
 import { InsightTableRowActions } from "@/components/patterns/InsightTableRowActions";
 import { NightMonitoringDemo } from "@/components/patterns/NightMonitoringDemo";
 import { PatternBottomNav } from "@/components/patterns/PatternBottomNav";
+import { PatientReportsDashboard } from "@/components/patterns/PatientReportsDashboard";
 import { DSPage } from "@/components/ds/page";
 
 export default function ClinicalPatternsPage() {
@@ -44,6 +46,18 @@ export default function ClinicalPatternsPage() {
 
         <section className="">
           <InsightTableDemo />
+        </section>
+
+        <section className="rounded-xl border border-border bg-muted/30 p-6 overflow-visible">
+          <h2 className="mb-4 text-lg font-semibold">Always-On Patient Panel</h2>
+          <div className="max-w-[320px]">
+            <AlwaysOnPatientPanel />
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-border bg-muted/30 p-6 overflow-visible">
+          <h2 className="mb-4 text-lg font-semibold">Patient Reports Dashboard</h2>
+          <PatientReportsDashboard />
         </section>
 
         <PatternBottomNav currentHref="/patterns/clinical" />
