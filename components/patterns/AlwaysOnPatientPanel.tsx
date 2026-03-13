@@ -4,18 +4,19 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  Activity,
+  BellElectric,
   Calendar,
   ChevronDown,
   ChevronUp,
+  Cigarette,
   Globe,
   Pill,
   MessageSquare,
   NotebookPen,
   Pencil,
   Stethoscope,
-  UserRound,
   X,
+  Bell,
 } from "lucide-react";
 
 type Communication = "phone" | "sms" | "email";
@@ -175,7 +176,7 @@ export function AlwaysOnPatientPanel() {
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-orange-500/15">
-                      <Activity className="h-3.5 w-3.5 text-numo-orange-800" />
+                      <Cigarette className="h-3.5 w-3.5 text-numo-orange-800" />
                     </span>
                     <p>
                       <span className="font-semibold text-numo-blue-900">Smoker: </span>
@@ -184,7 +185,7 @@ export function AlwaysOnPatientPanel() {
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-yellow-500/20">
-                      <UserRound className="h-3.5 w-3.5 text-numo-yellow-900" />
+                      <BellElectric className="h-3.5 w-3.5 text-numo-yellow-900" />
                     </span>
                     <p>
                       <span className="font-semibold text-numo-blue-900">Considerations: </span>
@@ -197,15 +198,15 @@ export function AlwaysOnPatientPanel() {
           </AnimatePresence>
         </section>
 
-        <section className="rounded-xl border border-numo-teal-500/35 bg-numo-teal-500/10">
+        <section className="rounded-xl border border-numo-blue-500/35 bg-numo-blue-400/5">
           <button
             type="button"
             onClick={() => setIsDiagnosisOpen((v) => !v)}
             className="flex w-full items-center justify-between px-4 py-3 text-left"
           >
             <span className="inline-flex items-center gap-2 text-sm font-semibold text-numo-blue-900">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-teal-500/20">
-                <Stethoscope className="h-3.5 w-3.5 text-numo-teal-800" />
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-blue-500/20">
+                <Stethoscope className="h-3.5 w-3.5 text-numo-blue-800" />
               </span>
               Diagnosis
             </span>
@@ -218,8 +219,8 @@ export function AlwaysOnPatientPanel() {
                   {profile.diagnosis.map((item) => {
                     const [code, ...rest] = item.split(" ");
                     return (
-                      <div key={item} className="rounded-xl bg-muted/50 px-3 py-2 text-sm text-foreground">
-                        <span className="font-semibold text-numo-teal-900">{code}</span> {rest.join(" ")}
+                      <div key={item} className="rounded-xl  px-3 py-2 text-sm text-foreground">
+                        <span className="font-semibold text-numo-warm-blue-400-blue-900">{code}</span> {rest.join(" ")}
                       </div>
                     );
                   })}
@@ -229,15 +230,15 @@ export function AlwaysOnPatientPanel() {
           </AnimatePresence>
         </section>
 
-        <section className="rounded-xl border border-numo-orange-500/35 bg-numo-orange-500/10">
+        <section className="rounded-xl border border-numo-blue-500/35 bg-numo-blue-400/5">
           <button
             type="button"
             onClick={() => setIsMedicationsOpen((v) => !v)}
             className="flex w-full items-center justify-between px-4 py-3 text-left"
           >
             <span className="inline-flex items-center gap-2 text-sm font-semibold text-numo-blue-900">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-orange-500/20">
-                <Pill className="h-3.5 w-3.5 text-numo-orange-800" />
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-numo-blue-500/20">
+                <Pill className="h-3.5 w-3.5 text-numo-blue-800" />
               </span>
               Medications
             </span>
@@ -246,10 +247,10 @@ export function AlwaysOnPatientPanel() {
           <AnimatePresence initial={false}>
             {isMedicationsOpen ? (
               <motion.div {...sectionMotion} className="overflow-hidden">
-                <div className="space-y-4 rounded-xl bg-muted/50 px-4 py-2 pb-4 text-sm text-foreground">
+                <div className="space-y-4 rounded-xl  px-4 py-2 pb-4 text-sm text-foreground">
                   {profile.medications.map((med) => (
                     <div key={med.name}>
-                      <p className="text-sm font-semibold text-numo-orange-900">{med.name}</p>
+                      <p className="text-sm font-semibold text-numo-blue-900">{med.name}</p>
                       <p className="text-sm text-foreground">{med.dose}</p>
                       <p className="text-sm text-muted-foreground">{med.source}</p>
                     </div>
@@ -260,7 +261,7 @@ export function AlwaysOnPatientPanel() {
           </AnimatePresence>
         </section>
 
-        <section className="space-y-3 rounded-xl border border-numo-yellow-600/35 bg-numo-yellow-400/15 p-4">
+        <section className="space-y-3 rounded-xl border border-numo-blue-500/35 bg-numo-blue-400/5 p-4">
           <p className="text-sm">
             <span className="font-semibold text-numo-blue-900">Monitoring start: </span>
             <span className="text-foreground">{profile.monitoringStart}</span>
@@ -274,8 +275,8 @@ export function AlwaysOnPatientPanel() {
 
       {isEditOpen && isMounted
         ? createPortal(
-            <div className="fixed inset-0 z-[100] grid place-items-center bg-black/40 p-4">
-              <div className="relative z-[101] isolate flex max-h-[calc(100vh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-border bg-background shadow-xl">
+            <div className="fixed inset-0 z-100 grid place-items-center bg-black/40 p-4">
+              <div className="relative z-101 isolate flex max-h-[calc(100vh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-border bg-background shadow-xl">
                 <div className="flex items-center justify-between border-b border-border px-4 py-3">
                   <h3 className="text-base font-semibold text-foreground">Edit Patient Profile</h3>
                   <button

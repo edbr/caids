@@ -19,7 +19,7 @@ export function CurieHeader({
     "relative inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background text-foreground hover:bg-muted/60";
 
   return (
-    <header className="w-full overflow-visible rounded-xl bg-transparent">
+    <header className="w-full overflow-visible border-b border-numo-slate-300 shadow-xs bg-numo-slate-400/10">
       <div className="flex items-center justify-between gap-3 px-3 py-2 md:px-6 md:py-2">
         <div className="flex min-w-0 items-center">
           <Image
