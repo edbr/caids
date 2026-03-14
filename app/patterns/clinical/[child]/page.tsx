@@ -7,6 +7,7 @@ import { CurieHeader } from "@/components/patterns/CurieHeader";
 import { InsightTableRowActions } from "@/components/patterns/InsightTableRowActions";
 import { NightMonitoringDemo } from "@/components/patterns/NightMonitoringDemo";
 import { NotesDemo } from "@/components/patterns/NotesDemo";
+import { NumoLoader3D } from "@/components/patterns/NumoLoader3D";
 import { PatternChildBottomNav } from "@/components/patterns/PatternChildBottomNav";
 import { PatientReportsDashboard } from "@/components/patterns/PatientReportsDashboard";
 import { DSPage } from "@/components/ds/page";
@@ -23,6 +24,10 @@ const CLINICAL_CHILDREN = {
   "night-monitoring": {
     title: "Night Monitoring",
     render: () => <NightMonitoringDemo />,
+  },
+  "numo-3d-loader": {
+    title: "Numo 3D Loader",
+    render: () => <NumoLoader3D />,
   },
   "notifications-panel": {
     title: "Notifications Panel",

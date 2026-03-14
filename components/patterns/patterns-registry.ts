@@ -21,6 +21,7 @@ export const PATTERN_ROUTES: PatternRoute[] = [
       { title: "Always-On Patient Panel", href: "/patterns/clinical/always-on-patient-panel" },
       { title: "Curie App Header", href: "/patterns/clinical/curie-app-header" },
       { title: "Night Monitoring", href: "/patterns/clinical/night-monitoring" },
+      { title: "Numo 3D Loader", href: "/patterns/clinical/numo-3d-loader" },
       { title: "Notes", href: "/patterns/clinical/notes" },
       { title: "Notifications Panel", href: "/patterns/clinical/notifications-panel" },
       { title: "Patient Reports Dashboard", href: "/patterns/clinical/patient-reports-dashboard" },

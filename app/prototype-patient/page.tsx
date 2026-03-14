@@ -6,6 +6,7 @@ import { CurieHeader } from "@/components/patterns/CurieHeader";
 import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
 import { PatientRecordTabs, type TabKey } from "@/components/patterns/PatientRecordTabs";
 import { AlwaysOnPatientPanel } from "@/components/patterns/AlwaysOnPatientPanel";
+import { NotesDemo } from "@/components/patterns/NotesDemo";
 import { PatientReportsDashboard } from "@/components/patterns/PatientReportsDashboard";
 
 export default function PrototypePatientPage() {
@@ -46,13 +47,13 @@ export default function PrototypePatientPage() {
 
                 {activeTab === "reports" ? (
                   <PatientReportsDashboard />
+                ) : activeTab === "notes" ? (
+                  <NotesDemo />
                 ) : (
                   <div className="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-6 text-sm text-muted-foreground">
                     {activeTab === "summary"
                       ? "Health Summary content placeholder."
-                      : activeTab === "notes"
-                        ? "Notes content placeholder."
-                        : "Spirometry content placeholder."}
+                      : "Spirometry content placeholder."}
                   </div>
                 )}
               </div>
