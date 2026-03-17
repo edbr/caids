@@ -1,119 +1,124 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
 
 type MenuItem = {
   label: string;
-  icon: string; // from /public/menuicon
-  badge?: number;
+  description: string;
+  badge?: string;
+  icon: string;
 };
 
 const ITEMS: MenuItem[] = [
-  { label: "Home", icon: "numo.svg" },
-  { label: "Care Plan", icon: "folder.svg", badge: 1 },
-  { label: "Peak flow", icon: "peakFlow.svg" },
-  { label: "Pulse oximeter", icon: "pulse.svg" },
-  { label: "Messages", icon: "mail.svg" },
-  { label: "Support help", icon: "help.svg" },
-  { label: "Settings", icon: "settings.svg" },
-];
+  { label: "Home", description: "Return to your dashboard", icon: "numo.svg" },
+  { label: "Care plan", description: "Review tasks and reminders", badge: "1", icon: "folder.svg" },
+  { label: "Peak flow", description: "Log a reading in under a minute", icon: "peakFlow.svg" },
+  { label: "Pulse oximeter", description: "Check your latest reading", icon: "pulse.svg" },
+  { label: "Messages", description: "Open today's care team note", badge: "2", icon: "mail.svg" },
+  { label: "Support", description: "Get help with device setup", icon: "help.svg" },
+  { label: "Settings", description: "Manage notifications and devices", icon: "settings.svg" },
+] as const;
 
 export function InteractionMenu() {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
-    <div className="relative">
-      {/* MENU BUTTON */}
+    <div ref={containerRef} className="relative">
       <motion.button
         type="button"
-        whileTap={{ scale: 0.97 }}
-        onClick={() => setOpen((v) => !v)}
-        className="
-          inline-flex items-center gap-2
-          px-6 py-3
-          rounded-2xl
-          bg-[#0f2a33]
-          border-2 border-[#3c9277]
-          text-[#69d5b3]
-          shadow-[0_0_6px_rgba(72,255,190,0.2)]
-          cursor-pointer select-none
-        "
+        whileTap={{ scale: 0.98 }}
+        onClick={() => setOpen((value) => !value)}
+        className="font-sans inline-flex h-11 items-center rounded-full border border-numo-teal-500 px-6 py-6 font-medium text-2xl text-numo-teal-400 shadow-[0_4px_4px_0_rgba(0,0,0,0.15)] transition-colors hover:bg-numo-teal-500/15"
         aria-expanded={open}
-        aria-label="Toggle menu"
+        aria-haspopup="menu"
+        aria-label={open ? "Close menu" : "Open menu"}
       >
-        <span className="font-medium text-[22px]">Menu</span>
+        Menu
       </motion.button>
 
-      {/* SLIDING MENU */}
       <AnimatePresence>
-        {open && (
+        {open ? (
           <motion.div
-            initial={{ x: 80, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 80, opacity: 0 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            className="absolute top-0 right-0 mt-16 w-62 space-y-4"
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="absolute right-0 top-[calc(100%+16px)] z-20 w-[min(86vw,340px)]"
           >
-            {ITEMS.map((item, i) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 12 }}
-                transition={{ delay: i * 0.04 }}
-              >
-                <InteractionMenuItem {...item} />
-              </motion.div>
-            ))}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-3 -top-2 h-28 rounded-full"
+            />
+
+            <div className="relative p-3 text-white ">
+              <div className="mt-3 space-y-2">
+                {ITEMS.map((item, index) => (
+                  <motion.button
+                    key={item.label}
+                    type="button"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.04 }}
+                    className="flex w-full items-center justify-between gap-3 rounded-[22px] border border-[#325762] bg-[#223a44] px-4 py-3 text-left transition-colors hover:bg-[#2e4d59]"
+                  >
+                    <span className="flex min-w-0 items-center gap-3">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-3xl">
+                        <Image
+                          src={`/menuicon/${item.icon}`}
+                          alt=""
+                          width={32}
+                          height={32}
+                          aria-hidden
+                          className="h-7 w-7 object-contain"
+                        />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-[22px] font-semibold tracking-[0.03em] text-[#eff7fb]">
+                          {item.label}
+                        </span>
+                      </span>
+                    </span>
+
+                    <span className="flex items-center gap-2">
+                      {item.badge ? (
+                        <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-[#ff6973] px-2 py-1 text-[11px] font-semibold text-white">
+                          {item.badge}
+                        </span>
+                      ) : null}
+                      <ChevronRight className="h-4 w-4 text-[#7fa5b3]" />
+                    </span>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
-    </div>
-  );
-}
-
-function InteractionMenuItem({ label, icon, badge }: MenuItem) {
-  return (
-    <div
-      className="
-        flex items-center justify-between
-        rounded-2xl
-        border-2 border-[#365b69]
-        bg-[#183447]
-        px-3.5 py-4
-        text-[#f5fbfe]
-        shadow-[0_0_8px_rgba(146,226,155,0.15)]
-      "
-    >
-      <div className="flex items-center gap-2.5 min-w-0">
-        <Image
-          src={`/menuicon/${icon}`}
-          alt=""
-          width={24}
-          height={24}
-          aria-hidden
-          className="h-6 w-6 shrink-0"
-        />
-        <div className="text-[22px] font-medium leading-[1.2] tracking-[0.01em] text-[#eaf5fb] truncate">
-          {label}
-        </div>
-      </div>
-
-      {typeof badge === "number" ? (
-        <span
-          className="
-            ml-3 inline-flex h-5 min-w-5 items-center justify-center
-            rounded-full
-            bg-[#ff6c6c]
-            px-1.5
-            text-[11px] font-semibold leading-none text-white
-          "
-          aria-label={`${badge} unread`}
-        >
-          {badge}
-        </span>
-      ) : null}
     </div>
   );
 }
