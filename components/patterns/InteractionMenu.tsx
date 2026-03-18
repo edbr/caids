@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 
@@ -22,20 +22,31 @@ const ITEMS: MenuItem[] = [
   { label: "Settings", description: "Manage notifications and devices", icon: "settings.svg" },
 ] as const;
 
-export function InteractionMenu() {
+type InteractionMenuProps = {
+  onOpenChange?: (open: boolean) => void;
+  placement?: "down" | "up";
+};
+
+export function InteractionMenu({ onOpenChange, placement = "down" }: InteractionMenuProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const updateOpen = useCallback((next: boolean) => {
+    setOpen(next);
+    onOpenChange?.(next);
+  }, [onOpenChange]);
+  const opensUp = placement === "up";
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
       if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
+        updateOpen(false);
       }
     }
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setOpen(false);
+        updateOpen(false);
       }
     }
 
@@ -45,14 +56,14 @@ export function InteractionMenu() {
       document.removeEventListener("mousedown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [updateOpen]);
 
   return (
     <div ref={containerRef} className="relative">
       <motion.button
         type="button"
         whileTap={{ scale: 0.98 }}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => updateOpen(!open)}
         className="font-sans inline-flex h-11 items-center rounded-full border border-numo-teal-500 px-6 py-6 font-medium text-2xl text-numo-teal-400 shadow-[0_4px_4px_0_rgba(0,0,0,0.15)] transition-colors hover:bg-numo-teal-500/15"
         aria-expanded={open}
         aria-haspopup="menu"
@@ -64,15 +75,21 @@ export function InteractionMenu() {
       <AnimatePresence>
         {open ? (
           <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            initial={{ opacity: 0, y: opensUp ? -12 : 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            exit={{ opacity: 0, y: opensUp ? -10 : 10, scale: 0.98 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
-            className="absolute right-0 top-[calc(100%+16px)] z-20 w-[min(86vw,340px)]"
+            className={[
+              "absolute right-0 z-20 w-[min(86vw,340px)]",
+              opensUp ? "bottom-[calc(100%+16px)]" : "top-[calc(100%+16px)]",
+            ].join(" ")}
           >
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-3 -top-2 h-28 rounded-full"
+              className={[
+                "pointer-events-none absolute inset-x-3 h-28 rounded-full",
+                opensUp ? "-bottom-2" : "-top-2",
+              ].join(" ")}
             />
 
             <div className="relative p-3 text-white ">

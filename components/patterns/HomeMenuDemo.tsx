@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Bell } from "lucide-react";
 import { InteractionMenu } from "@/components/patterns/InteractionMenu";
 import { TabletClock } from "@/components/patterns/TabletClock";
 
@@ -29,7 +28,6 @@ export function HomeMenuDemo() {
           </div>
 
           <div className="flex items-center gap-4">
-
             <InteractionMenu />
           </div>
         </header>

@@ -3,8 +3,11 @@
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { CalendarClock, Minimize2, Phone } from "lucide-react";
+import { CalendarClock } from "lucide-react";
+import { InteractionMenu } from "@/components/patterns/InteractionMenu";
 import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
+import { NextAppointmentCard } from "@/components/patterns/NextAppointmentCard";
+import { TabletClock } from "@/components/patterns/TabletClock";
 
 type BlobPath = {
   sx: number;
@@ -22,6 +25,18 @@ export function TabletAppointmentDemo() {
   const [travel, setTravel] = React.useState({ x: 0, y: 0 });
   const [showBlob, setShowBlob] = React.useState(false);
   const [blobPath, setBlobPath] = React.useState<BlobPath | null>(null);
+  const [now, setNow] = React.useState<Date | null>(null);
+  const [isInteractionMenuOpen, setIsInteractionMenuOpen] = React.useState(false);
+  const [isMonitoringMenuOpen, setIsMonitoringMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const firstTick = window.setTimeout(() => setNow(new Date()), 0);
+    const id = window.setInterval(() => setNow(new Date()), 1_000);
+    return () => {
+      window.clearTimeout(firstTick);
+      window.clearInterval(id);
+    };
+  }, []);
 
   const computeTravel = React.useCallback(() => {
     const cardEl = cardRef.current;
@@ -65,12 +80,36 @@ export function TabletAppointmentDemo() {
     setIsMinimized(false);
   }, []);
 
+  const handleMenuOpenChange = React.useCallback(
+    (open: boolean) => {
+      setIsInteractionMenuOpen(open);
+      if (open && !isMinimized) {
+        handleMinimize();
+      }
+    },
+    [handleMinimize, isMinimized],
+  );
+  const isAnyMenuOpen = isInteractionMenuOpen || isMonitoringMenuOpen;
+
   return (
     <div
       ref={containerRef}
       className="relative min-h-168 overflow-hidden rounded-2xl border border-numo-blue-700/50 p-4 sm:p-6 md:min-h-190 md:p-8 xl:p-10"
       style={{ background: "var(--Nu-blue-500, #203946)" }}
     >
+      <AnimatePresence>
+        {isAnyMenuOpen ? (
+          <motion.div
+            aria-hidden
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="pointer-events-none absolute inset-0 z-15 bg-[#09161d]/42 backdrop-blur-[1px]"
+          />
+        ) : null}
+      </AnimatePresence>
+
       <svg className="pointer-events-none absolute h-0 w-0">
         <defs>
           <filter id="goo-tablet">
@@ -97,9 +136,6 @@ export function TabletAppointmentDemo() {
         />
 
         <div className="flex items-center gap-3">
-          <button className="font-sans inline-flex h-10 items-center rounded-full border border-numo-teal-500 px-4 text-base font-medium text-numo-teal-400 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-teal-500/15 md:h-11 md:px-6 md:text-2xl">
-            Menu
-          </button>
           <button
             ref={iconRef}
             onClick={isMinimized ? handleRestore : undefined}
@@ -113,6 +149,7 @@ export function TabletAppointmentDemo() {
           >
             <CalendarClock className="h-6 w-6" />
           </button>
+          <InteractionMenu onOpenChange={handleMenuOpenChange} placement="up" />
         </div>
       </header>
 
@@ -126,16 +163,11 @@ export function TabletAppointmentDemo() {
           layout
           transition={{ type: "spring", stiffness: 180, damping: 22 }}
           className={[
-            "text-center",
+            "flex justify-center text-center",
             isMinimized ? "mx-auto w-full max-w-5xl pl-0" : "pl-2 xl:pl-8",
           ].join(" ")}
         >
-          <div className="text-center font-sans text-[68px] font-normal leading-none text-[#82B1C9] sm:text-[92px] md:text-[120px]">
-            2:14 PM
-          </div>
-          <div className="mt-2 text-center font-sans text-[22px] font-normal leading-normal text-[#82B1C9] sm:text-[28px] md:mt-3 md:text-[36px]">
-            September 23, 2022
-          </div>
+          <TabletClock value={now} variant="compact" />
         </motion.div>
 
         <AnimatePresence initial={false} mode="wait">
@@ -155,43 +187,17 @@ export function TabletAppointmentDemo() {
                 animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
                 exit={{ x: travel.x, y: travel.y, scale: 0.18, opacity: 0 }}
                 transition={{ duration: 0.62, ease: [0.2, 0.8, 0.2, 1] }}
-                className="rounded-3xl border border-numo-blue-600/70 bg-numo-blue-900/55 p-4 text-numo-gray-400 shadow-[0_20px_40px_hsl(var(--numo-blue-900)/0.35)] sm:p-5 md:p-6"
+                className=""
               >
-                <div className="mb-3.5 flex items-center justify-between border-b border-numo-blue-600/70 pb-3">
-                  <h3 className="font-sans text-[22px] leading-[1.02] tracking-tight text-numo-slate-500 sm:text-[24px] md:text-[28px]">
-                    Next appointment:
-                  </h3>
-                  <button
-                    onClick={handleMinimize}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-numo-blue-500 text-numo-slate-500 transition-colors hover:bg-numo-blue-600/25"
-                    aria-label="Minimize appointment"
-                  >
-                    <Minimize2 className="h-4.5 w-4.5" />
-                  </button>
-                </div>
-
-                <p className="font-sans text-[21px] font-medium leading-tight tracking-tight text-numo-orange-400 sm:text-[23px] md:text-[26px]">
-                  Apr 01, 2023, 3:00 PM
-                </p>
-
-                <button className="mt-4 inline-flex rounded-full border border-numo-orange-700 bg-numo-orange-500 px-4 py-2 font-sans text-[17px] font-semibold leading-none tracking-tight text-numo-blue-900 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] transition-colors hover:bg-numo-orange-700/90 sm:mt-4.5 sm:px-5 sm:text-[20px]">
-                  Start Check-in
-                </button>
-
-                <div className="mt-6.5 font-sans">
-                  <div className="mt-1.5 inline-flex items-center gap-2.5 text-[17px] leading-tight tracking-tight text-numo-slate-500 sm:text-[18px] md:text-[20px]">
-                    <Phone className="h-5 w-5 " />
-                    (480)336-2774
-                  </div>
-                </div>
+                <NextAppointmentCard onMinimize={handleMinimize} />
               </motion.div>
             </motion.div>
           ) : null}
         </AnimatePresence>
       </div>
 
-      <div className="relative z-10 mt-8 w-full md:absolute md:bottom-8 md:left-1/2 md:mt-0 md:w-[min(1080px,calc(100%-2rem))] md:-translate-x-1/2">
-        <MonitoringBarDemo />
+      <div className="relative z-20 mt-8 w-full md:absolute md:bottom-8 md:left-1/2 md:mt-0 md:w-[min(1080px,calc(100%-2rem))] md:-translate-x-1/2">
+        <MonitoringBarDemo menuPlacement="up" onMenuOpenChange={setIsMonitoringMenuOpen} />
       </div>
 
       {showBlob && blobPath ? (

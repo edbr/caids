@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { CirclePause, CirclePlay, Ellipsis, TimerReset } from "lucide-react";
+import { ChevronRight, CirclePause, CirclePlay, Ellipsis, TimerReset } from "lucide-react";
 
 type MonitoringState = "start" | "paused" | "stopAtTen";
 
@@ -51,30 +51,41 @@ const STATE_ACTIONS: Record<MonitoringState, MenuAction[]> = {
   ],
 };
 
-export function MonitoringBarDemo() {
+type MonitoringBarDemoProps = {
+  menuPlacement?: "down" | "up";
+  onMenuOpenChange?: (open: boolean) => void;
+};
+
+export function MonitoringBarDemo({ menuPlacement = "down", onMenuOpenChange }: MonitoringBarDemoProps) {
   const [state, setState] = React.useState<MonitoringState>("stopAtTen");
   const [menuOpen, setMenuOpen] = React.useState(false);
   const menuRef = React.useRef<HTMLDivElement | null>(null);
   const isPaused = state === "paused";
   const isAnimating = state === "stopAtTen";
   const morphDuration = isPaused ? 3.8 : 2.2;
+  const opensUp = menuPlacement === "up";
+
+  const updateMenuOpen = React.useCallback((next: boolean) => {
+    setMenuOpen(next);
+    onMenuOpenChange?.(next);
+  }, [onMenuOpenChange]);
 
   React.useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
       if (!menuRef.current) return;
       if (!menuRef.current.contains(event.target as Node)) {
-        setMenuOpen(false);
+        updateMenuOpen(false);
       }
     }
 
     window.addEventListener("mousedown", handlePointerDown);
     return () => window.removeEventListener("mousedown", handlePointerDown);
-  }, []);
+  }, [updateMenuOpen]);
 
   const actions = STATE_ACTIONS[state];
 
   return (
-    <div className="overflow-visible rounded-md bg-numo-blue-800 p-3 sm:p-4 md:p-8">
+    <div className="overflow-visible rounded-md  p-3 sm:p-4 md:p-8">
       <div className="relative mx-auto w-full max-w-260 overflow-visible" ref={menuRef}>
         <div
           className="flex items-center gap-2 px-3 py-3 sm:gap-3 sm:px-4 sm:py-4 md:gap-6 md:px-8 md:py-5"
@@ -178,33 +189,45 @@ export function MonitoringBarDemo() {
 
           <button
             type="button"
-            onClick={() => setMenuOpen((v) => !v)}
+            onClick={() => updateMenuOpen(!menuOpen)}
             aria-expanded={menuOpen}
-            aria-label="Open monitoring menu"
-            className="inline-flex h-10 w-10 shrink-0 self-center items-center justify-center rounded-lg border border-numo-slate-500/35 bg-numo-blue-900/35 text-numo-gray-400 transition hover:border-numo-orange-500 hover:bg-numo-blue-800/55 hover:text-numo-orange-400 sm:h-11 sm:w-11 md:h-14 md:w-14 md:rounded-xl md:border-2"
+            aria-label="Open monitoring actions"
+            className="inline-flex h-10 shrink-0 self-center items-center justify-center gap-2 rounded-xl border border-numo-orange-500/50 bg-numo-blue-900/35 px-2 text-numo-orange-300 transition hover:bg-numo-blue-800/55 hover:text-numo-orange-200 sm:h-11 sm:px-3.5 md:h-14 md:rounded-2xl md:border-2 md:px-4"
           >
-            <Ellipsis className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
+            <Ellipsis className="h-5 w-5 sm:h-4.5 sm:w-5.5 md:h-6 md:w-6" />
+            
           </button>
         </div>
 
         {menuOpen ? (
-          <div className="absolute right-0 top-full z-20 mt-2 w-[min(22rem,calc(100vw-1.5rem))] sm:mt-3 md:w-90">
-            <div className="rounded-2xl border border-numo-blue-700/70 bg-numo-blue-900/95 p-2.5 shadow-[0_10px_24px_hsl(var(--numo-blue-900)/0.45),0_2px_8px_hsl(var(--numo-blue-900)/0.35)] backdrop-blur-sm">
-            <div className="space-y-1.5">
+          <div
+            className={[
+              "absolute right-0 z-20 w-[min(22rem,calc(100vw-1.5rem))] md:w-90",
+              opensUp ? "bottom-full mb-2 sm:mb-3" : "top-full mt-2 sm:mt-3",
+            ].join(" ")}
+          >
+            <div className="rounded-md bg-numo-blue-900/95 p-2.5 shadow-[0_10px_24px_hsl(var(--numo-blue-900)/0.45),0_2px_8px_hsl(var(--numo-blue-900)/0.35)] backdrop-blur-md">
+            <div className="space-y-2">
               {actions.map((action) => (
                 <button
                   key={action.id}
                   type="button"
                   onClick={() => {
                     setState(action.nextState);
-                    setMenuOpen(false);
+                    updateMenuOpen(false);
                   }}
-                  className="group flex min-h-12 w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-numo-slate-400 transition-all duration-150 hover:bg-numo-blue-700/80 active:scale-[0.99] active:bg-numo-blue-700 md:min-h-14 md:gap-3 md:px-4 md:py-3 md:text-base"
+                  className="group flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border border-numo-blue-700/65 bg-numo-blue-800/82 px-3.5 py-3 text-left text-sm font-medium text-numo-gray-400 shadow-[inset_0_1px_0_hsl(var(--background)/0.04)] transition-all duration-150 hover:border-numo-teal-500/45 hover:bg-numo-blue-700/90 active:scale-[0.99] active:bg-numo-blue-700 md:min-h-16 md:px-4.5 md:py-3.5 md:text-base"
                 >
-                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-numo-blue-800/70 text-numo-slate-500 transition-colors group-hover:bg-numo-blue-800 group-hover:text-numo-gray-400 md:h-9 md:w-9">
-                    <action.icon className="h-5 w-5 md:h-6 md:w-6" />
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-numo-blue-600/70 bg-numo-blue-900/55 text-numo-teal-300 transition-colors group-hover:border-numo-teal-500/50 group-hover:text-numo-teal-200 md:h-11 md:w-11">
+                      <action.icon className="h-5 w-5 md:h-5.5 md:w-5.5" />
+                    </span>
+                    <span className="min-w-0 leading-tight text-md text-numo-gray-400">{action.label}</span>
                   </span>
-                  {action.label}
+
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-numo-blue-900/45 text-numo-slate-500 transition-colors group-hover:text-numo-gray-400">
+                    <ChevronRight className="h-4.5 w-4.5" />
+                  </span>
                 </button>
               ))}
             </div>
