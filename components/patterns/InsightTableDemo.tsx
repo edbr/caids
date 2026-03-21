@@ -3,6 +3,15 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import {
+  Activity,
+  BellRing,
+  ClipboardList,
+  Gauge,
+  HeartPulse,
+  SearchCheck,
+  ShieldCheck,
+} from "lucide-react";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -12,6 +21,18 @@ import { InsightTableFilters, type RiskFilter } from "@/components/patterns/Insi
 import { DSAudioPlayButton } from "@/components/ds/audio-play-button";
 import { InsightTableRowActions } from "@/components/patterns/InsightTableRowActions";
 import { type ActionState } from "@/components/patterns/RowActions";
+
+const MORE_LABEL_OPTIONS = [
+  "More symptoms",
+  "Needs review",
+  "Escalation needed",
+  "Review trends",
+  "Needs coaching",
+  "Stable",
+  "Reviews",
+] as const;
+
+type MoreLabelOption = (typeof MORE_LABEL_OPTIONS)[number];
 
 type PatientRow = {
   id: string;
@@ -23,7 +44,7 @@ type PatientRow = {
   meta: string;
   condition: string;
   symptoms: string[];
-  moreLabel: string;
+  moreLabel: MoreLabelOption;
   moreTime: string;
   metricTitle: string;
   metricDetail: string;
@@ -61,6 +82,15 @@ const RISK_TO_DOT_COLOR: Record<RowRisk, StatusDotColor> = {
   high: "red",
 };
 const RISK_CYCLE: RowRisk[] = ["low", "moderate", "high"];
+const MORE_LABEL_ICON: Record<MoreLabelOption, React.ComponentType<{ className?: string }>> = {
+  "More symptoms": Activity,
+  "Needs review": SearchCheck,
+  "Escalation needed": BellRing,
+  "Review trends": Gauge,
+  "Needs coaching": ClipboardList,
+  Stable: ShieldCheck,
+  Reviews: HeartPulse,
+};
 
 function statusDots(colors: [StatusDotColor, StatusDotColor, StatusDotColor]): PatientRow["statusDots"] {
   return [
@@ -275,7 +305,7 @@ function StatusChangeDialog({
   }, [onCancel]);
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/35 px-4" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/35 px-4" role="dialog" aria-modal="true">
       <div className="w-full max-w-sm rounded-2xl border border-border bg-background p-5 shadow-xl">
         <div className="text-sm font-semibold text-foreground">Confirm Status Change</div>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -296,6 +326,81 @@ function StatusChangeDialog({
             className="rounded-md bg-foreground px-3 py-1.5 text-sm text-background transition hover:opacity-90"
           >
             Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MoreLabelDialog({
+  patientName,
+  initialLabel,
+  onCancel,
+  onConfirm,
+}: {
+  patientName: string;
+  initialLabel: MoreLabelOption;
+  onCancel: () => void;
+  onConfirm: (label: MoreLabelOption) => void;
+}) {
+  const [selectedLabel, setSelectedLabel] = React.useState<MoreLabelOption>(initialLabel);
+
+  React.useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onCancel();
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onCancel]);
+
+  return (
+    <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/35 px-4" role="dialog" aria-modal="true">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-background p-5 shadow-xl">
+        <div className="text-sm font-semibold text-foreground">Update More Label</div>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          Choose the new more label for <span className="font-medium text-foreground">{patientName}</span>.
+        </p>
+        <div className="mt-4 grid gap-2">
+          {MORE_LABEL_OPTIONS.map((label) => {
+            const isSelected = selectedLabel === label;
+            const Icon = MORE_LABEL_ICON[label];
+
+            return (
+              <button
+                key={label}
+                type="button"
+                onClick={() => setSelectedLabel(label)}
+                className={[
+                  "rounded-lg border px-3 py-2 text-left text-sm transition",
+                  isSelected
+                    ? "border-foreground bg-foreground/5 text-foreground"
+                    : "border-border bg-background text-muted-foreground hover:text-foreground",
+                ].join(" ")}
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span>{label}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-4 flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => onConfirm(selectedLabel)}
+            className="rounded-md bg-foreground px-3 py-1.5 text-sm text-background transition hover:opacity-90"
+          >
+            Save
           </button>
         </div>
       </div>
@@ -354,6 +459,39 @@ function InsightStatus({
   );
 }
 
+function InsightMore({
+  rowId,
+  moreLabel,
+  moreTime,
+  onRequestMoreLabelChange,
+}: {
+  rowId: string;
+  moreLabel: MoreLabelOption;
+  moreTime: string;
+  onRequestMoreLabelChange: () => void;
+}) {
+  const Icon = MORE_LABEL_ICON[moreLabel];
+
+  return (
+    <div className="min-w-0">
+      <TooltipZ label="Update this follow-up label">
+        <button
+          type="button"
+          onClick={onRequestMoreLabelChange}
+          className="flex max-w-full items-center gap-2 text-left text-sm font-medium leading-tight text-foreground transition hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+          aria-label={`Update more label for ${rowId}. Current label ${moreLabel}.`}
+        >
+          <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <span className="truncate">{moreLabel}</span>
+        </button>
+      </TooltipZ>
+      <div className="mt-1 text-[11px] leading-none text-muted-foreground tabular-nums">
+        {moreTime}
+      </div>
+    </div>
+  );
+}
+
 function InsightRow({
   row,
   rowIndex,
@@ -362,6 +500,7 @@ function InsightRow({
   onTogglePlay,
   elapsedSeconds,
   onRequestRiskChange,
+  onRequestMoreLabelChange,
 }: {
   row: PatientRow;
   rowIndex: number;
@@ -370,6 +509,7 @@ function InsightRow({
   onTogglePlay: () => void;
   elapsedSeconds: number;
   onRequestRiskChange: (risk: RowRisk) => void;
+  onRequestMoreLabelChange: () => void;
 }) {
   const [hovered, setHovered] = React.useState(false);
   const clamped = Math.max(0, Math.min(AUDIO_DURATION_S, elapsedSeconds));
@@ -488,14 +628,12 @@ function InsightRow({
         </div>
 
         {/* more */}
-        <div className="min-w-0">
-          <div className="text-sm font-medium text-foreground leading-tight truncate">
-            {row.moreLabel}
-          </div>
-          <div className="mt-1 text-[11px] leading-none text-muted-foreground tabular-nums">
-            {row.moreTime}
-          </div>
-        </div>
+        <InsightMore
+          rowId={row.id}
+          moreLabel={row.moreLabel}
+          moreTime={row.moreTime}
+          onRequestMoreLabelChange={onRequestMoreLabelChange}
+        />
 
         {/* vitals */}
         <div className="min-w-0">
@@ -540,6 +678,11 @@ export default function InsightTableDemo() {
     rowId: string;
     patientName: string;
     nextRisk: RowRisk;
+  } | null>(null);
+  const [pendingMoreLabelChange, setPendingMoreLabelChange] = React.useState<{
+    rowId: string;
+    patientName: string;
+    currentLabel: MoreLabelOption;
   } | null>(null);
 
   const [playingRowId, setPlayingRowId] = React.useState<string | null>("p2");
@@ -599,6 +742,26 @@ export default function InsightTableDemo() {
     if (!pendingStatusChange) return;
     updateRowRisk(pendingStatusChange.rowId, pendingStatusChange.nextRisk);
     setPendingStatusChange(null);
+  }
+
+  function requestMoreLabelChange(rowId: string, patientName: string, currentLabel: MoreLabelOption) {
+    setPendingMoreLabelChange({ rowId, patientName, currentLabel });
+  }
+
+  function confirmMoreLabelChange(nextLabel: MoreLabelOption) {
+    if (!pendingMoreLabelChange) return;
+
+    setRows((currentRows) =>
+      currentRows.map((row) =>
+        row.id === pendingMoreLabelChange.rowId
+          ? {
+              ...row,
+              moreLabel: nextLabel,
+            }
+          : row
+      )
+    );
+    setPendingMoreLabelChange(null);
   }
 
   function togglePlay(rowId: string) {
@@ -663,6 +826,7 @@ export default function InsightTableDemo() {
                     onTogglePlay={() => togglePlay(row.id)}
                     elapsedSeconds={elapsedByRowId[row.id] ?? 0}
                     onRequestRiskChange={(nextRisk) => requestRowRiskChange(row.id, row.name, nextRisk)}
+                    onRequestMoreLabelChange={() => requestMoreLabelChange(row.id, row.name, row.moreLabel)}
                   />
                 ))
               ) : (
@@ -679,6 +843,14 @@ export default function InsightTableDemo() {
             nextRisk={pendingStatusChange.nextRisk}
             onCancel={() => setPendingStatusChange(null)}
             onConfirm={confirmRowRiskChange}
+          />
+        ) : null}
+        {pendingMoreLabelChange ? (
+          <MoreLabelDialog
+            patientName={pendingMoreLabelChange.patientName}
+            initialLabel={pendingMoreLabelChange.currentLabel}
+            onCancel={() => setPendingMoreLabelChange(null)}
+            onConfirm={confirmMoreLabelChange}
           />
         ) : null}
       </div>
