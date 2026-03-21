@@ -46,9 +46,9 @@ type PatientRow = {
   symptoms: string[];
   moreLabel: MoreLabelOption;
   moreTime: string;
-  metricTitle: string;
-  metricDetail: string;
-  metricTime: string;
+  oxygenation: number;
+  pulseBpm: number;
+  readingTime: string;
   actionStates: {
     schedule?: ActionState;
     message?: ActionState;
@@ -119,9 +119,9 @@ const INITIAL_ROWS: PatientRow[] = [
     symptoms: ["Cough [4]", "Sneeze [8]", "Heavy breathing [2]"],
     moreLabel: "More symptoms",
     moreTime: "03:46 PM, 02/24",
-    metricTitle: "70–130 mg/dl",
-    metricDetail: "Pulse rate: 96 BPM",
-    metricTime: "03:46 PM, 02/24",
+    oxygenation: 94,
+    pulseBpm: 96,
+    readingTime: "03:46 PM, 02/24",
     actionStates: { schedule: "default", message: "loading", videoCall: "disabled" },
     statusDots: statusDots(["yellow", "red", "red"]),
   },
@@ -137,9 +137,9 @@ const INITIAL_ROWS: PatientRow[] = [
     symptoms: ["Wheezing [6]", "Cough [2]", "Shortness of breath [3]"],
     moreLabel: "Needs review",
     moreTime: "09:12 AM, 02/25",
-    metricTitle: "SpO₂ trend",
-    metricDetail: "O2 saturation: 89% (low)",
-    metricTime: "09:12 AM, 02/25",
+    oxygenation: 89,
+    pulseBpm: 102,
+    readingTime: "09:12 AM, 02/25",
     actionStates: { schedule: "danger", message: "success", videoCall: "default" },
     statusDots: statusDots(["red", "yellow", "red"]),
   },
@@ -155,9 +155,9 @@ const INITIAL_ROWS: PatientRow[] = [
     symptoms: ["Wheezing [19]", "Cough [2]", "Shortness of breath [30]"],
     moreLabel: "More symptoms",
     moreTime: "06:25 AM, 02/25",
-    metricTitle: "SpO₂ trend",
-    metricDetail: "O2 saturation: 86% (low)",
-    metricTime: "12:17 AM, 02/24",
+    oxygenation: 86,
+    pulseBpm: 98,
+    readingTime: "12:17 AM, 02/24",
     actionStates: { schedule: "default", message: "default", videoCall: "default" },
     statusDots: statusDots(["green", "green", "yellow"]),
   },
@@ -173,9 +173,9 @@ const INITIAL_ROWS: PatientRow[] = [
     symptoms: ["Chest tightness [4]", "Cough [3]", "Fatigue [5]"],
     moreLabel: "Review trends",
     moreTime: "11:22 AM, 02/25",
-    metricTitle: "Respiratory rate",
-    metricDetail: "RR: 23/min",
-    metricTime: "11:20 AM, 02/25",
+    oxygenation: 91,
+    pulseBpm: 92,
+    readingTime: "11:20 AM, 02/25",
     actionStates: { schedule: "default", message: "default", videoCall: "success" },
     statusDots: statusDots(["yellow", "green", "yellow"]),
   },
@@ -191,9 +191,9 @@ const INITIAL_ROWS: PatientRow[] = [
     symptoms: ["Wheezing [8]", "Shortness of breath [7]", "Cough [5]"],
     moreLabel: "Escalation needed",
     moreTime: "01:05 PM, 02/25",
-    metricTitle: "SpO₂ trend",
-    metricDetail: "O2 saturation: 84% (critical)",
-    metricTime: "01:04 PM, 02/25",
+    oxygenation: 84,
+    pulseBpm: 110,
+    readingTime: "01:04 PM, 02/25",
     actionStates: { schedule: "danger", message: "loading", videoCall: "default" },
     statusDots: statusDots(["red", "red", "yellow"]),
   },
@@ -209,9 +209,9 @@ const INITIAL_ROWS: PatientRow[] = [
     symptoms: ["Sneeze [2]", "Cough [1]", "Shortness of breath [1]"],
     moreLabel: "Stable",
     moreTime: "08:33 AM, 02/25",
-    metricTitle: "Pulse trend",
-    metricDetail: "Pulse rate: 78 BPM",
-    metricTime: "08:31 AM, 02/25",
+    oxygenation: 97,
+    pulseBpm: 78,
+    readingTime: "08:31 AM, 02/25",
     actionStates: { schedule: "default", message: "success", videoCall: "default" },
     statusDots: statusDots(["green", "yellow", "green"]),
   },
@@ -227,9 +227,9 @@ const INITIAL_ROWS: PatientRow[] = [
     symptoms: ["Breathlessness [5]", "Fatigue [4]", "Dry cough [3]"],
     moreLabel: "Needs coaching",
     moreTime: "04:44 PM, 02/24",
-    metricTitle: "Activity vs HR",
-    metricDetail: "Pulse rate: 104 BPM",
-    metricTime: "04:43 PM, 02/24",
+    oxygenation: 90,
+    pulseBpm: 104,
+    readingTime: "04:43 PM, 02/24",
     actionStates: { schedule: "default", message: "default", videoCall: "disabled" },
     statusDots: statusDots(["yellow", "red", "green"]),
   },
@@ -485,8 +485,47 @@ function InsightMore({
           <span className="truncate">{moreLabel}</span>
         </button>
       </TooltipZ>
-      <div className="mt-1 text-[11px] leading-none text-muted-foreground tabular-nums">
+      <div className="mt-1 pl-6 pt-1 text-[11px] leading-none text-muted-foreground tabular-nums">
         {moreTime}
+      </div>
+    </div>
+  );
+}
+
+function InsightVitals({
+  oxygenation,
+  pulseBpm,
+  readingTime,
+}: {
+  oxygenation: number;
+  pulseBpm: number;
+  readingTime: string;
+}) {
+  const [hovered, setHovered] = React.useState(false);
+
+  return (
+    <div
+      className="min-w-0"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="space-y-0.5">
+        <div className="text-sm leading-snug">
+          {oxygenation}% O2, {pulseBpm} BPM
+        </div>
+        <div className="relative pl-0.5 pt-1">
+          <motion.button
+            type="button"
+            animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 4 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="absolute left-0 top-0 inline-flex rounded-md border border-border bg-background px-2.5 py-1 text-[11px] font-medium text-foreground shadow-sm"
+          >
+            Request new reading
+          </motion.button>
+          <div className="text-[11px] leading-none text-muted-foreground tabular-nums">
+            {readingTime}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -636,17 +675,11 @@ function InsightRow({
         />
 
         {/* vitals */}
-        <div className="min-w-0">
-          <div className="text-xs font-medium text-muted-foreground leading-tight">
-            {row.metricTitle}
-          </div>
-          <div className="mt-1 space-y-0.5">
-            <div className="text-sm leading-snug">{row.metricDetail}</div>
-            <div className="text-[11px] leading-none text-muted-foreground tabular-nums">
-              {row.metricTime}
-            </div>
-          </div>
-        </div>
+        <InsightVitals
+          oxygenation={row.oxygenation}
+          pulseBpm={row.pulseBpm}
+          readingTime={row.readingTime}
+        />
 
         {/* actions */}
         <div className="flex justify-end">
