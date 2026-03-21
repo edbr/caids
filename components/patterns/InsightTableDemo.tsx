@@ -18,6 +18,7 @@ type PatientRow = {
   name: string;
   clinic: string;
   risk: Exclude<RiskFilter, "all">;
+  statusLevel: Exclude<RiskFilter, "all">;
   abnormalVitals: boolean;
   meta: string;
   condition: string;
@@ -38,39 +39,171 @@ type PatientRow = {
   }>;
 };
 
+type RowRisk = Exclude<RiskFilter, "all">;
+type StatusDotColor = PatientRow["statusDots"][number]["color"];
+
 const AUDIO_DURATION_S = 30;
-const STATUS_COLORS: Array<"green" | "yellow" | "red"> = ["green", "yellow", "red"];
+const STATUS_DOT_COLOR_CLASS: Record<StatusDotColor, string> = {
+  green:
+    "bg-[#22c55e] shadow-[0_0_0_1px_rgba(34,197,94,0.15),0_0_10px_rgba(34,197,94,0.35)]",
+  yellow:
+    "bg-[#f59e0b] shadow-[0_0_0_1px_rgba(245,158,11,0.15),0_0_10px_rgba(245,158,11,0.35)]",
+  red: "bg-[#ef4444] shadow-[0_0_0_1px_rgba(239,68,68,0.15),0_0_12px_rgba(239,68,68,0.4)]",
+};
+const STATUS_DOT_SIZE_CLASS: Record<PatientRow["statusDots"][number]["size"], string> = {
+  sm: "h-3 w-3",
+  md: "h-4 w-4",
+  lg: "h-6 w-6",
+};
+const RISK_TO_DOT_COLOR: Record<RowRisk, StatusDotColor> = {
+  low: "green",
+  moderate: "yellow",
+  high: "red",
+};
+const RISK_CYCLE: RowRisk[] = ["low", "moderate", "high"];
 
-function stableHash(input: string): number {
-  let hash = 0;
-  for (let i = 0; i < input.length; i += 1) {
-    hash = (hash * 31 + input.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-}
-
-function statusDotsFromId(id: string): PatientRow["statusDots"] {
-  const hash = stableHash(id);
+function statusDots(colors: [StatusDotColor, StatusDotColor, StatusDotColor]): PatientRow["statusDots"] {
   return [
-    { color: STATUS_COLORS[hash % STATUS_COLORS.length]!, size: "sm" },
-    { color: STATUS_COLORS[Math.floor(hash / 3) % STATUS_COLORS.length]!, size: "md" },
-    { color: STATUS_COLORS[Math.floor(hash / 9) % STATUS_COLORS.length]!, size: "lg" },
+    { color: colors[0], size: "sm" },
+    { color: colors[1], size: "md" },
+    { color: colors[2], size: "lg" },
   ];
 }
 
-function riskFromStatusDots(statusDots: PatientRow["statusDots"]): Exclude<RiskFilter, "all"> {
-  const thirdDot = statusDots[2];
-  if (!thirdDot) return "low";
-  if (thirdDot.color === "red") return "high";
-  if (thirdDot.color === "yellow") return "moderate";
-  return "low";
-}
-
-const RISK_ORDER: Record<Exclude<RiskFilter, "all">, number> = {
+const RISK_ORDER: Record<RowRisk, number> = {
   high: 0,
   moderate: 1,
   low: 2,
 };
+
+const INITIAL_ROWS: PatientRow[] = [
+  {
+    id: "p1",
+    name: "Marta Beauchamp",
+    clinic: "Curie Downtown",
+    risk: "high",
+    statusLevel: "high",
+    abnormalVitals: false,
+    meta: "57 yrs, female",
+    condition: "COPD",
+    symptoms: ["Cough [4]", "Sneeze [8]", "Heavy breathing [2]"],
+    moreLabel: "More symptoms",
+    moreTime: "03:46 PM, 02/24",
+    metricTitle: "70–130 mg/dl",
+    metricDetail: "Pulse rate: 96 BPM",
+    metricTime: "03:46 PM, 02/24",
+    actionStates: { schedule: "default", message: "loading", videoCall: "disabled" },
+    statusDots: statusDots(["yellow", "red", "red"]),
+  },
+  {
+    id: "p2",
+    name: "Marco Odermatt",
+    clinic: "Curie North",
+    risk: "high",
+    statusLevel: "high",
+    abnormalVitals: true,
+    meta: "63 yrs, male",
+    condition: "Asthma",
+    symptoms: ["Wheezing [6]", "Cough [2]", "Shortness of breath [3]"],
+    moreLabel: "Needs review",
+    moreTime: "09:12 AM, 02/25",
+    metricTitle: "SpO₂ trend",
+    metricDetail: "O2 saturation: 89% (low)",
+    metricTime: "09:12 AM, 02/25",
+    actionStates: { schedule: "danger", message: "success", videoCall: "default" },
+    statusDots: statusDots(["red", "yellow", "red"]),
+  },
+  {
+    id: "p3",
+    name: "Denise Mertens",
+    clinic: "Curie Downtown",
+    risk: "low",
+    statusLevel: "moderate",
+    abnormalVitals: true,
+    meta: "80 yrs, female",
+    condition: "COPD",
+    symptoms: ["Wheezing [19]", "Cough [2]", "Shortness of breath [30]"],
+    moreLabel: "More symptoms",
+    moreTime: "06:25 AM, 02/25",
+    metricTitle: "SpO₂ trend",
+    metricDetail: "O2 saturation: 86% (low)",
+    metricTime: "12:17 AM, 02/24",
+    actionStates: { schedule: "default", message: "default", videoCall: "default" },
+    statusDots: statusDots(["green", "green", "yellow"]),
+  },
+  {
+    id: "p4",
+    name: "Caroline Hayes",
+    clinic: "Curie East",
+    risk: "moderate",
+    statusLevel: "moderate",
+    abnormalVitals: true,
+    meta: "69 yrs, female",
+    condition: "Interstitial Lung Disease",
+    symptoms: ["Chest tightness [4]", "Cough [3]", "Fatigue [5]"],
+    moreLabel: "Review trends",
+    moreTime: "11:22 AM, 02/25",
+    metricTitle: "Respiratory rate",
+    metricDetail: "RR: 23/min",
+    metricTime: "11:20 AM, 02/25",
+    actionStates: { schedule: "default", message: "default", videoCall: "success" },
+    statusDots: statusDots(["yellow", "green", "yellow"]),
+  },
+  {
+    id: "p5",
+    name: "Julian Mercer",
+    clinic: "Curie Downtown",
+    risk: "high",
+    statusLevel: "high",
+    abnormalVitals: true,
+    meta: "74 yrs, male",
+    condition: "COPD",
+    symptoms: ["Wheezing [8]", "Shortness of breath [7]", "Cough [5]"],
+    moreLabel: "Escalation needed",
+    moreTime: "01:05 PM, 02/25",
+    metricTitle: "SpO₂ trend",
+    metricDetail: "O2 saturation: 84% (critical)",
+    metricTime: "01:04 PM, 02/25",
+    actionStates: { schedule: "danger", message: "loading", videoCall: "default" },
+    statusDots: statusDots(["red", "red", "yellow"]),
+  },
+  {
+    id: "p6",
+    name: "Emma Sullivan",
+    clinic: "Curie North",
+    risk: "low",
+    statusLevel: "low",
+    abnormalVitals: false,
+    meta: "52 yrs, female",
+    condition: "Asthma",
+    symptoms: ["Sneeze [2]", "Cough [1]", "Shortness of breath [1]"],
+    moreLabel: "Stable",
+    moreTime: "08:33 AM, 02/25",
+    metricTitle: "Pulse trend",
+    metricDetail: "Pulse rate: 78 BPM",
+    metricTime: "08:31 AM, 02/25",
+    actionStates: { schedule: "default", message: "success", videoCall: "default" },
+    statusDots: statusDots(["green", "yellow", "green"]),
+  },
+  {
+    id: "p7",
+    name: "Noah Bradford",
+    clinic: "Curie South",
+    risk: "moderate",
+    statusLevel: "low",
+    abnormalVitals: true,
+    meta: "61 yrs, male",
+    condition: "Pulmonary Fibrosis",
+    symptoms: ["Breathlessness [5]", "Fatigue [4]", "Dry cough [3]"],
+    moreLabel: "Needs coaching",
+    moreTime: "04:44 PM, 02/24",
+    metricTitle: "Activity vs HR",
+    metricDetail: "Pulse rate: 104 BPM",
+    metricTime: "04:43 PM, 02/24",
+    actionStates: { schedule: "default", message: "default", videoCall: "disabled" },
+    statusDots: statusDots(["yellow", "red", "green"]),
+  },
+];
 
 function TooltipZ({
   children,
@@ -121,6 +254,106 @@ function HeaderRow() {
   );
 }
 
+function StatusChangeDialog({
+  patientName,
+  nextRisk,
+  onCancel,
+  onConfirm,
+}: {
+  patientName: string;
+  nextRisk: RowRisk;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  React.useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onCancel();
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onCancel]);
+
+  return (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/35 px-4" role="dialog" aria-modal="true">
+      <div className="w-full max-w-sm rounded-2xl border border-border bg-background p-5 shadow-xl">
+        <div className="text-sm font-semibold text-foreground">Confirm Status Change</div>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          Change <span className="font-medium text-foreground">{patientName}</span> to{" "}
+          <span className="font-medium text-foreground">{nextRisk}</span> status?
+        </p>
+        <div className="mt-4 flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-md border border-border bg-background px-3 py-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="rounded-md bg-foreground px-3 py-1.5 text-sm text-background transition hover:opacity-90"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InsightStatus({
+  rowId,
+  statusDots,
+  statusLevel,
+  onRequestRiskChange,
+}: {
+  rowId: string;
+  statusDots: PatientRow["statusDots"];
+  statusLevel: RowRisk;
+  onRequestRiskChange: (risk: RowRisk) => void;
+}) {
+  const nextRisk = RISK_CYCLE[(RISK_CYCLE.indexOf(statusLevel) + 1) % RISK_CYCLE.length] ?? "low";
+
+  return (
+    <TooltipZ label={`Large square: ${statusLevel}. Click to set ${nextRisk}.`}>
+      <div className="flex items-center gap-2">
+        {statusDots.map((dot, idx) => {
+          const isLargeDot = dot.size === "lg";
+
+          if (!isLargeDot) {
+            return (
+              <span
+                key={`${rowId}-dot-${idx}`}
+                className={[
+                  "rounded ring-1 ring-white/70",
+                  STATUS_DOT_COLOR_CLASS[dot.color],
+                  STATUS_DOT_SIZE_CLASS[dot.size],
+                ].join(" ")}
+              />
+            );
+          }
+
+          return (
+            <button
+              key={`${rowId}-dot-${idx}`}
+              type="button"
+              onClick={() => onRequestRiskChange(nextRisk)}
+              className={[
+                "rounded ring-1 ring-white/70 transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40",
+                STATUS_DOT_COLOR_CLASS[RISK_TO_DOT_COLOR[statusLevel]],
+                STATUS_DOT_SIZE_CLASS[dot.size],
+              ].join(" ")}
+              aria-label={`Set ${rowId} status. Current ${statusLevel}. Click to switch to ${nextRisk}.`}
+            />
+          );
+        })}
+      </div>
+    </TooltipZ>
+  );
+}
+
 function InsightRow({
   row,
   rowIndex,
@@ -128,6 +361,7 @@ function InsightRow({
   isPlaying,
   onTogglePlay,
   elapsedSeconds,
+  onRequestRiskChange,
 }: {
   row: PatientRow;
   rowIndex: number;
@@ -135,23 +369,12 @@ function InsightRow({
   isPlaying: boolean;
   onTogglePlay: () => void;
   elapsedSeconds: number;
+  onRequestRiskChange: (risk: RowRisk) => void;
 }) {
   const [hovered, setHovered] = React.useState(false);
   const clamped = Math.max(0, Math.min(AUDIO_DURATION_S, elapsedSeconds));
   const baseZ = 10 + rowIndex;
   const activeZ = 60;
-  const dotColorClass: Record<PatientRow["statusDots"][number]["color"], string> = {
-    green:
-      "bg-[#22c55e] shadow-[0_0_0_1px_rgba(34,197,94,0.15),0_0_10px_rgba(34,197,94,0.35)]",
-    yellow:
-      "bg-[#f59e0b] shadow-[0_0_0_1px_rgba(245,158,11,0.15),0_0_10px_rgba(245,158,11,0.35)]",
-    red: "bg-[#ef4444] shadow-[0_0_0_1px_rgba(239,68,68,0.15),0_0_12px_rgba(239,68,68,0.4)]",
-  };
-  const dotSizeClass: Record<PatientRow["statusDots"][number]["size"], string> = {
-    sm: "h-3 w-3",
-    md: "h-4 w-4",
-    lg: "h-6 w-6",
-  };
 
   return (
     <motion.div
@@ -180,18 +403,12 @@ function InsightRow({
         ].join(" ")}
       >
         {/* status */}
-        <div className="flex items-center gap-2">
-          {row.statusDots.map((dot, idx) => (
-            <span
-              key={`${row.id}-dot-${idx}`}
-              className={[
-                "rounded ring-1 ring-white/70",
-                dotColorClass[dot.color],
-                dotSizeClass[dot.size],
-              ].join(" ")}
-            />
-          ))}
-        </div>
+        <InsightStatus
+          rowId={row.id}
+          statusDots={row.statusDots}
+          statusLevel={row.statusLevel}
+          onRequestRiskChange={onRequestRiskChange}
+        />
 
         {/* patient */}
         <div className="min-w-0">
@@ -318,130 +535,12 @@ function InsightRow({
 }
 
 export default function InsightTableDemo() {
-  const rows = React.useMemo<PatientRow[]>(
-    () => [
-      {
-        id: "p1",
-        name: "Marta Beauchamp",
-        clinic: "Curie Downtown",
-        risk: "moderate",
-        abnormalVitals: false,
-        meta: "57 yrs, female",
-        condition: "COPD",
-        symptoms: ["Cough [4]", "Sneeze [8]", "Heavy breathing [2]"],
-        moreLabel: "More symptoms",
-        moreTime: "03:46 PM, 02/24",
-        metricTitle: "70–130 mg/dl",
-        metricDetail: "Pulse rate: 96 BPM",
-        metricTime: "03:46 PM, 02/24",
-        actionStates: { schedule: "default", message: "loading", videoCall: "disabled" },
-        statusDots: statusDotsFromId("p1"),
-      },
-      {
-        id: "p2",
-        name: "Marco Odermatt",
-        clinic: "Curie North",
-        risk: "high",
-        abnormalVitals: true,
-        meta: "63 yrs, male",
-        condition: "Asthma",
-        symptoms: ["Wheezing [6]", "Cough [2]", "Shortness of breath [3]"],
-        moreLabel: "Needs review",
-        moreTime: "09:12 AM, 02/25",
-        metricTitle: "SpO₂ trend",
-        metricDetail: "O2 saturation: 89% (low)",
-        metricTime: "09:12 AM, 02/25",
-        actionStates: { schedule: "danger", message: "success", videoCall: "default" },
-        statusDots: statusDotsFromId("p2"),
-      },
-      {
-        id: "p3",
-        name: "Denise Mertens",
-        clinic: "Curie Downtown",
-        risk: "low",
-        abnormalVitals: true,
-        meta: "80 yrs, female",
-        condition: "COPD",
-        symptoms: ["Wheezing [19]", "Cough [2]", "Shortness of breath [30]"],
-        moreLabel: "More symptoms",
-        moreTime: "06:25 AM, 02/25",
-        metricTitle: "SpO₂ trend",
-        metricDetail: "O2 saturation: 86% (low)",
-        metricTime: "12:17 AM, 02/24",
-        actionStates: { schedule: "default", message: "default", videoCall: "default" },
-        statusDots: statusDotsFromId("p3"),
-      },
-      {
-        id: "p4",
-        name: "Caroline Hayes",
-        clinic: "Curie East",
-        risk: "moderate",
-        abnormalVitals: true,
-        meta: "69 yrs, female",
-        condition: "Interstitial Lung Disease",
-        symptoms: ["Chest tightness [4]", "Cough [3]", "Fatigue [5]"],
-        moreLabel: "Review trends",
-        moreTime: "11:22 AM, 02/25",
-        metricTitle: "Respiratory rate",
-        metricDetail: "RR: 23/min",
-        metricTime: "11:20 AM, 02/25",
-        actionStates: { schedule: "default", message: "default", videoCall: "success" },
-        statusDots: statusDotsFromId("p4"),
-      },
-      {
-        id: "p5",
-        name: "Julian Mercer",
-        clinic: "Curie Downtown",
-        risk: "high",
-        abnormalVitals: true,
-        meta: "74 yrs, male",
-        condition: "COPD",
-        symptoms: ["Wheezing [8]", "Shortness of breath [7]", "Cough [5]"],
-        moreLabel: "Escalation needed",
-        moreTime: "01:05 PM, 02/25",
-        metricTitle: "SpO₂ trend",
-        metricDetail: "O2 saturation: 84% (critical)",
-        metricTime: "01:04 PM, 02/25",
-        actionStates: { schedule: "danger", message: "loading", videoCall: "default" },
-        statusDots: statusDotsFromId("p5"),
-      },
-      {
-        id: "p6",
-        name: "Emma Sullivan",
-        clinic: "Curie North",
-        risk: "low",
-        abnormalVitals: false,
-        meta: "52 yrs, female",
-        condition: "Asthma",
-        symptoms: ["Sneeze [2]", "Cough [1]", "Shortness of breath [1]"],
-        moreLabel: "Stable",
-        moreTime: "08:33 AM, 02/25",
-        metricTitle: "Pulse trend",
-        metricDetail: "Pulse rate: 78 BPM",
-        metricTime: "08:31 AM, 02/25",
-        actionStates: { schedule: "default", message: "success", videoCall: "default" },
-        statusDots: statusDotsFromId("p6"),
-      },
-      {
-        id: "p7",
-        name: "Noah Bradford",
-        clinic: "Curie South",
-        risk: "moderate",
-        abnormalVitals: true,
-        meta: "61 yrs, male",
-        condition: "Pulmonary Fibrosis",
-        symptoms: ["Breathlessness [5]", "Fatigue [4]", "Dry cough [3]"],
-        moreLabel: "Needs coaching",
-        moreTime: "04:44 PM, 02/24",
-        metricTitle: "Activity vs HR",
-        metricDetail: "Pulse rate: 104 BPM",
-        metricTime: "04:43 PM, 02/24",
-        actionStates: { schedule: "default", message: "default", videoCall: "disabled" },
-        statusDots: statusDotsFromId("p7"),
-      },
-    ],
-    []
-  );
+  const [rows, setRows] = React.useState<PatientRow[]>(() => INITIAL_ROWS);
+  const [pendingStatusChange, setPendingStatusChange] = React.useState<{
+    rowId: string;
+    patientName: string;
+    nextRisk: RowRisk;
+  } | null>(null);
 
   const [playingRowId, setPlayingRowId] = React.useState<string | null>("p2");
   const [elapsedByRowId, setElapsedByRowId] = React.useState<Record<string, number>>({
@@ -465,19 +564,42 @@ export default function InsightTableDemo() {
   const filteredRows = React.useMemo(
     () => {
       const result = rows.filter((row) => {
-        const derivedRisk = riskFromStatusDots(row.statusDots);
-        if (risk !== "all" && derivedRisk !== risk) return false;
+        if (risk !== "all" && row.risk !== risk) return false;
         if (clinic !== "all" && row.clinic !== clinic) return false;
         if (abnormalVitalsOnly && !row.abnormalVitals) return false;
         return true;
       });
 
-      return result.sort(
-        (a, b) => RISK_ORDER[riskFromStatusDots(a.statusDots)] - RISK_ORDER[riskFromStatusDots(b.statusDots)]
-      );
+      return result.sort((a, b) => RISK_ORDER[a.risk] - RISK_ORDER[b.risk]);
     },
     [rows, risk, clinic, abnormalVitalsOnly]
   );
+
+  function updateRowRisk(rowId: string, nextRisk: RowRisk) {
+    setRows((currentRows) =>
+      currentRows.map((row) => {
+        if (row.id !== rowId) return row;
+
+        return {
+          ...row,
+          statusLevel: nextRisk,
+          statusDots: row.statusDots.map((dot) =>
+            dot.size === "lg" ? { ...dot, color: RISK_TO_DOT_COLOR[nextRisk] } : dot
+          ),
+        };
+      })
+    );
+  }
+
+  function requestRowRiskChange(rowId: string, patientName: string, nextRisk: RowRisk) {
+    setPendingStatusChange({ rowId, patientName, nextRisk });
+  }
+
+  function confirmRowRiskChange() {
+    if (!pendingStatusChange) return;
+    updateRowRisk(pendingStatusChange.rowId, pendingStatusChange.nextRisk);
+    setPendingStatusChange(null);
+  }
 
   function togglePlay(rowId: string) {
     setPlayingRowId((prev) => {
@@ -540,6 +662,7 @@ export default function InsightTableDemo() {
                     isPlaying={playingRowId === row.id}
                     onTogglePlay={() => togglePlay(row.id)}
                     elapsedSeconds={elapsedByRowId[row.id] ?? 0}
+                    onRequestRiskChange={(nextRisk) => requestRowRiskChange(row.id, row.name, nextRisk)}
                   />
                 ))
               ) : (
@@ -550,6 +673,14 @@ export default function InsightTableDemo() {
             </div>
           </div>
         </div>
+        {pendingStatusChange ? (
+          <StatusChangeDialog
+            patientName={pendingStatusChange.patientName}
+            nextRisk={pendingStatusChange.nextRisk}
+            onCancel={() => setPendingStatusChange(null)}
+            onConfirm={confirmRowRiskChange}
+          />
+        ) : null}
       </div>
     </TooltipProvider>
   );
