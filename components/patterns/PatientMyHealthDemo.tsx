@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import {
-  HeartPulse,
+  Stethoscope,
   TrendingUp,
 } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, XAxis } from "recharts";
@@ -53,7 +53,7 @@ const SUMMARY_CARDS: SummaryCard[] = [
   {
     title: "Pulse",
     iconSrc: "/menuicon/pulse.svg",
-    accent: "text-numo-slate-400",
+    accent: "text-numo-slate-500",
     highLabel: "88 bpm",
     highDate: "Today",
     lowLabel: "65 bpm",
@@ -62,7 +62,7 @@ const SUMMARY_CARDS: SummaryCard[] = [
   {
     title: "Oxygen",
     iconSrc: "/menuicon/o2.svg",
-    accent: "text-numo-slate-400",
+    accent: "text-numo-slate-500",
     highLabel: "95 %",
     highDate: "03/28",
     lowLabel: "89 %",
@@ -235,7 +235,9 @@ function CardHeading({
           {icon}
         </div>
         <div className="min-w-0 space-y-1 pt-1.5">
-          <h3 className={`text-[26px] font-medium leading-none tracking-[0.02em] ${titleClassName}`}>
+          <h3
+            className={`text-[26px] font-regular leading-[1.05] tracking-[0.01em] text-balance ${titleClassName}`}
+          >
             {title}
           </h3>
           {description ? (
@@ -264,7 +266,7 @@ function HealthSummaryCard({
       initial={{ opacity: 0, y: 18, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="h-full rounded-[26px] border border-numo-blue-800/50 bg-numo-blue-900/70 px-5 py-5 shadow-[0_16px_36px_hsl(var(--numo-blue-900)/0.32),inset_0_1px_0_hsl(var(--numo-slate-400)/0.08)]"
+      className="h-full rounded-[26px] border border-numo-blue-800/50 bg-numo-blue-900 px-5 py-5 shadow-[0_16px_36px_hsl(var(--numo-blue-900)/0.32),inset_0_1px_0_hsl(var(--numo-slate-400)/0.08)]"
     >
       <CardHeading
         icon={<Image src={iconSrc} alt="" width={32} height={32} className="h-8 w-8" aria-hidden />}
@@ -311,9 +313,9 @@ function MostCommonSymptomsCard({ rows }: { rows: SymptomRow[] }) {
       className="rounded-[26px] border border-numo-blue-800/50 bg-numo-blue-900/70 px-5 py-5 shadow-[0_16px_36px_hsl(var(--numo-blue-900)/0.32),inset_0_1px_0_hsl(var(--numo-slate-400)/0.08)]"
     >
       <CardHeading
-        icon={<HeartPulse className="h-8 w-8 text-numo-teal-300" />}
+        icon={<Stethoscope className="h-8 w-8 text-numo-yellow-300" />}
         title="Common symptoms"
-        titleClassName="text-numo-slate-300"
+        titleClassName="text-numo-slate-600"
         meta={
           <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-numo-slate-500">
           </div>
@@ -345,7 +347,7 @@ function MostCommonSymptomsCard({ rows }: { rows: SymptomRow[] }) {
 
 function SymptomTrendCard({ points }: { points: TrendPoint[] }) {
   return (
-    <article className="rounded-[22px] border border-numo-blue-800/50 bg-numo-blue-900/80 px-6 py-5 shadow-[0_16px_36px_hsl(var(--numo-blue-900)/0.32),inset_0_1px_0_hsl(var(--numo-slate-400)/0.08)]">
+    <article className="rounded-[22px] border border-numo-blue-800/50 bg-numo-blue-900 px-6 py-5 shadow-[0_16px_36px_hsl(var(--numo-blue-900)/0.5),inset_0_1px_0_hsl(var(--numo-slate-400)/0.08)]">
       <CardHeading
         icon={<TrendingUp className="h-8 w-8 text-numo-teal-400" />}
         title="Trend"
@@ -611,7 +613,7 @@ export function PatientMyHealthDemo() {
           </div>
         </header>
 
-        <main className="pb-8 pt-8">
+        <main className="pb-8 pt-2">
           <div className="mt-12 grid gap-4 lg:grid-cols-[0.95fr_1.45fr]">
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
