@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { HomeMenuDemo } from "@/components/patterns/HomeMenuDemo";
 import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
+import { PatientMyHealthDemo } from "@/components/patterns/PatientMyHealthDemo";
 import { PatternChildBottomNav } from "@/components/patterns/PatternChildBottomNav";
 import { PatientTimeSelectionDemo } from "@/components/patterns/PatientTimeSelectionDemo";
 import { DSPage } from "@/components/ds/page";
@@ -17,6 +18,10 @@ const PATIENT_CHILDREN = {
   "home-menu-overlay": {
     title: "Home Menu Overlay",
     render: () => <HomeMenuDemo />,
+  },
+  "my-health": {
+    title: "My Health",
+    render: () => <PatientMyHealthDemo />,
   },
 } as const;
 

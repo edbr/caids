@@ -36,6 +36,7 @@ export const PATTERN_ROUTES: PatternRoute[] = [
     children: [
       { title: "Home Menu Overlay", href: "/patterns/patient/home-menu-overlay" },
       { title: "Monitoring Bar + Contextual Menu", href: "/patterns/patient/monitoring-bar-contextual-menu" },
+      { title: "My Health", href: "/patterns/patient/my-health" },
       { title: "Patient Time Selection (Multi-select)", href: "/patterns/patient/patient-time-selection-multi-select" },
     ],
   },
