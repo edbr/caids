@@ -23,13 +23,13 @@ import { InsightTableRowActions } from "@/components/patterns/InsightTableRowAct
 import { type ActionState } from "@/components/patterns/RowActions";
 
 const MORE_LABEL_OPTIONS = [
-  "More symptoms",
-  "Needs review",
-  "Escalation needed",
-  "Review trends",
-  "Needs coaching",
-  "Stable",
-  "Reviews",
+  "Team can act early",
+  "Symptoms increased",
+  "Monitor oxygen trend",
+  "Review flare-up risk",
+  "Coach before worsening",
+  "Stable today",
+  "Already reviewed",
 ] as const;
 
 type MoreLabelOption = (typeof MORE_LABEL_OPTIONS)[number];
@@ -62,6 +62,7 @@ type PatientRow = {
 
 type RowRisk = Exclude<RiskFilter, "all">;
 type StatusDotColor = PatientRow["statusDots"][number]["color"];
+type InsightLabel = MoreLabelOption | string;
 
 const AUDIO_DURATION_S = 30;
 const STATUS_DOT_COLOR_CLASS: Record<StatusDotColor, string> = {
@@ -83,14 +84,62 @@ const RISK_TO_DOT_COLOR: Record<RowRisk, StatusDotColor> = {
 };
 const RISK_CYCLE: RowRisk[] = ["low", "moderate", "high"];
 const MORE_LABEL_ICON: Record<MoreLabelOption, React.ComponentType<{ className?: string }>> = {
+  "Team can act early": Activity,
+  "Symptoms increased": SearchCheck,
+  "Monitor oxygen trend": BellRing,
+  "Review flare-up risk": Gauge,
+  "Coach before worsening": ClipboardList,
+  "Stable today": ShieldCheck,
+  "Already reviewed": HeartPulse,
+};
+const LEGACY_MORE_LABEL_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   "More symptoms": Activity,
   "Needs review": SearchCheck,
   "Escalation needed": BellRing,
   "Review trends": Gauge,
   "Needs coaching": ClipboardList,
   Stable: ShieldCheck,
-  Reviews: HeartPulse,
+  Reviewed: HeartPulse,
 };
+const INSIGHT_ICON_COLOR_CLASS: Record<string, string> = {
+  "Team can act early": "text-amber-600",
+  "Symptoms increased": "text-red-500",
+  "Monitor oxygen trend": "text-blue-500",
+  "Review flare-up risk": "text-orange-500",
+  "Coach before worsening": "text-violet-500",
+  "Stable today": "text-teal-500",
+  "Already reviewed": "text-emerald-600",
+  "More symptoms": "text-amber-600",
+  "Needs review": "text-orange-500",
+  "Escalation needed": "text-red-500",
+  "Review trends": "text-blue-500",
+  "Needs coaching": "text-violet-500",
+  Stable: "text-teal-500",
+  Reviewed: "text-emerald-600",
+};
+
+function getInsightIcon(label: InsightLabel) {
+  return MORE_LABEL_ICON[label as MoreLabelOption] ?? LEGACY_MORE_LABEL_ICON[label] ?? Activity;
+}
+
+function getInsightIconColorClass(label: InsightLabel) {
+  return INSIGHT_ICON_COLOR_CLASS[label] ?? "text-muted-foreground";
+}
+
+function renderSymptomWithCount(symptom: string) {
+  const match = symptom.match(/^(.*?)(\s*\[(\d+)\])$/);
+
+  if (!match) return symptom;
+  const count = Number(match[3]);
+  const countColorClass = count <= 5 ? "text-violet-500" : "text-amber-600";
+
+  return (
+    <>
+      <span>{match[1]}</span>
+      <span className={countColorClass}>{match[2]}</span>
+    </>
+  );
+}
 
 function statusDots(colors: [StatusDotColor, StatusDotColor, StatusDotColor]): PatientRow["statusDots"] {
   return [
@@ -105,6 +154,15 @@ const RISK_ORDER: Record<RowRisk, number> = {
   moderate: 1,
   low: 2,
 };
+const STATUS_OPTIONS: Array<{
+  risk: RowRisk;
+  label: string;
+  description: string;
+}> = [
+  { risk: "low", label: "Low", description: "Stable, continue monitoring" },
+  { risk: "moderate", label: "Moderate", description: "Needs review soon" },
+  { risk: "high", label: "High", description: "Needs prompt attention" },
+];
 
 const INITIAL_ROWS: PatientRow[] = [
   {
@@ -117,7 +175,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "57 yrs, female",
     condition: "COPD",
     symptoms: ["Cough [4]", "Sneeze [8]", "Heavy breathing [2]"],
-    moreLabel: "More symptoms",
+    moreLabel: "Team can act early",
     moreTime: "03:46 PM, 02/24",
     oxygenation: 94,
     pulseBpm: 96,
@@ -135,7 +193,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "63 yrs, male",
     condition: "Asthma",
     symptoms: ["Wheezing [6]", "Cough [2]", "Shortness of breath [3]"],
-    moreLabel: "Needs review",
+    moreLabel: "Review flare-up risk",
     moreTime: "09:12 AM, 02/25",
     oxygenation: 89,
     pulseBpm: 102,
@@ -153,7 +211,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "80 yrs, female",
     condition: "COPD",
     symptoms: ["Wheezing [19]", "Cough [2]", "Shortness of breath [30]"],
-    moreLabel: "More symptoms",
+    moreLabel: "Symptoms increased",
     moreTime: "06:25 AM, 02/25",
     oxygenation: 86,
     pulseBpm: 98,
@@ -171,7 +229,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "69 yrs, female",
     condition: "Interstitial Lung Disease",
     symptoms: ["Chest tightness [4]", "Cough [3]", "Fatigue [5]"],
-    moreLabel: "Review trends",
+    moreLabel: "Monitor oxygen trend",
     moreTime: "11:22 AM, 02/25",
     oxygenation: 91,
     pulseBpm: 92,
@@ -189,7 +247,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "74 yrs, male",
     condition: "COPD",
     symptoms: ["Wheezing [8]", "Shortness of breath [7]", "Cough [5]"],
-    moreLabel: "Escalation needed",
+    moreLabel: "Team can act early",
     moreTime: "01:05 PM, 02/25",
     oxygenation: 84,
     pulseBpm: 110,
@@ -207,7 +265,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "52 yrs, female",
     condition: "Asthma",
     symptoms: ["Sneeze [2]", "Cough [1]", "Shortness of breath [1]"],
-    moreLabel: "Stable",
+    moreLabel: "Stable today",
     moreTime: "08:33 AM, 02/25",
     oxygenation: 97,
     pulseBpm: 78,
@@ -225,7 +283,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "61 yrs, male",
     condition: "Pulmonary Fibrosis",
     symptoms: ["Breathlessness [5]", "Fatigue [4]", "Dry cough [3]"],
-    moreLabel: "Needs coaching",
+    moreLabel: "Coach before worsening",
     moreTime: "04:44 PM, 02/24",
     oxygenation: 90,
     pulseBpm: 104,
@@ -268,16 +326,16 @@ function HeaderRow() {
       <div
         className={[
           "grid items-center gap-6 px-6 py-3",
-          // status | patient | audio | symptoms | more | vitals | actions
-          "grid-cols-[72px_minmax(220px,1.2fr)_56px_minmax(220px,1.3fr)_minmax(160px,1fr)_minmax(180px,1fr)_140px]",
+          // status | patient | audio | symptoms | vitals | insight | actions
+          "grid-cols-[72px_minmax(220px,1.2fr)_56px_minmax(220px,1.3fr)_minmax(180px,1fr)_minmax(160px,1fr)_140px]",
         ].join(" ")}
       >
         <div className="opacity-0 select-none">status</div>
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Patient</div>
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground text-center">Audio</div>
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Symptoms</div>
-        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">More</div>
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Vitals</div>
+        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Insight</div>
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground text-right">Actions</div>
       </div>
     </div>
@@ -286,15 +344,19 @@ function HeaderRow() {
 
 function StatusChangeDialog({
   patientName,
+  currentRisk,
   nextRisk,
   onCancel,
   onConfirm,
 }: {
   patientName: string;
+  currentRisk: RowRisk;
   nextRisk: RowRisk;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm: (risk: RowRisk) => void;
 }) {
+  const [selectedRisk, setSelectedRisk] = React.useState<RowRisk>(nextRisk);
+
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") onCancel();
@@ -304,14 +366,55 @@ function StatusChangeDialog({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onCancel]);
 
+  React.useEffect(() => {
+    setSelectedRisk(nextRisk);
+  }, [nextRisk]);
+
   return (
     <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/35 px-4" role="dialog" aria-modal="true">
-      <div className="w-full max-w-sm rounded-2xl border border-border bg-background p-5 shadow-xl">
-        <div className="text-sm font-semibold text-foreground">Confirm Status Change</div>
+      <div className="w-full max-w-md rounded-2xl border border-border bg-background p-5 shadow-xl">
+        <div className="text-sm font-semibold text-foreground">Change Status</div>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Change <span className="font-medium text-foreground">{patientName}</span> to{" "}
-          <span className="font-medium text-foreground">{nextRisk}</span> status?
+          Choose a new status for <span className="font-medium text-foreground">{patientName}</span>. Current
+          status: <span className="font-medium capitalize text-foreground"> {currentRisk}</span>.
         </p>
+        <div className="mt-4 grid gap-2">
+          {STATUS_OPTIONS.map((option) => {
+            const isSelected = selectedRisk === option.risk;
+
+            return (
+              <label
+                key={option.risk}
+                className={[
+                  "flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition",
+                  isSelected
+                    ? "border-foreground bg-foreground/5"
+                    : "border-border bg-background hover:border-foreground/30",
+                ].join(" ")}
+              >
+                <input
+                  type="radio"
+                  name="status-risk"
+                  value={option.risk}
+                  checked={isSelected}
+                  onChange={() => setSelectedRisk(option.risk)}
+                  className="h-4 w-4 accent-foreground"
+                />
+                <span
+                  className={[
+                    "h-4 w-4 shrink-0 rounded ring-1 ring-white/70",
+                    STATUS_DOT_COLOR_CLASS[RISK_TO_DOT_COLOR[option.risk]],
+                  ].join(" ")}
+                  aria-hidden
+                />
+                <span className="min-w-0">
+                  <span className="block text-sm font-medium text-foreground">{option.label}</span>
+                  <span className="block text-xs text-muted-foreground">{option.description}</span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
         <div className="mt-4 flex justify-end gap-2">
           <button
             type="button"
@@ -322,7 +425,7 @@ function StatusChangeDialog({
           </button>
           <button
             type="button"
-            onClick={onConfirm}
+            onClick={() => onConfirm(selectedRisk)}
             className="rounded-md bg-foreground px-3 py-1.5 text-sm text-background transition hover:opacity-90"
           >
             Confirm
@@ -358,9 +461,9 @@ function MoreLabelDialog({
   return (
     <div className="fixed inset-0 z-120 flex items-center justify-center bg-black/35 px-4" role="dialog" aria-modal="true">
       <div className="w-full max-w-md rounded-2xl border border-border bg-background p-5 shadow-xl">
-        <div className="text-sm font-semibold text-foreground">Update More Label</div>
+        <div className="text-sm font-semibold text-foreground">Update Insight</div>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Choose the new more label for <span className="font-medium text-foreground">{patientName}</span>.
+          Choose the new insight label for <span className="font-medium text-foreground">{patientName}</span>.
         </p>
         <div className="mt-4 grid gap-2">
           {MORE_LABEL_OPTIONS.map((label) => {
@@ -466,22 +569,23 @@ function InsightMore({
   onRequestMoreLabelChange,
 }: {
   rowId: string;
-  moreLabel: MoreLabelOption;
+  moreLabel: InsightLabel;
   moreTime: string;
   onRequestMoreLabelChange: () => void;
 }) {
-  const Icon = MORE_LABEL_ICON[moreLabel];
+  const Icon = getInsightIcon(moreLabel);
+  const iconColorClass = getInsightIconColorClass(moreLabel);
 
   return (
     <div className="min-w-0">
-      <TooltipZ label="Update this follow-up label">
+      <TooltipZ label="Update this insight label">
         <button
           type="button"
           onClick={onRequestMoreLabelChange}
           className="flex max-w-full items-center gap-2 text-left text-sm font-medium leading-tight text-foreground transition hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
-          aria-label={`Update more label for ${rowId}. Current label ${moreLabel}.`}
+          aria-label={`Update insight label for ${rowId}. Current label ${moreLabel}.`}
         >
-          <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <Icon className={`h-4 w-4 shrink-0 ${iconColorClass}`} />
           <span className="truncate">{moreLabel}</span>
         </button>
       </TooltipZ>
@@ -502,6 +606,7 @@ function InsightVitals({
   readingTime: string;
 }) {
   const [hovered, setHovered] = React.useState(false);
+  const vitalsColorClass = oxygenation < 90 ? "text-red-500" : "text-foreground";
 
   return (
     <div
@@ -510,7 +615,7 @@ function InsightVitals({
       onMouseLeave={() => setHovered(false)}
     >
       <div className="space-y-0.5">
-        <div className="text-sm leading-snug">
+        <div className={`text-sm font-medium leading-tight ${vitalsColorClass}`}>
           {oxygenation}% O2, {pulseBpm} BPM
         </div>
         <div className="relative pl-0.5 pt-1">
@@ -578,7 +683,7 @@ function InsightRow({
       <div
         className={[
           "grid items-center gap-6 px-6 py-4",
-          "grid-cols-[72px_minmax(220px,1.2fr)_56px_minmax(220px,1.3fr)_minmax(160px,1fr)_minmax(180px,1fr)_140px]",
+          "grid-cols-[72px_minmax(220px,1.2fr)_56px_minmax(220px,1.3fr)_minmax(180px,1fr)_minmax(160px,1fr)_140px]",
         ].join(" ")}
       >
         {/* status */}
@@ -591,12 +696,11 @@ function InsightRow({
 
         {/* patient */}
         <div className="min-w-0">
-          <div className="text-base font-medium text-foreground leading-tight truncate">
+          <div className="text-lg font-medium text-foreground leading-tight truncate">
             {row.name}
           </div>
-          <div className="mt-1 space-y-px">
-            <div className="text-sm text-muted-foreground leading-snug">{row.meta}</div>
-            <div className="text-sm text-muted-foreground leading-snug">{row.condition}</div>
+          <div className="mt-1 text-sm text-muted-foreground leading-snug truncate">
+            {row.meta}, {row.condition}
           </div>
         </div>
 
@@ -622,10 +726,10 @@ function InsightRow({
         </div>
 
         {/* symptoms */}
-        <div className="relative text-xs text-foreground leading-snug">
+        <div className="relative text-sm font-medium leading-tight text-foreground">
           <div className="space-y-0.5">
-            {row.symptoms.slice(0, 3).map((s) => (
-              <div key={s}>{s}</div>
+            {row.symptoms.slice(0, 2).map((s) => (
+              <div key={s}>{renderSymptomWithCount(s)}</div>
             ))}
           </div>
 
@@ -666,19 +770,19 @@ function InsightRow({
           </motion.div>
         </div>
 
-        {/* more */}
-        <InsightMore
-          rowId={row.id}
-          moreLabel={row.moreLabel}
-          moreTime={row.moreTime}
-          onRequestMoreLabelChange={onRequestMoreLabelChange}
-        />
-
         {/* vitals */}
         <InsightVitals
           oxygenation={row.oxygenation}
           pulseBpm={row.pulseBpm}
           readingTime={row.readingTime}
+        />
+
+        {/* insight */}
+        <InsightMore
+          rowId={row.id}
+          moreLabel={row.moreLabel}
+          moreTime={row.moreTime}
+          onRequestMoreLabelChange={onRequestMoreLabelChange}
         />
 
         {/* actions */}
@@ -710,6 +814,7 @@ export default function InsightTableDemo() {
   const [pendingStatusChange, setPendingStatusChange] = React.useState<{
     rowId: string;
     patientName: string;
+    currentRisk: RowRisk;
     nextRisk: RowRisk;
   } | null>(null);
   const [pendingMoreLabelChange, setPendingMoreLabelChange] = React.useState<{
@@ -767,13 +872,18 @@ export default function InsightTableDemo() {
     );
   }
 
-  function requestRowRiskChange(rowId: string, patientName: string, nextRisk: RowRisk) {
-    setPendingStatusChange({ rowId, patientName, nextRisk });
+  function requestRowRiskChange(
+    rowId: string,
+    patientName: string,
+    currentRisk: RowRisk,
+    nextRisk: RowRisk
+  ) {
+    setPendingStatusChange({ rowId, patientName, currentRisk, nextRisk });
   }
 
-  function confirmRowRiskChange() {
+  function confirmRowRiskChange(nextRisk: RowRisk) {
     if (!pendingStatusChange) return;
-    updateRowRisk(pendingStatusChange.rowId, pendingStatusChange.nextRisk);
+    updateRowRisk(pendingStatusChange.rowId, nextRisk);
     setPendingStatusChange(null);
   }
 
@@ -858,7 +968,9 @@ export default function InsightTableDemo() {
                     isPlaying={playingRowId === row.id}
                     onTogglePlay={() => togglePlay(row.id)}
                     elapsedSeconds={elapsedByRowId[row.id] ?? 0}
-                    onRequestRiskChange={(nextRisk) => requestRowRiskChange(row.id, row.name, nextRisk)}
+                    onRequestRiskChange={(nextRisk) =>
+                      requestRowRiskChange(row.id, row.name, row.statusLevel, nextRisk)
+                    }
                     onRequestMoreLabelChange={() => requestMoreLabelChange(row.id, row.name, row.moreLabel)}
                   />
                 ))
@@ -873,6 +985,7 @@ export default function InsightTableDemo() {
         {pendingStatusChange ? (
           <StatusChangeDialog
             patientName={pendingStatusChange.patientName}
+            currentRisk={pendingStatusChange.currentRisk}
             nextRisk={pendingStatusChange.nextRisk}
             onCancel={() => setPendingStatusChange(null)}
             onConfirm={confirmRowRiskChange}
