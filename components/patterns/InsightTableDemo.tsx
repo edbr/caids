@@ -23,8 +23,7 @@ import { InsightTableRowActions } from "@/components/patterns/InsightTableRowAct
 import { type ActionState } from "@/components/patterns/RowActions";
 
 const MORE_LABEL_OPTIONS = [
-  "Team can act early",
-  "Symptoms increased",
+  "More Symptoms",
   "Monitor oxygen trend",
   "Review flare-up risk",
   "Coach before worsening",
@@ -67,10 +66,10 @@ type InsightLabel = MoreLabelOption | string;
 const AUDIO_DURATION_S = 30;
 const STATUS_DOT_COLOR_CLASS: Record<StatusDotColor, string> = {
   green:
-    "bg-[#22c55e] shadow-[0_0_0_1px_rgba(34,197,94,0.15),0_0_10px_rgba(34,197,94,0.35)]",
+    "bg-numo-teal-500 shadow-[0_0_0_1px_hsl(var(--numo-teal-500)/0.15),0_0_10px_hsl(var(--numo-teal-500)/0.25)]",
   yellow:
-    "bg-[#f59e0b] shadow-[0_0_0_1px_rgba(245,158,11,0.15),0_0_10px_rgba(245,158,11,0.35)]",
-  red: "bg-[#ef4444] shadow-[0_0_0_1px_rgba(239,68,68,0.15),0_0_12px_rgba(239,68,68,0.4)]",
+    "bg-numo-yellow-600/80 shadow-[0_0_0_1px_hsl(var(--numo-yellow-500)/0.15),0_0_10px_hsl(var(--numo-yellow-500)/0.25)]",
+  red: "bg-numo-red-700/90 shadow-[0_0_0_1px_hsl(var(--numo-red-600)/0.15),0_0_12px_hsl(var(--numo-red-600)/0.25)]",
 };
 const STATUS_DOT_SIZE_CLASS: Record<PatientRow["statusDots"][number]["size"], string> = {
   sm: "h-3 w-3",
@@ -83,9 +82,10 @@ const RISK_TO_DOT_COLOR: Record<RowRisk, StatusDotColor> = {
   high: "red",
 };
 const RISK_CYCLE: RowRisk[] = ["low", "moderate", "high"];
+const DETAIL_PRIMARY_TEXT_CLASS = "text-sm font-medium leading-tight";
+
 const MORE_LABEL_ICON: Record<MoreLabelOption, React.ComponentType<{ className?: string }>> = {
-  "Team can act early": Activity,
-  "Symptoms increased": SearchCheck,
+  "More Symptoms": SearchCheck,
   "Monitor oxygen trend": BellRing,
   "Review flare-up risk": Gauge,
   "Coach before worsening": ClipboardList,
@@ -102,20 +102,18 @@ const LEGACY_MORE_LABEL_ICON: Record<string, React.ComponentType<{ className?: s
   Reviewed: HeartPulse,
 };
 const INSIGHT_ICON_COLOR_CLASS: Record<string, string> = {
-  "Team can act early": "text-amber-600",
-  "Symptoms increased": "text-red-500",
-  "Monitor oxygen trend": "text-blue-500",
-  "Review flare-up risk": "text-orange-500",
-  "Coach before worsening": "text-violet-500",
-  "Stable today": "text-teal-500",
-  "Already reviewed": "text-emerald-600",
-  "More symptoms": "text-amber-600",
-  "Needs review": "text-orange-500",
-  "Escalation needed": "text-red-500",
-  "Review trends": "text-blue-500",
-  "Needs coaching": "text-violet-500",
-  Stable: "text-teal-500",
-  Reviewed: "text-emerald-600",
+  "More Symptoms": "text-numo-red-500",
+  "Monitor oxygen trend": "text-numo-blue-600",
+  "Review flare-up risk": "text-numo-teal-500",
+  "Coach before worsening": "text-numo-warm-blue-600",
+  "Stable today": "text-numo-teal-500",
+  "Already reviewed": "text-numo-teal-500",
+  "Needs review": "text-numo-orange-500",
+  "Escalation needed": "text-numo-red-500",
+  "Review trends": "text-numo-blue-500",
+  "Needs coaching": "text-numo-warm-blue-600",
+  Stable: "text-numo-teal-500",
+  Reviewed: "text-numo-teal-600",
 };
 
 function getInsightIcon(label: InsightLabel) {
@@ -131,7 +129,7 @@ function renderSymptomWithCount(symptom: string) {
 
   if (!match) return symptom;
   const count = Number(match[3]);
-  const countColorClass = count <= 5 ? "text-violet-500" : "text-amber-600";
+  const countColorClass = count <= 5 ? "text-numo-warm-blue-500" : "text-numo-orange-600";
 
   return (
     <>
@@ -175,7 +173,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "57 yrs, female",
     condition: "COPD",
     symptoms: ["Cough [4]", "Sneeze [8]", "Heavy breathing [2]"],
-    moreLabel: "Team can act early",
+    moreLabel: "More Symptoms",
     moreTime: "03:46 PM, 02/24",
     oxygenation: 94,
     pulseBpm: 96,
@@ -193,7 +191,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "63 yrs, male",
     condition: "Asthma",
     symptoms: ["Wheezing [6]", "Cough [2]", "Shortness of breath [3]"],
-    moreLabel: "Review flare-up risk",
+    moreLabel: "Already reviewed",
     moreTime: "09:12 AM, 02/25",
     oxygenation: 89,
     pulseBpm: 102,
@@ -211,7 +209,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "80 yrs, female",
     condition: "COPD",
     symptoms: ["Wheezing [19]", "Cough [2]", "Shortness of breath [30]"],
-    moreLabel: "Symptoms increased",
+    moreLabel: "More Symptoms",
     moreTime: "06:25 AM, 02/25",
     oxygenation: 86,
     pulseBpm: 98,
@@ -247,7 +245,7 @@ const INITIAL_ROWS: PatientRow[] = [
     meta: "74 yrs, male",
     condition: "COPD",
     symptoms: ["Wheezing [8]", "Shortness of breath [7]", "Cough [5]"],
-    moreLabel: "Team can act early",
+    moreLabel: "More Symptoms",
     moreTime: "01:05 PM, 02/25",
     oxygenation: 84,
     pulseBpm: 110,
@@ -335,7 +333,7 @@ function HeaderRow() {
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground text-center">Audio</div>
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Symptoms</div>
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Vitals</div>
-        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Insight</div>
+        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Insights</div>
         <div className="text-[11px] uppercase tracking-wide text-muted-foreground text-right">Actions</div>
       </div>
     </div>
@@ -582,14 +580,14 @@ function InsightMore({
         <button
           type="button"
           onClick={onRequestMoreLabelChange}
-          className="flex max-w-full items-center gap-2 text-left text-sm font-medium leading-tight text-foreground transition hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+          className={`flex max-w-full items-center gap-2 text-left ${DETAIL_PRIMARY_TEXT_CLASS} text-foreground transition hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40`}
           aria-label={`Update insight label for ${rowId}. Current label ${moreLabel}.`}
         >
           <Icon className={`h-4 w-4 shrink-0 ${iconColorClass}`} />
           <span className="truncate">{moreLabel}</span>
         </button>
       </TooltipZ>
-      <div className="mt-1 pl-6 pt-1 text-[11px] leading-none text-muted-foreground tabular-nums">
+      <div className="mt-1 pl-6 pt-1 text-[11px] leading-none text-numo-slate-900 tabular-nums">
         {moreTime}
       </div>
     </div>
@@ -606,7 +604,7 @@ function InsightVitals({
   readingTime: string;
 }) {
   const [hovered, setHovered] = React.useState(false);
-  const vitalsColorClass = oxygenation < 90 ? "text-red-500" : "text-foreground";
+  const vitalsColorClass = oxygenation < 90 ? "text-numo-red-700" : "text-foreground";
 
   return (
     <div
@@ -615,7 +613,7 @@ function InsightVitals({
       onMouseLeave={() => setHovered(false)}
     >
       <div className="space-y-0.5">
-        <div className={`text-sm font-medium leading-tight ${vitalsColorClass}`}>
+        <div className={`${DETAIL_PRIMARY_TEXT_CLASS} ${vitalsColorClass}`}>
           {oxygenation}% O2, {pulseBpm} BPM
         </div>
         <div className="relative pl-0.5 pt-1">
@@ -627,7 +625,7 @@ function InsightVitals({
           >
             Request new reading
           </motion.button>
-          <div className="text-[11px] leading-none text-muted-foreground tabular-nums">
+          <div className="text-[11px] leading-none text-numo-slate-900 tabular-nums">
             {readingTime}
           </div>
         </div>
@@ -699,7 +697,7 @@ function InsightRow({
           <div className="text-lg font-medium text-foreground leading-tight truncate">
             {row.name}
           </div>
-          <div className="mt-1 text-sm text-muted-foreground leading-snug truncate">
+          <div className="mt-1 text-sm text-numo-slate-900 leading-snug truncate">
             {row.meta}, {row.condition}
           </div>
         </div>
@@ -726,7 +724,7 @@ function InsightRow({
         </div>
 
         {/* symptoms */}
-        <div className="relative text-sm font-medium leading-tight text-foreground">
+        <div className={`relative ${DETAIL_PRIMARY_TEXT_CLASS} text-foreground`}>
           <div className="space-y-0.5">
             {row.symptoms.slice(0, 2).map((s) => (
               <div key={s}>{renderSymptomWithCount(s)}</div>
