@@ -187,12 +187,6 @@ function TrendTooltipContent({
                 : key === "expectedOxygenation"
                   ? "oxygenation"
                   : key;
-          const color =
-            normalizedKey === "symptomTrend"
-              ? severityDotColor(Number(item.value ?? 1))
-              : normalizedKey === "pulse"
-                ? "hsl(var(--numo-orange-400))"
-                : "hsl(var(--numo-yellow-400))";
           const displayValue =
             normalizedKey === "symptomTrend"
               ? severityLabel(Number(item.value ?? 1))

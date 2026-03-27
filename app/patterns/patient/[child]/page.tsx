@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { HomeMenuDemo } from "@/components/patterns/HomeMenuDemo";
 import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
 import { PatientMyHealthDemo } from "@/components/patterns/PatientMyHealthDemo";
+import { PatientMyHealthAccessibilityNotes } from "@/components/patterns/PatientMyHealthAccessibilityNotes";
 import { PatternChildBottomNav } from "@/components/patterns/PatternChildBottomNav";
 import { PatientTimeSelectionDemo } from "@/components/patterns/PatientTimeSelectionDemo";
 import { DSPage } from "@/components/ds/page";
@@ -47,6 +48,7 @@ export default async function PatientChildPatternPage({
           <h2 className="mb-4 text-lg font-semibold">{selected.title}</h2>
           {selected.render()}
         </section>
+        {child === "my-health" ? <PatientMyHealthAccessibilityNotes /> : null}
         <PatternChildBottomNav
           patternHref="/patterns/patient"
           currentChildHref={currentChildHref}

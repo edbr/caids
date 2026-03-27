@@ -1,6 +1,7 @@
 "use client";
 
 import { DSPage } from "@/components/ds/page";
+import { AccessibilityFoundationsSection } from "@/components/ds/AccessibilityFoundationsSection";
 import { TokenSwatch } from "@/components/ds/token-swatch";
 
 function ElevationCard({ label, varName }: { label: string; varName: string }) {
@@ -210,6 +211,8 @@ export default function FoundationsPage() {
             <span className="font-mono">@theme</span>.
           </p>
         </section>
+
+        <AccessibilityFoundationsSection />
       </div>
     </DSPage>
   );
