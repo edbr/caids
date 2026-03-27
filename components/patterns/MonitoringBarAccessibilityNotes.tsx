@@ -78,28 +78,67 @@ export function MonitoringBarAccessibilityNotes() {
       </div>
 
       <div className="mt-5 overflow-hidden rounded-xl border border-border bg-background">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[24%]">Area</TableHead>
-              <TableHead className="w-[24%]">Colors</TableHead>
-              <TableHead className="w-[16%]">Contrast</TableHead>
-              <TableHead className="w-[36%]">Accessibility note</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {MONITORING_BAR_ROWS.map((row) => (
-              <TableRow key={row.area}>
-                <TableCell className="align-top font-medium text-foreground">{row.area}</TableCell>
-                <TableCell className="align-top text-muted-foreground">{row.colors}</TableCell>
-                <TableCell className="align-top text-foreground">{row.contrast}</TableCell>
-                <TableCell className="max-w-0 whitespace-normal wrap-break-word align-top text-muted-foreground">
-                  {row.guidance}
-                </TableCell>
+        <div className="grid gap-3 p-3 md:hidden">
+          {MONITORING_BAR_ROWS.map((row) => (
+            <article key={row.area} className="rounded-xl border border-border bg-card p-4">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    Area
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-foreground">{row.area}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    Colors
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">{row.colors}</p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                      Contrast
+                    </p>
+                    <p className="mt-1 text-sm text-foreground">{row.contrast}</p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                      Accessibility note
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">{row.guidance}</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[24%]">Area</TableHead>
+                <TableHead className="w-[24%] whitespace-normal">Colors</TableHead>
+                <TableHead className="w-[16%] whitespace-normal">Contrast</TableHead>
+                <TableHead className="w-[36%] whitespace-normal">Accessibility note</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {MONITORING_BAR_ROWS.map((row) => (
+                <TableRow key={row.area}>
+                  <TableCell className="align-top whitespace-normal font-medium text-foreground">
+                    {row.area}
+                  </TableCell>
+                  <TableCell className="align-top whitespace-normal text-muted-foreground">{row.colors}</TableCell>
+                  <TableCell className="align-top whitespace-normal text-foreground">{row.contrast}</TableCell>
+                  <TableCell className="align-top whitespace-normal text-muted-foreground">
+                    {row.guidance}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </section>
   );
