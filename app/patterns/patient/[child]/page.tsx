@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { HomeMenuDemo } from "@/components/patterns/HomeMenuDemo";
 import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
+import { MonitoringBarAccessibilityNotes } from "@/components/patterns/MonitoringBarAccessibilityNotes";
 import { PatientMyHealthDemo } from "@/components/patterns/PatientMyHealthDemo";
 import { PatientMyHealthAccessibilityNotes } from "@/components/patterns/PatientMyHealthAccessibilityNotes";
 import { PatternChildBottomNav } from "@/components/patterns/PatternChildBottomNav";
@@ -48,6 +49,7 @@ export default async function PatientChildPatternPage({
           <h2 className="mb-4 text-lg font-semibold">{selected.title}</h2>
           {selected.render()}
         </section>
+        {child === "monitoring-bar-contextual-menu" ? <MonitoringBarAccessibilityNotes /> : null}
         {child === "my-health" ? <PatientMyHealthAccessibilityNotes /> : null}
         <PatternChildBottomNav
           patternHref="/patterns/patient"
