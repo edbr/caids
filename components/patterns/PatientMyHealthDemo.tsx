@@ -223,25 +223,25 @@ function CardHeading({
   meta,
 }: CardHeadingProps) {
   return (
-    <div className="flex items-start justify-between gap-3">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center sm:h-10 sm:w-10">
           {icon}
         </div>
-        <div className="min-w-0 space-y-1 pt-1.5">
+        <div className="min-w-0 space-y-1 pt-1 sm:pt-1.5">
           <h3
-            className={`text-[26px] font-regular leading-[1.05] tracking-[0.01em] text-balance ${titleClassName}`}
+            className={`text-[22px] font-regular leading-[1.05] tracking-[0.01em] text-balance sm:text-[26px] ${titleClassName}`}
           >
             {title}
           </h3>
           {description ? (
-            <CardDescription className="text-[14px] leading-snug text-numo-slate-400">
+            <CardDescription className="text-[13px] leading-snug text-numo-slate-400 sm:text-[14px]">
               {description}
             </CardDescription>
           ) : null}
         </div>
       </div>
-      {meta ? <div className="pt-0.5">{meta}</div> : null}
+      {meta ? <div className="pt-0.5 sm:shrink-0">{meta}</div> : null}
     </div>
   );
 }
@@ -260,7 +260,7 @@ function HealthSummaryCard({
       initial={{ opacity: 0, y: 18, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="h-full rounded-[26px] border border-numo-blue-800/50 bg-numo-blue-900 px-5 py-5 shadow-[0_16px_36px_hsl(var(--numo-blue-900)/0.32),inset_0_1px_0_hsl(var(--numo-slate-400)/0.08)]"
+      className="h-full rounded-[26px] border border-numo-blue-800/50 bg-numo-blue-900 px-4 py-4 shadow-[0_16px_36px_hsl(var(--numo-blue-900)/0.32),inset_0_1px_0_hsl(var(--numo-slate-400)/0.08)] sm:px-5 sm:py-5"
     >
       <CardHeading
         icon={<Image src={iconSrc} alt="" width={32} height={32} className="h-8 w-8" aria-hidden />}
@@ -268,30 +268,30 @@ function HealthSummaryCard({
         titleClassName={accent}
       />
 
-      <div className="mt-5 space-y-3">
-        <div className="flex items-center justify-between gap-3 border-b border-numo-blue-700/90 pb-3">
+      <div className="mt-4 space-y-3 sm:mt-5">
+        <div className="flex flex-col gap-2 border-b border-numo-blue-700/90 pb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <div className="text-numo-gray-400">
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-numo-slate-400">
               Highest
             </div>
-            <div className="mt-1 text-[24px] leading-none">
+            <div className="mt-1 text-[20px] leading-none sm:text-[24px]">
               <span className="mr-2 text-numo-yellow-400">↑</span>
               <span>{highLabel}</span>
             </div>
           </div>
-          <div className="pt-4 text-[16px] tabular-nums text-numo-slate-400">{highDate}</div>
+          <div className="text-[14px] tabular-nums text-numo-slate-400 sm:pt-4 sm:text-[16px]">{highDate}</div>
         </div>
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <div className="text-numo-gray-400">
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-numo-slate-400">
               Lowest
             </div>
-            <div className="mt-1 text-[24px] leading-none">
+            <div className="mt-1 text-[20px] leading-none sm:text-[24px]">
               <span className="mr-2 text-numo-gray-400">↓</span>
               <span>{lowLabel}</span>
             </div>
           </div>
-          <div className="pt-4 text-[16px] tabular-nums text-numo-slate-400">{lowDate}</div>
+          <div className="text-[14px] tabular-nums text-numo-slate-400 sm:pt-4 sm:text-[16px]">{lowDate}</div>
         </div>
       </div>
     </motion.article>
@@ -304,7 +304,7 @@ function MostCommonSymptomsCard({ rows }: { rows: SymptomRow[] }) {
       initial={{ opacity: 0, y: 22, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.5, delay: 0.14, ease: "easeOut" }}
-      className="rounded-[26px] border border-numo-blue-800/50 bg-numo-blue-900/70 px-5 py-5 shadow-[0_16px_36px_hsl(var(--numo-blue-900)/0.32),inset_0_1px_0_hsl(var(--numo-slate-400)/0.08)]"
+      className="rounded-[26px] border border-numo-blue-800/50 bg-numo-blue-900/70 px-4 py-4 shadow-[0_16px_36px_hsl(var(--numo-blue-900)/0.32),inset_0_1px_0_hsl(var(--numo-slate-400)/0.08)] sm:px-5 sm:py-5"
     >
       <CardHeading
         icon={<Stethoscope className="h-8 w-8 text-numo-yellow-300" />}
@@ -316,7 +316,7 @@ function MostCommonSymptomsCard({ rows }: { rows: SymptomRow[] }) {
         }
       />
 
-      <div className="mt-5 rounded-xl bg-numo-blue-900 px-5 py-1">
+      <div className="mt-4 rounded-xl bg-numo-blue-900 px-4 py-1 sm:mt-5 sm:px-5">
         <Table>
           <TableBody>
             {rows.map((row) => (
@@ -324,10 +324,10 @@ function MostCommonSymptomsCard({ rows }: { rows: SymptomRow[] }) {
                 key={row.label}
                 className="border-numo-blue-700/85 hover:bg-transparent"
               >
-                <TableCell className="py-3 pl-0 text-[20px] leading-relaxed tracking-wide text-numo-gray-400">
+                <TableCell className="py-3 pl-0 pr-3 text-[16px] leading-snug tracking-[0.01em] text-numo-gray-400 sm:text-[20px] sm:leading-relaxed sm:tracking-wide">
                   {row.label}
                 </TableCell>
-                <TableCell className="py-3 pr-0 text-right text-[20px] tabular-nums text-numo-gray-400">
+                <TableCell className="py-3 pr-0 text-right text-[17px] tabular-nums text-numo-gray-400 sm:text-[20px]">
                   {row.count}
                 </TableCell>
               </TableRow>
@@ -596,7 +596,7 @@ export function PatientMyHealthDemo() {
     <div className="relative mx-auto w-full overflow-hidden rounded-[28px] border border-numo-blue-700 bg-numo-blue-800 shadow-[0_32px_100px_hsl(var(--numo-blue-900)/0.38)]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,hsl(var(--numo-slate-700)/0.18),transparent_28%),radial-gradient(circle_at_50%_42%,hsl(var(--numo-blue-400)/0.08),transparent_30%)]" />
 
-      <div className="relative min-h-190 px-8 py-7 sm:px-10 sm:py-9">
+      <div className="relative min-h-190 px-4 py-5 sm:px-10 sm:py-9">
         <header className="flex items-start justify-between gap-4">
           <div className="pt-1">
             <Image src="/numoW.svg" alt="Numo logo" width={204} height={56} className="h-9 w-auto sm:h-11" priority />
@@ -607,8 +607,8 @@ export function PatientMyHealthDemo() {
           </div>
         </header>
 
-        <main className="pb-8 pt-2">
-          <div className="mt-12 grid gap-4 lg:grid-cols-[0.95fr_1.45fr]">
+        <main className="pb-5 pt-2 sm:pb-8">
+          <div className="mt-8 grid gap-4 lg:mt-12 lg:grid-cols-[1.15fr_1.45fr]">
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 {SUMMARY_CARDS.map((card) => (
