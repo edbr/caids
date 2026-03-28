@@ -274,9 +274,9 @@ function HealthSummaryCard({
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-numo-slate-400">
               Highest
             </div>
-            <div className="mt-1 text-[20px] leading-none sm:text-[24px]">
+            <div className="mt-1 text-[20px] leading-none sm:text-[20px]">
               <span className="mr-2 text-numo-yellow-400">↑</span>
-              <span>{highLabel}</span>
+              <span className="font-medium">{highLabel}</span>
             </div>
           </div>
           <div className="text-[14px] tabular-nums text-numo-slate-400 sm:pt-4 sm:text-[16px]">{highDate}</div>
@@ -286,7 +286,7 @@ function HealthSummaryCard({
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-numo-slate-400">
               Lowest
             </div>
-            <div className="mt-1 text-[20px] leading-none sm:text-[24px]">
+            <div className="mt-1 text-[20px] leading-none sm:text-[20px]">
               <span className="mr-2 text-numo-gray-400">↓</span>
               <span>{lowLabel}</span>
             </div>
