@@ -59,12 +59,12 @@ export function InteractionMenu({ onOpenChange, placement = "down" }: Interactio
   }, [updateOpen]);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative z-30">
       <motion.button
         type="button"
         whileTap={{ scale: 0.98 }}
         onClick={() => updateOpen(!open)}
-        className="font-sans inline-flex h-11 items-center rounded-full border border-numo-teal-500 px-6 py-6 font-medium text-2xl text-numo-teal-400 shadow-[0_4px_4px_0_rgba(0,0,0,0.15)] transition-colors hover:bg-numo-teal-500/15"
+        className="font-sans relative z-30 inline-flex h-11 items-center rounded-full border border-numo-teal-500 px-6 py-6 font-medium text-2xl text-numo-teal-400 shadow-[0_4px_4px_0_rgba(0,0,0,0.15)] transition-colors hover:bg-numo-teal-700/25"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={open ? "Close menu" : "Open menu"}
@@ -74,66 +74,78 @@ export function InteractionMenu({ onOpenChange, placement = "down" }: Interactio
 
       <AnimatePresence>
         {open ? (
-          <motion.div
-            initial={{ opacity: 0, y: opensUp ? -12 : 12, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: opensUp ? -10 : 10, scale: 0.98 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-            className={[
-              "absolute right-0 z-20 w-[min(86vw,340px)]",
-              opensUp ? "bottom-[calc(100%+16px)]" : "top-[calc(100%+16px)]",
-            ].join(" ")}
-          >
-            <div
+          <>
+            <motion.div
               aria-hidden
-              className={[
-                "pointer-events-none absolute inset-x-3 h-28 rounded-full",
-                opensUp ? "-bottom-2" : "-top-2",
-              ].join(" ")}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="fixed inset-0 z-10 bg-[#10232c]/16 backdrop-blur-[6px]"
+              onClick={() => updateOpen(false)}
             />
 
-            <div className="relative p-3 text-white ">
-              <div className="mt-3 space-y-2">
-                {ITEMS.map((item, index) => (
-                  <motion.button
-                    key={item.label}
-                    type="button"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.04 }}
-                    className="flex w-full items-center justify-between gap-3 rounded-[22px] border border-[#325762] bg-[#223a44] px-4 py-3 text-left transition-colors hover:bg-[#2e4d59]"
-                  >
-                    <span className="flex min-w-0 items-center gap-3">
-                      <span className="flex h-11 w-11 items-center justify-center rounded-3xl">
-                        <Image
-                          src={`/menuicon/${item.icon}`}
-                          alt=""
-                          width={32}
-                          height={32}
-                          aria-hidden
-                          className="h-7 w-7 object-contain"
-                        />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block truncate text-[22px] font-semibold tracking-[0.03em] text-[#eff7fb]">
-                          {item.label}
-                        </span>
-                      </span>
-                    </span>
+            <motion.div
+              initial={{ opacity: 0, y: opensUp ? -12 : 12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: opensUp ? -10 : 10, scale: 0.98 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className={[
+                "absolute right-0 z-20 w-[min(86vw,340px)]",
+                opensUp ? "bottom-[calc(100%+16px)]" : "top-[calc(100%+16px)]",
+              ].join(" ")}
+            >
+              <div
+                aria-hidden
+                className={[
+                  "pointer-events-none absolute inset-x-3 h-28 rounded-full",
+                  opensUp ? "-bottom-2" : "-top-2",
+                ].join(" ")}
+              />
 
-                    <span className="flex items-center gap-2">
-                      {item.badge ? (
-                        <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-[#ff6973] px-2 py-1 text-[11px] font-semibold text-white">
-                          {item.badge}
+              <div className="relative p-3 text-white ">
+                <div className="mt-3 space-y-2">
+                  {ITEMS.map((item, index) => (
+                    <motion.button
+                      key={item.label}
+                      type="button"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.04 }}
+                      className="flex w-full items-center justify-between gap-3 rounded-[22px] border border-[#325762] bg-[#223a44] px-4 py-3 text-left transition-all hover:border-2 hover:border-numo-slate-800 hover:bg-numo-blue-700/20"
+                    >
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-3xl">
+                          <Image
+                            src={`/menuicon/${item.icon}`}
+                            alt=""
+                            width={32}
+                            height={32}
+                            aria-hidden
+                            className="h-7 w-7 object-contain"
+                          />
                         </span>
-                      ) : null}
-                      <ChevronRight className="h-4 w-4 text-[#7fa5b3]" />
-                    </span>
-                  </motion.button>
-                ))}
+                        <span className="min-w-0">
+                          <span className="block truncate text-[22px] font-semibold tracking-[0.03em] text-[#eff7fb]">
+                            {item.label}
+                          </span>
+                        </span>
+                      </span>
+
+                      <span className="flex items-center gap-2">
+                        {item.badge ? (
+                          <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-[#ff6973] px-2 py-1 text-[11px] font-semibold text-white">
+                            {item.badge}
+                          </span>
+                        ) : null}
+                        <ChevronRight className="h-4 w-4 text-[#7fa5b3]" />
+                      </span>
+                    </motion.button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         ) : null}
       </AnimatePresence>
     </div>

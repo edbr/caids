@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight, CirclePause, CirclePlay, Ellipsis, TimerReset } from "lucide-react";
 
 type MonitoringState = "start" | "paused" | "stopAtTen";
@@ -62,6 +62,7 @@ export function MonitoringBarDemo({ menuPlacement = "down", onMenuOpenChange }: 
   const menuRef = React.useRef<HTMLDivElement | null>(null);
   const isPaused = state === "paused";
   const isAnimating = state === "stopAtTen";
+  const isActive = state === "stopAtTen";
   const morphDuration = isPaused ? 3.8 : 2.2;
   const opensUp = menuPlacement === "up";
 
@@ -109,14 +110,14 @@ export function MonitoringBarDemo({ menuPlacement = "down", onMenuOpenChange }: 
           >
             <defs>
               <linearGradient id="monitor-wave-main" x1="0" y1="0" x2="240" y2="0" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="hsl(var(--numo-blue-400) / 0.25)" />
-                <stop offset="42%" stopColor="hsl(var(--numo-teal-400) / 0.95)" />
-                <stop offset="100%" stopColor="hsl(var(--numo-orange-400) / 0.5)" />
+                <stop offset="0%" stopColor={isAnimating ? "hsl(var(--numo-blue-400) / 0.25)" : "rgba(255,255,255,0.28)"} />
+                <stop offset="42%" stopColor={isAnimating ? "hsl(var(--numo-teal-400) / 0.95)" : "rgba(230,230,230,0.95)"} />
+                <stop offset="100%" stopColor={isAnimating ? "hsl(var(--numo-orange-400) / 0.5)" : "rgba(120,120,120,0.85)"} />
               </linearGradient>
               <linearGradient id="monitor-wave-sub" x1="0" y1="0" x2="240" y2="0" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="hsl(var(--numo-blue-500) / 0.2)" />
-                <stop offset="60%" stopColor="hsl(var(--numo-teal-600) / 0.7)" />
-                <stop offset="100%" stopColor="hsl(var(--numo-yellow-500) / 0.95)" />
+                <stop offset="0%" stopColor={isAnimating ? "hsl(var(--numo-blue-500) / 0.2)" : "rgba(245,245,245,0.18)"} />
+                <stop offset="60%" stopColor={isAnimating ? "hsl(var(--numo-teal-600) / 0.7)" : "rgba(205,205,205,0.72)"} />
+                <stop offset="100%" stopColor={isAnimating ? "hsl(var(--numo-yellow-500) / 0.95)" : "rgba(90,90,90,0.92)"} />
               </linearGradient>
             </defs>
             <motion.path
@@ -161,7 +162,7 @@ export function MonitoringBarDemo({ menuPlacement = "down", onMenuOpenChange }: 
             />
             <motion.path
               d="M8 36C30 24 42 52 64 36C86 24 98 52 120 36C142 24 154 52 176 36C198 24 210 48 232 36"
-              stroke="hsl(var(--numo-blue-400) / 0.42)"
+              stroke={isAnimating ? "hsl(var(--numo-blue-400) / 0.42)" : "rgba(210,210,210,0.55)"}
               strokeWidth="1.8"
               strokeLinecap="round"
               animate={
@@ -183,9 +184,46 @@ export function MonitoringBarDemo({ menuPlacement = "down", onMenuOpenChange }: 
             />
           </motion.svg>
 
-          <p className="flex-1 px-1 text-left font-sans text-[15px] leading-tight text-numo-slate-400 sm:px-2 sm:text-[18px] md:px-6 md:text-[26px] md:leading-none">
-            {STATE_COPY[state]}
-          </p>
+          <div className="flex-1 px-1 sm:px-2 md:px-6">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.p
+                key={state}
+                initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  filter: isActive ? "blur(0px) drop-shadow(0 0 12px rgba(104, 210, 220, 0.15))" : "blur(0px)",
+                  backgroundPositionX: isActive ? ["0%", "100%", "0%"] : "0%",
+                }}
+                exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
+                transition={
+                  isActive
+                    ? {
+                        opacity: { duration: 0.26, ease: "easeOut" },
+                        y: { duration: 0.26, ease: "easeOut" },
+                        filter: { duration: 0.26, ease: "easeOut" },
+                        backgroundPositionX: { duration: 4.2, repeat: Infinity, ease: "linear" },
+                      }
+                    : { duration: 0.26, ease: "easeOut" }
+                }
+                className={[
+                  "text-left font-sans text-[15px] leading-tight sm:text-[18px] md:text-[26px] md:leading-none",
+                  isActive ? "bg-size-[200%_100%] bg-clip-text text-transparent" : "text-numo-slate-400",
+                ].join(" ")}
+                style={
+                  isActive
+                    ? {
+                        backgroundImage:
+                          "linear-gradient(90deg, hsl(var(--numo-blue-400) / 0.82) 0%, hsl(var(--numo-teal-400)) 42%, hsl(var(--numo-yellow-500) / 0.96) 78%, hsl(var(--numo-orange-400) / 0.9) 100%)",
+                      }
+                    : undefined
+                }
+                aria-live="polite"
+              >
+                {STATE_COPY[state]}
+              </motion.p>
+            </AnimatePresence>
+          </div>
 
           <button
             type="button"
