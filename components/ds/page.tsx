@@ -87,11 +87,11 @@ export function DSPage({
 
               <div className="flex items-center gap-1">
                 <Link
-                  href="https://edbelluti.com/"
+                  href="https://eduardobelluti.com/"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-background hover:text-foreground"
-                  aria-label="Website"
+                  aria-label="Eduardo Belluti portfolio"
                 >
                   <Globe className="h-4 w-4" />
                 </Link>

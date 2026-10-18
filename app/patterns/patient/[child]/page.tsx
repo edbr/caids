@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/site";
 import { notFound } from "next/navigation";
 import { HomeMenuDemo } from "@/components/patterns/HomeMenuDemo";
 import { MonitoringBarDemo } from "@/components/patterns/MonitoringBarDemo";
@@ -26,6 +27,21 @@ const PATIENT_CHILDREN = {
     render: () => <PatientMyHealthDemo />,
   },
 } as const;
+
+export function generateStaticParams() {
+  return Object.keys(PATIENT_CHILDREN).map((child) => ({ child }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ child: string }> }) {
+  const { child } = await params;
+  const selected = PATIENT_CHILDREN[child as keyof typeof PATIENT_CHILDREN];
+  if (!selected) notFound();
+  return pageMetadata(
+    `/patterns/patient/${child}`,
+    selected.title,
+    `${selected.title}: a patient experience pattern in the Curie + Numo healthcare design system.`,
+  );
+}
 
 export default async function PatientChildPatternPage({
   params,

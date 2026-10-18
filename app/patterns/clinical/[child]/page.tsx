@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/site";
 import { AlwaysOnPatientPanel } from "@/components/patterns/AlwaysOnPatientPanel";
 import { notFound } from "next/navigation";
 import NotificationsPanelDemo from "@/components/patterns/NotificationsPanelDemo";
@@ -69,6 +70,21 @@ const CLINICAL_CHILDREN = {
     render: () => <PatientReportsDashboard />,
   },
 } as const;
+
+export function generateStaticParams() {
+  return Object.keys(CLINICAL_CHILDREN).map((child) => ({ child }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ child: string }> }) {
+  const { child } = await params;
+  const selected = CLINICAL_CHILDREN[child as keyof typeof CLINICAL_CHILDREN];
+  if (!selected) notFound();
+  return pageMetadata(
+    `/patterns/clinical/${child}`,
+    selected.title,
+    `${selected.title}: a clinical experience pattern in the Curie + Numo healthcare design system.`,
+  );
+}
 
 export default async function ClinicalChildPatternPage({
   params,

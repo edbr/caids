@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { person, site } from "@/lib/site";
 
 const SITEMAP_GROUPS = [
   {
@@ -52,16 +53,20 @@ export function DSFooter() {
         ))}
       </div>
 
+      <nav aria-label="Project information" className="mt-8 flex flex-wrap gap-4 text-sm text-muted-foreground">
+        <a href={site.writeupUrl} className="hover:underline">Read the design system case study</a>
+        <a href="https://eduardobelluti.com/projects/personal" className="hover:underline">More projects by Eduardo Belluti</a>
+      </nav>
       <div className="mt-8 flex justify-end">
         <p className="text-sm text-muted-foreground">
           Designed by{" "}
           <a
-            href="https://edbelluti.com/"
+            href={person.url}
             target="_blank"
             rel="noreferrer"
             className="font-medium text-foreground transition hover:text-numo-teal-400"
           >
-            edbelluti
+            Eduardo Belluti
           </a>
         </p>
       </div>
