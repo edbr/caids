@@ -12,6 +12,15 @@ import { DSPage } from "@/components/ds/page";
 
 const PROTOTYPES = [
   {
+    href: "/prototypes/device-reporting-queue",
+    title: "@device-reporting-queue",
+    description: "Synthetic clinician queue for overdue reports, confirmed disconnections, and reporting recovery.",
+    type: "Clinical",
+    icon: Monitor,
+    iconBg: "border-numo-blue-500/40 bg-numo-blue-400/12",
+    iconColor: "text-numo-blue-700 dark:text-numo-blue-400",
+  },
+  {
     href: "/numo-home",
     title: "@numo-home",
     description: "Dashboard homepage with clinical summary, quick actions, and patient timeline.",
