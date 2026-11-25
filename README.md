@@ -40,9 +40,13 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 Run `CARE_DEMO_MOCK=1 npm run dev -- --hostname 127.0.0.1` and open
 [the care demo](http://localhost:3000/care-demo) or find it in the
 [prototype directory](http://localhost:3000/prototypes). Mock mode uses a
-session cookie scoped to the browser. Clear `care-demo-missing-kit` or use a
-fresh private browsing session to reset it. The demo assumes members can
-book before their kit arrives. Demo booking displays fictional times.
+session cookie scoped to the browser. The Member and Clinical views update
+together. Use **Reset my demo** in the clinical view to clear that session.
+Clinical scenario controls only run in mock mode. With n8n connected, the
+clinical view displays the saved request and activity from n8n. The demo assumes members can
+book before their kit arrives. In mock mode, choose a fictional time in
+the phone, then confirm it in the clinical view. Both views keep the same
+booking after refresh. Live n8n mode shows a booking preview.
 
 ### Connect n8n
 
@@ -60,15 +64,15 @@ book before their kit arrives. Demo booking displays fictional times.
 
 2. Import [status.json](n8n/care-demo/status.json) and
    [report-missing-kit.json](n8n/care-demo/report-missing-kit.json) as
-   separate workflows in that project. In each Data Table node, open
+   separate workflows in that project. In every Data Table node, open
    **Data table → From list**, replace the placeholder with **Care Follow-Up
    Demo**, and save. If the editor clears the column selections or mappings
    when you select the table, restore the following settings.
 
-   - **Find open missing-kit request** uses Row → Get and All Conditions.
-     Match `requestKey`, `memberId`, and `reviewStatus` with Equals and
-     their values above. Set Limit to 1 and enable **Always Output Data** so
-     an empty table produces the Delivered state.
+   - **Find missing-kit request** uses Row → Get, matching `requestKey`
+     with Equals. Set Limit to 1 and enable **Always Output Data** so an
+     empty table produces the Delivered state. The report workflow looks
+     up the key before upserting so retries preserve a case’s progress.
    - **Upsert missing-kit request** uses Row → Upsert. Match `requestKey`
      with Equals and the value above. Map each column manually to its value
      above. Leave Dry Run off and On Error set to Stop Workflow.
@@ -115,3 +119,12 @@ CF_ACCESS_CLIENT_SECRET=<service-token-client-secret>
 ```
 
 Leave both Cloudflare variables unset for local development over the SSH tunnel.
+
+
+The status workflow maps `open` and `in_review` to Help requested,
+`replacement_shipped` to Replacement on the way, and
+`replacement_received` to Replacement received. If upgrading an existing
+demo, update both published workflows. In n8n you can move the fictional
+case forward by editing `reviewStatus` directly, then refreshing the app.
+Optional Date columns `reviewedAt`, `shippedAt`, and `resolvedAt` appear as
+timeline entries when populated.

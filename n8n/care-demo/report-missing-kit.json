@@ -22,6 +22,72 @@
     {
       "parameters": {
         "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "SELECT_CARE_FOLLOW_UP_DEMO",
+          "mode": "list"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "requestKey",
+              "condition": "eq",
+              "keyValue": "demo-member-001:missing-lab-kit"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "3851b828-7526-40c2-bf10-eb2646abf96a",
+      "name": "Find missing-kit request",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "348352ed-f299-4bf0-a394-375d4f365402",
+              "leftValue": "={{ Boolean($json.requestKey) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "1ac5062e-4bfb-4424-89c7-59187baa765a",
+      "name": "Request already exists?"
+    },
+    {
+      "parameters": {
+        "resource": "row",
         "operation": "upsert",
         "dataTableId": {
           "__rl": true,
@@ -102,8 +168,8 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
       "position": [
-        240,
-        0
+        720,
+        160
       ],
       "id": "c08e205a-5d04-440a-98af-2a971d6d991e",
       "name": "Upsert missing-kit request",
@@ -111,12 +177,12 @@
     },
     {
       "parameters": {
-        "jsCode": "const saved = $input.first().json;\nif (saved.requestKey !== \"demo-member-001:missing-lab-kit\" || saved.reviewStatus !== \"open\") {\n  throw new Error(\"Missing-kit upsert did not return an open request\");\n}\nreturn [{ json: {\n  kitStatus: saved.reviewStatus === \"open\" ? \"help_requested\" : \"delivered\",\n  firstVisitStatus: \"ready_to_book\",\n} }];"
+        "jsCode": "const row = $input.first().json;\nconst statusByReview = {\n  open: \"help_requested\",\n  in_review: \"help_requested\",\n  replacement_shipped: \"replacement_shipped\",\n  replacement_received: \"replacement_received\",\n};\nconst firstVisitStatus = \"ready_to_book\";\nif (!row.requestKey) {\n  throw new Error(\"Missing-kit request was not saved\");\n}\nif (!Object.hasOwn(statusByReview, row.reviewStatus) || !row.createdAt) {\n  throw new Error(\"Unexpected missing-kit request state\");\n}\nreturn [{ json: {\n  kitStatus: statusByReview[row.reviewStatus],\n  firstVisitStatus,\n  request: {\n    reference: \"KIT-\" + row.id,\n    receivedAt: row.createdAt,\n    reviewStatus: row.reviewStatus,\n    reviewedAt: row.reviewedAt || undefined,\n    shippedAt: row.shippedAt || undefined,\n    resolvedAt: row.resolvedAt || undefined,\n  },\n} }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        480,
+        960,
         0
       ],
       "id": "e2ba1484-88e7-4677-8b6a-1cbe3e20a77f",
@@ -126,6 +192,35 @@
   "connections": {
     "Webhook": {
       "main": [
+        [
+          {
+            "node": "Find missing-kit request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find missing-kit request": {
+      "main": [
+        [
+          {
+            "node": "Request already exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request already exists?": {
+      "main": [
+        [
+          {
+            "node": "Return onboarding state",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Upsert missing-kit request",

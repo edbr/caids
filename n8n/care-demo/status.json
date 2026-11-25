@@ -35,16 +35,6 @@
               "keyName": "requestKey",
               "condition": "eq",
               "keyValue": "demo-member-001:missing-lab-kit"
-            },
-            {
-              "keyName": "memberId",
-              "condition": "eq",
-              "keyValue": "demo-member-001"
-            },
-            {
-              "keyName": "reviewStatus",
-              "condition": "eq",
-              "keyValue": "open"
             }
           ]
         },
@@ -58,12 +48,12 @@
         0
       ],
       "id": "3a27562d-132a-4c62-ace9-24827948f232",
-      "name": "Find open missing-kit request",
+      "name": "Find missing-kit request",
       "alwaysOutputData": true
     },
     {
       "parameters": {
-        "jsCode": "const saved = $input.first().json;\nreturn [{ json: {\n  kitStatus: saved.reviewStatus === \"open\" ? \"help_requested\" : \"delivered\",\n  firstVisitStatus: \"ready_to_book\",\n} }];"
+        "jsCode": "const row = $input.first().json;\nconst statusByReview = {\n  open: \"help_requested\",\n  in_review: \"help_requested\",\n  replacement_shipped: \"replacement_shipped\",\n  replacement_received: \"replacement_received\",\n};\nconst firstVisitStatus = \"ready_to_book\";\nif (!row.requestKey) {\n  return [{ json: { kitStatus: \"delivered\", firstVisitStatus } }];\n}\nif (!Object.hasOwn(statusByReview, row.reviewStatus) || !row.createdAt) {\n  throw new Error(\"Unexpected missing-kit request state\");\n}\nreturn [{ json: {\n  kitStatus: statusByReview[row.reviewStatus],\n  firstVisitStatus,\n  request: {\n    reference: \"KIT-\" + row.id,\n    receivedAt: row.createdAt,\n    reviewStatus: row.reviewStatus,\n    reviewedAt: row.reviewedAt || undefined,\n    shippedAt: row.shippedAt || undefined,\n    resolvedAt: row.resolvedAt || undefined,\n  },\n} }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -80,14 +70,14 @@
       "main": [
         [
           {
-            "node": "Find open missing-kit request",
+            "node": "Find missing-kit request",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Find open missing-kit request": {
+    "Find missing-kit request": {
       "main": [
         [
           {

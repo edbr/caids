@@ -1,21 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isCareState, type CareState } from "@/lib/care-demo";
+import { isCareState } from "@/lib/care-demo";
+import { scenarioState } from "./scenario-state";
 
 const MEMBER_ID = "demo-member-001";
-const MOCK_COOKIE = "care-demo-missing-kit";
 const headers = { "Cache-Control": "no-store" };
 
 export async function careState(request: NextRequest, report: boolean) {
   if (process.env.CARE_DEMO_MOCK === "1") {
-    const state: CareState = {
-      kitStatus: report || request.cookies.get(MOCK_COOKIE)?.value === "1" ? "help_requested" : "delivered",
-      firstVisitStatus: "ready_to_book",
-    };
-    const response = NextResponse.json(state, { headers });
-    if (report) {
-      response.cookies.set(MOCK_COOKIE, "1", { httpOnly: true, sameSite: "lax", path: "/" });
-    }
-    return response;
+    return scenarioState(request, report ? "report" : undefined);
   }
 
   try {
@@ -47,13 +39,15 @@ export async function careState(request: NextRequest, report: boolean) {
     });
     if (response.status !== 200) throw new Error("Care demo webhook failed");
     const state: unknown = await response.json();
-    if (!isCareState(state) || (report && state.kitStatus !== "help_requested")) {
+    if (!isCareState(state) || (report && state.kitStatus === "delivered")) {
       throw new Error("Unexpected care demo webhook response");
     }
 
     return NextResponse.json({
       kitStatus: state.kitStatus,
       firstVisitStatus: state.firstVisitStatus,
+      request: state.request,
+      visitSlot: state.visitSlot,
     }, { headers });
   } catch {
     return NextResponse.json({ error: "Care demo service unavailable" }, { status: 503, headers });
