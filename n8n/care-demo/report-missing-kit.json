@@ -1,0 +1,154 @@
+{
+  "name": "Care Follow-Up Demo \u00b7 report-missing-kit",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "care-demo/report-missing-kit",
+        "responseMode": "lastNode",
+        "responseData": "firstEntryJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4773083e-edcd-4633-a877-08a1367ca9db",
+      "name": "Webhook",
+      "webhookId": "a50f3c8e-9b01-42bb-a594-853d36a184f9"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "SELECT_CARE_FOLLOW_UP_DEMO",
+          "mode": "list"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "requestKey",
+              "condition": "eq",
+              "keyValue": "demo-member-001:missing-lab-kit"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "requestKey": "demo-member-001:missing-lab-kit",
+            "memberId": "demo-member-001",
+            "carrierStatus": "delivered",
+            "memberReport": "not received",
+            "reviewStatus": "open"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "requestKey",
+              "displayName": "requestKey",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "memberId",
+              "displayName": "memberId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "carrierStatus",
+              "displayName": "carrierStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "memberReport",
+              "displayName": "memberReport",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reviewStatus",
+              "displayName": "reviewStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "c08e205a-5d04-440a-98af-2a971d6d991e",
+      "name": "Upsert missing-kit request",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const saved = $input.first().json;\nif (saved.requestKey !== \"demo-member-001:missing-lab-kit\" || saved.reviewStatus !== \"open\") {\n  throw new Error(\"Missing-kit upsert did not return an open request\");\n}\nreturn [{ json: {\n  kitStatus: saved.reviewStatus === \"open\" ? \"help_requested\" : \"delivered\",\n  firstVisitStatus: \"ready_to_book\",\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "e2ba1484-88e7-4677-8b6a-1cbe3e20a77f",
+      "name": "Return onboarding state"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Upsert missing-kit request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert missing-kit request": {
+      "main": [
+        [
+          {
+            "node": "Return onboarding state",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}

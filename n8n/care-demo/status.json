@@ -1,0 +1,106 @@
+{
+  "name": "Care Follow-Up Demo \u00b7 status",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "care-demo/status",
+        "responseMode": "lastNode",
+        "responseData": "firstEntryJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "28e1e727-415f-475a-aa29-6d5be919953f",
+      "name": "Webhook",
+      "webhookId": "47f03131-e74b-484c-8e31-aa8c2d1ab7fd"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "SELECT_CARE_FOLLOW_UP_DEMO",
+          "mode": "list"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "requestKey",
+              "condition": "eq",
+              "keyValue": "demo-member-001:missing-lab-kit"
+            },
+            {
+              "keyName": "memberId",
+              "condition": "eq",
+              "keyValue": "demo-member-001"
+            },
+            {
+              "keyName": "reviewStatus",
+              "condition": "eq",
+              "keyValue": "open"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "3a27562d-132a-4c62-ace9-24827948f232",
+      "name": "Find open missing-kit request",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const saved = $input.first().json;\nreturn [{ json: {\n  kitStatus: saved.reviewStatus === \"open\" ? \"help_requested\" : \"delivered\",\n  firstVisitStatus: \"ready_to_book\",\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "2463ec82-7c08-4926-a9c1-e44b0d839aaf",
+      "name": "Return onboarding state"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Find open missing-kit request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find open missing-kit request": {
+      "main": [
+        [
+          {
+            "node": "Return onboarding state",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}

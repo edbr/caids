@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  CalendarDays,
   LogIn,
   Monitor,
   NotebookText,
@@ -11,6 +12,15 @@ import {
 import { DSPage } from "@/components/ds/page";
 
 const PROTOTYPES = [
+  {
+    href: "/care-demo",
+    title: "Your first two weeks",
+    description: "Report a missing at-home lab kit and keep moving toward your first visit.",
+    type: "Member",
+    icon: CalendarDays,
+    iconBg: "border-numo-teal-500/40 bg-numo-teal-400/12",
+    iconColor: "text-numo-teal-700 dark:text-numo-teal-400",
+  },
   {
     href: "/prototypes/device-reporting-queue",
     title: "@device-reporting-queue",
