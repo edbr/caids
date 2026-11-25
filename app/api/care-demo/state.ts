@@ -24,14 +24,28 @@ export async function careState(request: NextRequest, report: boolean) {
 
     const url = new URL(webhook);
     if (!report) url.searchParams.set("memberId", MEMBER_ID);
+
+    const clientId = process.env.CF_ACCESS_CLIENT_ID;
+    const clientSecret = process.env.CF_ACCESS_CLIENT_SECRET;
+    const webhookHeaders = new Headers();
+    if (clientId || clientSecret) {
+      if (!clientId || !clientSecret || url.protocol !== "https:") {
+        throw new Error("Cloudflare Access requires both credentials and an HTTPS webhook");
+      }
+      webhookHeaders.set("CF-Access-Client-Id", clientId);
+      webhookHeaders.set("CF-Access-Client-Secret", clientSecret);
+    }
+    if (report) webhookHeaders.set("Content-Type", "application/json");
+
     const response = await fetch(url, {
       method: report ? "POST" : "GET",
-      headers: report ? { "Content-Type": "application/json" } : undefined,
-      body: report ? JSON.stringify({ memberId: MEMBER_ID }) : undefined,
+      headers: webhookHeaders,
+      body: report ? JSON.stringify({}) : undefined,
       cache: "no-store",
+      redirect: "error",
       signal: AbortSignal.timeout(8000),
     });
-    if (!response.ok) throw new Error("Care demo webhook failed");
+    if (response.status !== 200) throw new Error("Care demo webhook failed");
     const state: unknown = await response.json();
     if (!isCareState(state) || (report && state.kitStatus !== "help_requested")) {
       throw new Error("Unexpected care demo webhook response");

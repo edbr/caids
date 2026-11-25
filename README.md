@@ -99,3 +99,19 @@ book before their kit arrives. Demo booking displays fictional times.
 5. For a live demo reset, open **Care Follow-Up Demo**, delete the row
    whose `requestKey` is `demo-member-001:missing-lab-kit`, then refresh
    the care demo. The kit starts at **Delivered** again.
+
+### Vercel with Cloudflare Access
+
+Set these variables in the Vercel project's Production environment and
+redeploy. Use your tunnel's HTTPS hostname and the credentials from a
+Cloudflare Access service token authorized for both webhook paths.
+
+```dotenv
+CARE_DEMO_MOCK=0
+N8N_CARE_STATUS_URL=https://care-hooks.edbelluti.com/webhook/care-demo/status
+N8N_REPORT_MISSING_KIT_URL=https://care-hooks.edbelluti.com/webhook/care-demo/report-missing-kit
+CF_ACCESS_CLIENT_ID=<service-token-client-id>
+CF_ACCESS_CLIENT_SECRET=<service-token-client-secret>
+```
+
+Leave both Cloudflare variables unset for local development over the SSH tunnel.
