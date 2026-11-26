@@ -30,7 +30,7 @@ export function scenarioState(request: NextRequest, action?: string, slot?: Visi
     } else if (state.visitSlot !== slot) {
       return NextResponse.json({ error: "A demo visit is already booked" }, { status: 409, headers });
     }
-  } else if (action === "confirm_visit" && state.visitSlot) {
+  } else if (action === "confirm_visit" && state.firstVisitStatus !== "ready_to_book") {
     state = { ...state, firstVisitStatus: "confirmed" };
   } else if (action && action !== "report") {
     const transition = requestState && requestState.reviewStatus !== "replacement_received"
@@ -43,6 +43,10 @@ export function scenarioState(request: NextRequest, action?: string, slot?: Visi
       kitStatus: transition.next === "in_review" ? "help_requested" : transition.next,
       request: { ...requestState, reviewStatus: transition.next, [transition.timestamp]: now },
     };
+  }
+
+  if (!isCareState(state)) {
+    return NextResponse.json({ error: "Care demo service unavailable" }, { status: 503, headers });
   }
 
   const response = NextResponse.json(state, { headers });

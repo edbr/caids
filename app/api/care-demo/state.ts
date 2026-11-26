@@ -48,12 +48,7 @@ export async function careState(request: NextRequest, report: boolean, mutation?
       throw new Error("Unexpected care demo webhook response");
     }
 
-    return NextResponse.json({
-      kitStatus: state.kitStatus,
-      firstVisitStatus: state.firstVisitStatus,
-      request: state.request,
-      visitSlot: state.visitSlot,
-    }, { headers });
+    return NextResponse.json(state, { headers });
   } catch {
     return NextResponse.json({ error: "Care demo service unavailable" }, { status: 503, headers });
   }

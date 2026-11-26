@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Care Demo State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kitStatus", "firstVisitStatus"],
+  "properties": {
+    "kitStatus": {
+      "type": "string",
+      "enum": ["delivered", "help_requested", "replacement_shipped", "replacement_received"]
+    },
+    "firstVisitStatus": {
+      "type": "string",
+      "enum": ["ready_to_book", "booked", "confirmed"]
+    },
+    "visitSlot": {
+      "type": "string",
+      "enum": ["tuesday", "thursday"]
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reference", "receivedAt", "reviewStatus"],
+      "properties": {
+        "reference": { "type": "string" },
+        "reviewStatus": {
+          "type": "string",
+          "enum": ["open", "in_review", "replacement_shipped", "replacement_received"]
+        },
+        "receivedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Report saved / missing kit reported"
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Care team started review"
+        },
+        "shippedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Replacement sent"
+        },
+        "resolvedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Replacement received / case resolved"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "firstVisitStatus": { "const": "ready_to_book" } } },
+      "then": { "not": { "required": ["visitSlot"] } },
+      "else": { "required": ["visitSlot"] }
+    }
+  ]
+}

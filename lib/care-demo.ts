@@ -1,3 +1,5 @@
+import validateCareDemoState from "./care-demo-validator.cjs";
+
 export const kitLabels = {
   delivered: "Delivered",
   help_requested: "Help requested",
@@ -27,8 +29,6 @@ export function isVisitSlot(value: unknown): value is VisitSlot {
 
 export type CareState = {
   kitStatus: keyof typeof kitLabels;
-  firstVisitStatus: "ready_to_book" | "booked" | "confirmed";
-  visitSlot?: VisitSlot;
   request?: {
     reference: string;
     receivedAt: string;
@@ -37,24 +37,13 @@ export type CareState = {
     shippedAt?: string;
     resolvedAt?: string;
   };
-};
+} & (
+  | { firstVisitStatus: "ready_to_book"; visitSlot?: never }
+  | { firstVisitStatus: "booked" | "confirmed"; visitSlot: VisitSlot }
+);
 
 export function isCareState(value: unknown): value is CareState {
-  if (!value || typeof value !== "object") return false;
-  const state = value as CareState;
-  if (!Object.hasOwn(kitLabels, state.kitStatus)) return false;
-  if (state.firstVisitStatus === "ready_to_book") {
-    if (state.visitSlot !== undefined) return false;
-  } else if (!["booked", "confirmed"].includes(state.firstVisitStatus) || !isVisitSlot(state.visitSlot)) {
-    return false;
-  }
-  if (state.request === undefined) return true;
-  const request = state.request;
-  return !!request && typeof request.reference === "string"
-    && Object.hasOwn(reviewLabels, request.reviewStatus)
-    && [request.receivedAt, request.reviewedAt, request.shippedAt, request.resolvedAt]
-      .every(time => time === undefined || (typeof time === "string" && Number.isFinite(Date.parse(time))))
-    && typeof request.receivedAt === "string";
+  return validateCareDemoState(value);
 }
 
 export const scenarioTransitions = {

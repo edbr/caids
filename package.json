@@ -6,11 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate:care-demo": "node scripts/generate-care-demo-validator.cjs",
+    "test": "node scripts/generate-care-demo-validator.cjs --check && node --test tests/*.test.mjs",
+    "prebuild": "node scripts/generate-care-demo-validator.cjs --check"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.33.0",
