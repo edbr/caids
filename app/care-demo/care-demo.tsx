@@ -6,6 +6,7 @@ import { ArrowLeft, BatteryFull, Package, Signal, Wifi } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { isCareState, kitLabels, type CareState, type VisitSlot } from "@/lib/care-demo";
+import careDemoStateSchema from "@/schemas/care-demo-state.schema.json";
 
 import { CareTeam, ReportFacts, ReportTime, RequestActivity } from "./care-team";
 import { ClinicalFirstVisit, MemberFirstVisit } from "./first-visit";
@@ -212,6 +213,32 @@ export function CareDemo({ mock }: { mock: boolean }) {
             />
           </section>
         </div>
+        <section aria-labelledby="care-demo-response" className="mt-8 space-y-4 rounded-xl border border-border bg-background p-4 sm:p-6">
+          <h2 id="care-demo-response" className="text-xl font-semibold">Care demo API response</h2>
+          {state ? (
+            <pre
+              aria-label="Latest response JSON"
+              tabIndex={0}
+              className="overflow-x-auto rounded-lg bg-muted p-4 text-sm"
+            >
+              <code>{JSON.stringify(state, null, 2)}</code>
+            </pre>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {lookupError ? "Response unavailable. Retry the status check to load it." : "Waiting for the status response…"}
+            </p>
+          )}
+          <details>
+            <summary className="cursor-pointer text-sm font-medium">View JSON Schema</summary>
+            <pre
+              aria-label="Care demo response schema"
+              tabIndex={0}
+              className="mt-3 max-h-96 overflow-auto rounded-lg bg-muted p-4 text-sm"
+            >
+              <code>{JSON.stringify(careDemoStateSchema, null, 2)}</code>
+            </pre>
+          </details>
+        </section>
       </div>
     </main>
   );
