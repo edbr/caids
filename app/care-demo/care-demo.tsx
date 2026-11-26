@@ -111,7 +111,7 @@ export function CareDemo({ mock }: { mock: boolean }) {
           <p className="text-sm font-medium text-muted-foreground">Demo · fictional member data</p>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Your first two weeks</h1>
           <p className="text-muted-foreground">Track your at-home lab kit and get ready for your first visit.</p>
-          {!mock && <Button type="button" variant="outline" disabled={refreshing || saving} onClick={refreshStatus}>Refresh status</Button>}
+          {!mock && <Button type="button" variant="outline" disabled={refreshing || saving || updating} onClick={refreshStatus}>Refresh status</Button>}
         </header>
 
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,390px)_minmax(0,1fr)]">
@@ -191,7 +191,6 @@ export function CareDemo({ mock }: { mock: boolean }) {
                 <MemberFirstVisit
                   key={scenarioVersion}
                   state={state}
-                  mock={mock}
                   busy={refreshing || saving || updating || !state}
                   error={scenarioError === "book"}
                   book={slot => updateScenario("book", slot)}
@@ -205,14 +204,12 @@ export function CareDemo({ mock }: { mock: boolean }) {
           <section aria-labelledby="clinical-view" className="min-w-0 space-y-4">
             <h2 id="clinical-view" className="text-xl font-semibold">Clinical view</h2>
             <CareTeam state={state} mock={mock} busy={refreshing || saving || updating} error={!!scenarioError && scenarioError !== "book" && scenarioError !== "confirm_visit"} update={updateScenario} />
-            {mock && (
-              <ClinicalFirstVisit
-                state={state}
-                busy={refreshing || saving || updating}
-                error={scenarioError === "confirm_visit"}
-                confirm={() => updateScenario("confirm_visit")}
-              />
-            )}
+            <ClinicalFirstVisit
+              state={state}
+              busy={refreshing || saving || updating}
+              error={scenarioError === "confirm_visit"}
+              confirm={() => updateScenario("confirm_visit")}
+            />
           </section>
         </div>
       </div>

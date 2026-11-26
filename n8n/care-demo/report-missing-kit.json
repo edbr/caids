@@ -1,38 +1,44 @@
 {
-  "name": "Care Follow-Up Demo \u00b7 report-missing-kit",
+  "name": "Care Follow-Up Demo · report-missing-kit",
   "nodes": [
     {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "care-demo/report-missing-kit",
-        "responseMode": "lastNode",
-        "responseData": "firstEntryJson",
-        "options": {}
-      },
+      "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
         0,
         0
       ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "care-demo/report-missing-kit",
+        "responseMode": "responseNode",
+        "options": {}
+      },
       "id": "4773083e-edcd-4633-a877-08a1367ca9db",
-      "name": "Webhook",
       "webhookId": "a50f3c8e-9b01-42bb-a594-853d36a184f9"
     },
     {
+      "name": "Read demo case",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
       "parameters": {
         "resource": "row",
         "operation": "get",
         "dataTableId": {
           "__rl": true,
-          "value": "SELECT_CARE_FOLLOW_UP_DEMO",
-          "mode": "list"
+          "mode": "list",
+          "value": "SELECT_CARE_FOLLOW_UP_DEMO"
         },
         "matchType": "allConditions",
         "filters": {
           "conditions": [
             {
-              "keyName": "requestKey",
+              "keyName": "request_key",
               "condition": "eq",
               "keyValue": "demo-member-001:missing-lab-kit"
             }
@@ -41,17 +47,55 @@
         "returnAll": false,
         "limit": 1
       },
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1,
-      "position": [
-        240,
-        0
-      ],
-      "id": "3851b828-7526-40c2-bf10-eb2646abf96a",
-      "name": "Find missing-kit request",
+      "id": "63f6c85e-dd36-4a36-bad4-654986e46520",
       "alwaysOutputData": true
     },
     {
+      "name": "Prepare response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const reply = (status, body) => [{ json: { status, body } }];\nconst row = $input.first().json;\nif (!row.onboarding_state) return reply(503, { error: \"Demo state is unavailable\" });\nconst state = JSON.parse(row.onboarding_state);\nconst input = $('Webhook').first().json.body ?? {};\nconst action = input.action === undefined ? 'report' : input.action;\nconst initial = { kitStatus: 'delivered', firstVisitStatus: 'ready_to_book' };\nconst now = new Date().toISOString();\nconst conflict = () => reply(409, { error: 'Demo state changed. Refresh and try again.' });\nlet next = state;\nswitch (action) {\n  case 'report':\n    if (!state.request) {\n      next = { ...state, kitStatus: 'help_requested', request: {\n        reference: 'KIT-' + row.id + '-' + Date.parse(now).toString(36).toUpperCase(),\n        receivedAt: now, reviewStatus: 'open',\n      } };\n    }\n    break;\n  case 'reset':\n    next = initial;\n    break;\n  case 'book':\n    if (!['tuesday', 'thursday'].includes(input.slot)) return reply(400, { error: 'Invalid demo time' });\n    if (state.visitSlot && state.visitSlot !== input.slot) return conflict();\n    if (!state.visitSlot) next = { ...state, firstVisitStatus: 'booked', visitSlot: input.slot };\n    break;\n  case 'confirm_visit':\n    if (!state.visitSlot) return conflict();\n    if (state.firstVisitStatus !== 'confirmed') next = { ...state, firstVisitStatus: 'confirmed' };\n    break;\n  case 'in_review':\n  case 'replacement_shipped':\n  case 'replacement_received': {\n    const transitions = {\n      in_review: { from: 'open', at: 'reviewedAt', kitStatus: 'help_requested' },\n      replacement_shipped: { from: 'in_review', at: 'shippedAt', kitStatus: 'replacement_shipped' },\n      replacement_received: { from: 'replacement_shipped', at: 'resolvedAt', kitStatus: 'replacement_received' },\n    };\n    if (state.request?.reviewStatus === action) break;\n    const transition = transitions[action];\n    if (state.request?.reviewStatus !== transition.from) return conflict();\n    next = { ...state, kitStatus: transition.kitStatus, request: {\n      ...state.request, reviewStatus: action, [transition.at]: now,\n    } };\n    break;\n  }\n  default:\n    return reply(400, { error: 'Invalid demo action' });\n}\n\nconst serialized = JSON.stringify(next);\nif (serialized === row.onboarding_state) return reply(200, state);\nreturn [{ json: { previous: row.onboarding_state, next: serialized } }];"
+      },
+      "id": "5edfce14-bfa5-4800-a3db-8aa1d95ec8d1"
+    },
+    {
+      "name": "Return onboarding state",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1320,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.body }}",
+        "options": {
+          "responseCode": "={{ $json.status }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              }
+            ]
+          }
+        }
+      },
+      "id": "e0daef2e-5c40-483c-b325-f0fe30366f07"
+    },
+    {
+      "name": "State changed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        0
+      ],
       "parameters": {
         "conditions": {
           "options": {
@@ -62,8 +106,8 @@
           },
           "conditions": [
             {
-              "id": "348352ed-f299-4bf0-a394-375d4f365402",
-              "leftValue": "={{ Boolean($json.requestKey) }}",
+              "id": "ba874a33-38fd-4d69-bcf0-e5652eb370e2",
+              "leftValue": "={{ Boolean($json.next) }}",
               "rightValue": "",
               "operator": {
                 "type": "boolean",
@@ -76,84 +120,49 @@
         },
         "options": {}
       },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        480,
-        0
-      ],
-      "id": "1ac5062e-4bfb-4424-89c7-59187baa765a",
-      "name": "Request already exists?"
+      "id": "cdb9e761-6b73-46de-b0e8-3abc1e15bce8"
     },
     {
+      "name": "Save demo case",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        880,
+        0
+      ],
       "parameters": {
         "resource": "row",
-        "operation": "upsert",
+        "operation": "update",
         "dataTableId": {
           "__rl": true,
-          "value": "SELECT_CARE_FOLLOW_UP_DEMO",
-          "mode": "list"
+          "mode": "list",
+          "value": "SELECT_CARE_FOLLOW_UP_DEMO"
         },
         "matchType": "allConditions",
         "filters": {
           "conditions": [
             {
-              "keyName": "requestKey",
+              "keyName": "request_key",
               "condition": "eq",
               "keyValue": "demo-member-001:missing-lab-kit"
+            },
+            {
+              "keyName": "onboarding_state",
+              "condition": "eq",
+              "keyValue": "={{ $json.previous }}"
             }
           ]
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "requestKey": "demo-member-001:missing-lab-kit",
-            "memberId": "demo-member-001",
-            "carrierStatus": "delivered",
-            "memberReport": "not received",
-            "reviewStatus": "open"
+            "onboarding_state": "={{ $json.next }}"
           },
           "matchingColumns": [],
           "schema": [
             {
-              "id": "requestKey",
-              "displayName": "requestKey",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "memberId",
-              "displayName": "memberId",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "carrierStatus",
-              "displayName": "carrierStatus",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "memberReport",
-              "displayName": "memberReport",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "reviewStatus",
-              "displayName": "reviewStatus",
+              "id": "onboarding_state",
+              "displayName": "onboarding_state",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -163,30 +172,24 @@
           ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
-        }
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1,
-      "position": [
-        720,
-        160
-      ],
-      "id": "c08e205a-5d04-440a-98af-2a971d6d991e",
-      "name": "Upsert missing-kit request",
-      "alwaysOutputData": false
+      "id": "80b4bbae-f2f5-4337-8f7b-dd30e0bc9c3a",
+      "alwaysOutputData": true
     },
     {
-      "parameters": {
-        "jsCode": "const row = $input.first().json;\nconst statusByReview = {\n  open: \"help_requested\",\n  in_review: \"help_requested\",\n  replacement_shipped: \"replacement_shipped\",\n  replacement_received: \"replacement_received\",\n};\nconst firstVisitStatus = \"ready_to_book\";\nif (!row.requestKey) {\n  throw new Error(\"Missing-kit request was not saved\");\n}\nif (!Object.hasOwn(statusByReview, row.reviewStatus) || !row.createdAt) {\n  throw new Error(\"Unexpected missing-kit request state\");\n}\nreturn [{ json: {\n  kitStatus: statusByReview[row.reviewStatus],\n  firstVisitStatus,\n  request: {\n    reference: \"KIT-\" + row.id,\n    receivedAt: row.createdAt,\n    reviewStatus: row.reviewStatus,\n    reviewedAt: row.reviewedAt || undefined,\n    shippedAt: row.shippedAt || undefined,\n    resolvedAt: row.resolvedAt || undefined,\n  },\n} }];"
-      },
+      "name": "Return save result",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        960,
+        1100,
         0
       ],
-      "id": "e2ba1484-88e7-4677-8b6a-1cbe3e20a77f",
-      "name": "Return onboarding state"
+      "parameters": {
+        "jsCode": "const row = $input.first().json;\nreturn [{ json: row.onboarding_state\n  ? { status: 200, body: JSON.parse(row.onboarding_state) }\n  : { status: 409, body: { error: 'Demo state changed. Refresh and try again.' } } }];"
+      },
+      "id": "174b2ccc-cf19-49cd-902b-dde469dd1ed8"
     }
   ],
   "connections": {
@@ -194,43 +197,65 @@
       "main": [
         [
           {
-            "node": "Find missing-kit request",
+            "node": "Read demo case",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Find missing-kit request": {
+    "Read demo case": {
       "main": [
         [
           {
-            "node": "Request already exists?",
+            "node": "Prepare response",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Request already exists?": {
+    "Prepare response": {
       "main": [
         [
           {
-            "node": "Return onboarding state",
+            "node": "State changed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "State changed?": {
+      "main": [
+        [
+          {
+            "node": "Save demo case",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Upsert missing-kit request",
+            "node": "Return onboarding state",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Upsert missing-kit request": {
+    "Save demo case": {
+      "main": [
+        [
+          {
+            "node": "Return save result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return save result": {
       "main": [
         [
           {

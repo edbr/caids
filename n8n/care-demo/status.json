@@ -1,38 +1,44 @@
 {
-  "name": "Care Follow-Up Demo \u00b7 status",
+  "name": "Care Follow-Up Demo · status",
   "nodes": [
     {
-      "parameters": {
-        "httpMethod": "GET",
-        "path": "care-demo/status",
-        "responseMode": "lastNode",
-        "responseData": "firstEntryJson",
-        "options": {}
-      },
+      "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
         0,
         0
       ],
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "care-demo/status",
+        "responseMode": "responseNode",
+        "options": {}
+      },
       "id": "28e1e727-415f-475a-aa29-6d5be919953f",
-      "name": "Webhook",
       "webhookId": "47f03131-e74b-484c-8e31-aa8c2d1ab7fd"
     },
     {
+      "name": "Read demo case",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
       "parameters": {
         "resource": "row",
         "operation": "get",
         "dataTableId": {
           "__rl": true,
-          "value": "SELECT_CARE_FOLLOW_UP_DEMO",
-          "mode": "list"
+          "mode": "list",
+          "value": "SELECT_CARE_FOLLOW_UP_DEMO"
         },
         "matchType": "allConditions",
         "filters": {
           "conditions": [
             {
-              "keyName": "requestKey",
+              "keyName": "request_key",
               "condition": "eq",
               "keyValue": "demo-member-001:missing-lab-kit"
             }
@@ -41,28 +47,46 @@
         "returnAll": false,
         "limit": 1
       },
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1,
-      "position": [
-        240,
-        0
-      ],
-      "id": "3a27562d-132a-4c62-ace9-24827948f232",
-      "name": "Find missing-kit request",
+      "id": "2a658dad-df7c-4878-be9d-4e74f6e45058",
       "alwaysOutputData": true
     },
     {
-      "parameters": {
-        "jsCode": "const row = $input.first().json;\nconst statusByReview = {\n  open: \"help_requested\",\n  in_review: \"help_requested\",\n  replacement_shipped: \"replacement_shipped\",\n  replacement_received: \"replacement_received\",\n};\nconst firstVisitStatus = \"ready_to_book\";\nif (!row.requestKey) {\n  return [{ json: { kitStatus: \"delivered\", firstVisitStatus } }];\n}\nif (!Object.hasOwn(statusByReview, row.reviewStatus) || !row.createdAt) {\n  throw new Error(\"Unexpected missing-kit request state\");\n}\nreturn [{ json: {\n  kitStatus: statusByReview[row.reviewStatus],\n  firstVisitStatus,\n  request: {\n    reference: \"KIT-\" + row.id,\n    receivedAt: row.createdAt,\n    reviewStatus: row.reviewStatus,\n    reviewedAt: row.reviewedAt || undefined,\n    shippedAt: row.shippedAt || undefined,\n    resolvedAt: row.resolvedAt || undefined,\n  },\n} }];"
-      },
+      "name": "Prepare response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        480,
+        440,
         0
       ],
-      "id": "2463ec82-7c08-4926-a9c1-e44b0d839aaf",
-      "name": "Return onboarding state"
+      "parameters": {
+        "jsCode": "const reply = (status, body) => [{ json: { status, body } }];\nconst row = $input.first().json;\nif (!row.onboarding_state) return reply(503, { error: \"Demo state is unavailable\" });\nconst state = JSON.parse(row.onboarding_state);\nreturn reply(200, state);"
+      },
+      "id": "b5398a45-a705-4a91-8bba-c31dacb8a1c5"
+    },
+    {
+      "name": "Return onboarding state",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.body }}",
+        "options": {
+          "responseCode": "={{ $json.status }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Cache-Control",
+                "value": "no-store"
+              }
+            ]
+          }
+        }
+      },
+      "id": "a393d5e8-f72d-40f7-bd87-684c7fc13ffb"
     }
   ],
   "connections": {
@@ -70,14 +94,25 @@
       "main": [
         [
           {
-            "node": "Find missing-kit request",
+            "node": "Read demo case",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Find missing-kit request": {
+    "Read demo case": {
+      "main": [
+        [
+          {
+            "node": "Prepare response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare response": {
       "main": [
         [
           {

@@ -68,7 +68,7 @@ export function CareTeam({ state, mock, busy, error, update }: {
         <h3 className="text-[22px] font-semibold tracking-[-0.01em]">Missing-kit request</h3>
       </DSPanelHeader>
       <DSPanelBody className="space-y-4 px-6">
-        <p className="text-sm text-muted-foreground">{mock ? "Scenario controls · affect this browser’s fictional case" : "Read-only view · synced from n8n"}</p>
+        <p className="text-sm text-muted-foreground">{mock ? "Scenario controls · affect this browser’s fictional case" : "Shared fictional case · saved to n8n"}</p>
         <div role="status" className="space-y-3">
           {report ? (
             <>
@@ -82,10 +82,10 @@ export function CareTeam({ state, mock, busy, error, update }: {
         {state && state.kitStatus !== "delivered" && <ReportFacts />}
         {report && <RequestActivity report={report} />}
         {error && <p role="alert" className="text-sm text-destructive">We couldn’t update the scenario. Please try again.</p>}
-        {mock && (report || state?.visitSlot) && (
+        {(report || state?.visitSlot) && (
           <div className="flex flex-wrap gap-2">
             {transition && <PrimaryBtn disabled={busy} className="min-h-11 disabled:pointer-events-none disabled:opacity-50" onClick={() => update(transition.next)}>{transition.label}</PrimaryBtn>}
-            <SecondaryBtn disabled={busy} className="min-h-11 disabled:pointer-events-none disabled:opacity-50" onClick={() => update("reset")}>Reset my demo</SecondaryBtn>
+            <SecondaryBtn disabled={busy} className="min-h-11 disabled:pointer-events-none disabled:opacity-50" onClick={() => update("reset")}>{mock ? "Reset my demo" : "Reset shared demo"}</SecondaryBtn>
           </div>
         )}
       </DSPanelBody>

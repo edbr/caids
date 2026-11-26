@@ -42,67 +42,35 @@ Run `CARE_DEMO_MOCK=1 npm run dev -- --hostname 127.0.0.1` and open
 [prototype directory](http://localhost:3000/prototypes). Mock mode uses a
 session cookie scoped to the browser. The Member and Clinical views update
 together. Use **Reset my demo** in the clinical view to clear that session.
-Clinical scenario controls only run in mock mode. With n8n connected, the
-clinical view displays the saved request and activity from n8n. The demo assumes members can
-book before their kit arrives. In mock mode, choose a fictional time in
-the phone, then confirm it in the clinical view. Both views keep the same
-booking after refresh. Live n8n mode shows a booking preview.
+Choose a fictional visit time in the Member view and confirm it in the
+Clinical view. The Clinical view also advances the missing-kit request.
+With n8n connected, both views share one fictional case that persists after
+refresh. **Reset shared demo** clears the request and booking for everyone.
 
 ### Connect n8n
 
-1. Open [n8n over the SSH tunnel](http://localhost:5678). In the project
-   that will contain both workflows, create a Data Table named
-   **Care Follow-Up Demo** with these five String columns.
-
-   | Column | Value for the demo request |
-   | --- | --- |
-   | `requestKey` | `demo-member-001:missing-lab-kit` |
-   | `memberId` | `demo-member-001` |
-   | `carrierStatus` | `delivered` |
-   | `memberReport` | `not received` |
-   | `reviewStatus` | `open` |
-
+1. In [n8n](http://127.0.0.1:5678), create or reuse the **Care Follow-Up Demo**
+   Data Table. It needs String columns `request_key` and `onboarding_state`.
+   Keep one row with `request_key` set to
+   `demo-member-001:missing-lab-kit`. For a new demo, set `onboarding_state`
+   to `{"kitStatus":"delivered","firstVisitStatus":"ready_to_book"}`.
+   When upgrading, preserve the existing fictional request in the JSON
+   state before publishing. The case row stays in the table during resets.
 2. Import [status.json](n8n/care-demo/status.json) and
-   [report-missing-kit.json](n8n/care-demo/report-missing-kit.json) as
-   separate workflows in that project. In every Data Table node, open
-   **Data table → From list**, replace the placeholder with **Care Follow-Up
-   Demo**, and save. If the editor clears the column selections or mappings
-   when you select the table, restore the following settings.
-
-   - **Find missing-kit request** uses Row → Get, matching `requestKey`
-     with Equals. Set Limit to 1 and enable **Always Output Data** so an
-     empty table produces the Delivered state. The report workflow looks
-     up the key before upserting so retries preserve a case’s progress.
-   - **Upsert missing-kit request** uses Row → Upsert. Match `requestKey`
-     with Equals and the value above. Map each column manually to its value
-     above. Leave Dry Run off and On Error set to Stop Workflow.
-
-   Both webhook nodes respond when the last node finishes and return its
-   first JSON entry. [n8n Data Table row operations](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.datatable/rows) · [n8n Webhook reference](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/)
-
-3. Publish both workflows (or activate them in older n8n versions). Set
-   these server-side values in `.env.local`. Use the production webhook
-   paths shown in n8n with the local tunnel host and port.
+   [report-missing-kit.json](n8n/care-demo/report-missing-kit.json).
+   In every Data Table node select **Care Follow-Up Demo**. In **Save demo
+   case**, keep both filters and map `onboarding_state` to the **Prepare
+   response** node's serialized next state (`={{ $json.next }}`).
+   Publish both workflows. The existing POST webhook accepts kit reports
+   and the booking, review, confirmation, and reset actions.
+3. Set these server-side values in `.env.local` and start Next.js with
+   `npm run dev -- --hostname 127.0.0.1`.
 
    ```dotenv
    CARE_DEMO_MOCK=0
-   N8N_CARE_STATUS_URL=http://localhost:5678/webhook/care-demo/status
-   N8N_REPORT_MISSING_KIT_URL=http://localhost:5678/webhook/care-demo/report-missing-kit
+   N8N_CARE_STATUS_URL=http://127.0.0.1:5678/webhook/care-demo/status
+   N8N_REPORT_MISSING_KIT_URL=http://127.0.0.1:5678/webhook/care-demo/report-missing-kit
    ```
-
-4. Restart Next.js with `npm run dev -- --hostname 127.0.0.1` and open
-   the care demo. Report the missing kit and refresh to check that **Help
-   requested** persists. To exercise the same upsert twice, run the
-   following command twice and confirm the table shows one row with the
-   demo request key.
-
-   ```sh
-   curl -fsS -X POST http://localhost:3000/api/care-demo/report-missing-kit
-   ```
-
-5. For a live demo reset, open **Care Follow-Up Demo**, delete the row
-   whose `requestKey` is `demo-member-001:missing-lab-kit`, then refresh
-   the care demo. The kit starts at **Delivered** again.
 
 ### Vercel with Cloudflare Access
 
@@ -119,12 +87,3 @@ CF_ACCESS_CLIENT_SECRET=<service-token-client-secret>
 ```
 
 Leave both Cloudflare variables unset for local development over the SSH tunnel.
-
-
-The status workflow maps `open` and `in_review` to Help requested,
-`replacement_shipped` to Replacement on the way, and
-`replacement_received` to Replacement received. If upgrading an existing
-demo, update both published workflows. In n8n you can move the fictional
-case forward by editing `reviewStatus` directly, then refreshing the app.
-Optional Date columns `reviewedAt`, `shippedAt`, and `resolvedAt` appear as
-timeline entries when populated.
